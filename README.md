@@ -99,7 +99,7 @@ your .env file. Please replace with your information
 Start the server backend
 
 ```
-npm start
+npm run dev
 ```
 
 #### Frontend Setup
