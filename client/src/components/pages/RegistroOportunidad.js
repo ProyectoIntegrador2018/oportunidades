@@ -4,7 +4,7 @@ import {Grid, TextField, Button} from '@material-ui/core';
 
 import '../../styles/globalStyles.css';
 
-const Signup = () => {
+const RegistroOportunidad = () => {
    return ( 
       <>
          <Grid
@@ -15,7 +15,7 @@ const Signup = () => {
             className="container"
          >
             <div className="container-white">
-               <h1 className="texto-primary">Regístrate</h1>
+               <h1 className="texto-primary">Registro Oportunidad</h1>
                <TextField className="textField mb-1" required label="Nombre"></TextField>
                <TextField className="textField mb-1" required label="Correo" type="email"></TextField>
                <TextField className="textField mb-1" required label="Teléfono"></TextField>
@@ -35,4 +35,4 @@ const Signup = () => {
    );
 }
  
-export default Signup;
+export default RegistroOportunidad;
