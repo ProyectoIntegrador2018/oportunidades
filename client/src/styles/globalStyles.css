@@ -1,0 +1,73 @@
+/* Login y registro */
+.container {
+   height: 100vh;
+   background-color: #EE5D36;
+}
+
+.container-white {
+   background-color: white;
+   display: flex;
+   flex-direction: column;
+   padding: 2em;
+   border-radius: 15px;
+   justify-content: center;
+   align-content: center;
+   margin: 2em;
+}
+
+.textField {
+   width: 300px;
+}
+
+@media only screen and (max-width: 450px) {
+   .container-white {
+      margin: 0;
+   }
+}
+
+@media only screen and (max-width: 400px) {
+   .container {
+      background-color: white;
+   }
+}
+
+.texto {
+   color: #222223;
+}
+
+.texto-primary {
+   color: #EE5D36;
+}
+
+.link {
+   color: #EE5D36;
+}
+
+.link:visited {
+   color: #2C82C2;
+}
+
+.boton {
+   color: white !important;
+   background-color: #EE5D36 !important;
+   margin: 1.5em !important;
+}
+
+.boton:hover {
+   background-color: #d53f16 !important;
+}
+
+.group {
+   display: flex;
+   width: 100%;
+   justify-content: center;
+}
+
+.ml-1 {
+   margin-left: 1em !important;
+}
+
+.mb-1 {
+   margin-bottom: 1em !important;
+}
+
