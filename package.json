@@ -1,0 +1,29 @@
+{
+  "name": "oportunidades",
+  "version": "1.0.0",
+  "description": "MERN app for csoft mty",
+  "main": "app.js",
+  "scripts": {
+    "start": "nodemon app.js",
+    "dev": "nodemon app.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "heroku-postbuild": "cd client && npm install && npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ProyectoIntegrador2018/oportunidades.git"
+  },
+  "author": "CDA SOFT",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ProyectoIntegrador2018/oportunidades/issues"
+  },
+  "homepage": "https://github.com/ProyectoIntegrador2018/oportunidades#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "mongoose": "^5.10.6",
+    "nodemon": "^2.0.4"
+  }
+}
