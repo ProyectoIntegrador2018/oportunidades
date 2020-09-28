@@ -6,8 +6,11 @@
   "scripts": {
     "start": "nodemon app.js",
     "dev": "nodemon app.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest --runInBand ./test",
     "heroku-postbuild": "cd client && npm install && npm run build"
+  },
+  "jest": {
+    "testEnvironment": "node"
   },
   "repository": {
     "type": "git",
@@ -20,10 +23,17 @@
   },
   "homepage": "https://github.com/ProyectoIntegrador2018/oportunidades#readme",
   "dependencies": {
+    "bcrypt": "^5.0.0",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.10.6",
-    "nodemon": "^2.0.4"
+    "nodemon": "^2.0.4",
+    "validator": "^13.1.17"
+  },
+  "devDependencies": {
+    "jest": "^26.4.2",
+    "mongodb-memory-server": "^6.8.0"
   }
 }
