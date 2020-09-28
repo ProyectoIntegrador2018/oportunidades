@@ -23,16 +23,6 @@
   },
   "homepage": "https://github.com/ProyectoIntegrador2018/oportunidades#readme",
   "dependencies": {
-    "@material-ui/core": "^4.11.0",
-    "@types/history": "^4.7.8",
-    "cors": "^2.8.5",
-    "dotenv": "^8.2.0",
-    "express": "^4.17.1",
-    "history": "^5.0.0",
-    "mongoose": "^5.10.6",
-    "nodemon": "^2.0.4",
-    "react-router": "^6.0.0-beta.0",
-    "react-router-dom": "^6.0.0-beta.0"
     "bcrypt": "^5.0.0",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
@@ -44,6 +34,16 @@
   },
   "devDependencies": {
     "jest": "^26.4.2",
-    "mongodb-memory-server": "^6.8.0"
+    "mongodb-memory-server": "^6.8.0",
+    "@material-ui/core": "^4.11.0",
+    "@types/history": "^4.7.8",
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "history": "^5.0.0",
+    "mongoose": "^5.10.6",
+    "nodemon": "^2.0.4",
+    "react-router": "^6.0.0-beta.0",
+    "react-router-dom": "^6.0.0-beta.0"
   }
 }
