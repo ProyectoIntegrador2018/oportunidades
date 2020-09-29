@@ -13,8 +13,6 @@ app.use(express.urlencoded({ extended: true }));
 
 mongoose.connect(database, { useNewUrlParser: true });
 
-const userRouter = require("./server/routes/userapi");
-app.use("/user", userRouter);
 
 if (process.env.NODE_ENV === "production") {
    app.use(express.static("client/build"));
