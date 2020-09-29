@@ -6,11 +6,7 @@
   "scripts": {
     "start": "nodemon app.js",
     "dev": "nodemon app.js",
-    "test": "jest --runInBand ./test",
     "heroku-postbuild": "cd client && npm install && npm run build"
-  },
-  "jest": {
-    "testEnvironment": "node"
   },
   "repository": {
     "type": "git",
@@ -33,17 +29,11 @@
     "validator": "^13.1.17"
   },
   "devDependencies": {
-    "jest": "^26.4.2",
-    "mongodb-memory-server": "^6.8.0",
-    "@material-ui/core": "^4.11.0",
-    "@types/history": "^4.7.8",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "history": "^5.0.0",
     "mongoose": "^5.10.6",
-    "nodemon": "^2.0.4",
-    "react-router": "^6.0.0-beta.0",
-    "react-router-dom": "^6.0.0-beta.0"
+    "nodemon": "^2.0.4"
   }
 }
