@@ -5,19 +5,13 @@ const rfpController = require("../controllers/rfpController");
 const router = express.Router();
 
 /**
- * Route to create an RFP by a client
+ * Route to create a RFP by a client
  * @implements {userMiddleWare} Function to check if the request is sent by a logged user
  * @param {Object} req contains the RFP's data in its body.
  * @param {Object} res response for the request
  */
 
 router.post("/create-rfp", userMiddleware, (req, res) => {
-   let name = req.body.name;
-   let position = req.body.position;
-   let phone = req.body.phone;
-   let email = req.body.email;
-   let category = req.body.category;
-   let meeting = req.body.meeting;
    rfpController
       .createrfp(req.body)
       .then((rfp) => {
@@ -31,6 +25,41 @@ router.post("/create-rfp", userMiddleware, (req, res) => {
          return res.status(400).send({ error });
       });
 });
+
+/**
+ * Route to delete a RFP by a client
+ * @implements {userMiddleWare} Function to check if the request is sent by a logged user
+ * @param {Object} req contains the RFP's data in its body.
+ * @param {Object} res response for the request
+ */
+router.delete('/deleterfp', userMiddleware, (req, res) => {
+  rfpController
+     .deleterfp(req)
+     .then(() => {
+        return res.send();
+     })
+     .catch((error) => {
+        return res.status(400).send({ error });
+     });
+});
+
+/**
+ * Route to update a RFP by a client
+ * @implements {userMiddleWare} Function to check if the request is sent by a logged user
+ * @param {Object} req contains the RFP's data in its body.
+ * @param {Object} res response for the request
+ */
+router.put('/updaterfp', userMiddleware, (req, res) => {
+  rfpController
+     .updaterfp(req)
+     .then(() => {
+        return res.send();
+     })
+     .catch((error) => {
+        return res.status(400).send({ error });
+     });
+});
+
 
 router.get("/ping", userMiddleware, (req, res) => {
    return res.send({info: "ping is working for authorized user"})

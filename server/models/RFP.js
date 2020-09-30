@@ -5,15 +5,15 @@ const jwt = require("jsonwebtoken");
 
 const schema = new mongoose.Schema(
    {
-      name: {
+      nombrecliente: {
          type: String,
          required: true,
       },
-      position: {
+      posicioncliente: {
          type: String,
          required: true,
       },
-      phone: {
+      telefono: {
          type: Number,
          required: true,
       },
@@ -21,11 +21,55 @@ const schema = new mongoose.Schema(
          type: String,
          required: true,
       },
-      category: {
+      nombreOportunidad: {
          type: String,
          required: true,
       },
-      meeting: {
+      objetivoOportunidad: {
+         type: String,
+         required: true,
+      },
+      fechasRelevantes: {
+         type: String,
+         required: true,
+      },
+      descripcionProblematica: {
+         type: String,
+         required: true,
+      },
+      descripcionFuncional: {
+         type: String,
+         required: true,
+      },
+      requerimientosObligatorios: {
+         type: String,
+         required: true,
+      },
+      aprobadaAreaUsuario: {
+         type: String,
+         required: true,
+      },
+      aprobadaAreaTI: {
+         type: String,
+         required: true,
+      },
+      presupuestoAsignado: {
+         type: String,
+         required: true,
+      },
+      comentariosAdicionales: {
+         type: String,
+         required: true,
+      },
+      tipoGeneralProyecto: {
+         type: String,
+         required: true,
+      },
+      tipoEspecificoProyecto: {
+         type: String,
+         required: true,
+      },
+      fechaCita: {
          type: Date,
          required: true,
       },
