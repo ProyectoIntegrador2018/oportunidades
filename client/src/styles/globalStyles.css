@@ -71,3 +71,16 @@
    margin-bottom: 1em !important;
 }
 
+.error-titulo {
+   margin: 0;
+   margin-bottom: 0.3em;
+   color: '#222223';
+   text-align: start;
+   max-width: 300px;
+}
+
+.error-texto {
+   color: hsl(0, 95%, 44%);
+   font-weight: 900;
+   margin-right: 0.5em;
+}
