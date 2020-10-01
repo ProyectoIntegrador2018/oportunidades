@@ -1,12 +1,19 @@
-import React from 'react';
-import {Link} from 'react-router-dom';
+import React, {useState} from 'react';
+import {Link, useNavigate} from 'react-router-dom';
 import {Grid, TextField, Button} from '@material-ui/core';
 import {useFormik} from 'formik';
 import * as Yup from 'yup';
+import axios from 'axios';
 
 import '../../styles/globalStyles.css';
 
 const Signup = () => {
+   // state de error
+   const [mensajeError, guardarMensajeError] = useState('');
+
+   // hook para redireccionar
+   const navigate = useNavigate();
+
    // validación y leer los datos del formulario
    const formik = useFormik({
       initialValues: {
@@ -31,17 +38,25 @@ const Signup = () => {
                      .required('La contraseña es obligatoria'),
       }),
       onSubmit: usuario => {
-         console.log(usuario)
-         //  componentDidMount() {
-         //    axios
-         //       .post("/user/create-client-user")
-         //       .then((res) => {
-         //          // aqui seteas el token dentro de la sesión del navegador
-         //       })
-         //       .catch((error) => {
-         //          console.log(error);
-         //       });
-         // }
+         axios
+            .post("/user/create-client-user", 
+               {
+                  name: usuario.nombre,
+                  email: usuario.email,
+                  telefono: usuario.telefono,
+                  empresa: usuario.empresa,
+                  password: usuario.password,
+                  userType: 'cliente'
+               }
+            )
+            .then((res) => {
+               // redireccionar
+               navigate('/');
+            })
+            .catch((error) => {
+               console.log(error);
+               guardarMensajeError('Correo ya existente o incorrecto');
+            })
       }
    });
 
@@ -57,6 +72,9 @@ const Signup = () => {
          >
             <form onSubmit={formik.handleSubmit} className="container-white">
                <h1 className="texto-primary">Regístrate</h1>
+               {mensajeError === '' 
+               ? null
+               : (<p className="error-titulo-rojo">{mensajeError}</p>)}
                <TextField 
                   className="textField mb-1" 
                   id="nombre"

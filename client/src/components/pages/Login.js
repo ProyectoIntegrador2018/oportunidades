@@ -1,12 +1,19 @@
-import React from 'react';
-import {Link} from 'react-router-dom';
+import React, {useState} from 'react';
+import {Link, useNavigate} from 'react-router-dom';
 import {Grid, TextField, Button} from '@material-ui/core';
 import {useFormik} from 'formik';
 import * as Yup from 'yup';
+import axios from 'axios';
 
 import '../../styles/globalStyles.css';
 
 const Login = () => {
+   // state de error
+   const [mensajeError, guardarMensajeError] = useState('');
+
+   // hook para redireccionar
+   const navigate = useNavigate();
+
    // validación y leer los datos del formulario
    const formik = useFormik({
       initialValues: {
@@ -20,7 +27,26 @@ const Login = () => {
                      .required('La contraseña es obligatoria'),
       }),
       onSubmit: usuario => {
-         console.log(usuario)
+         console.log(usuario);
+         axios
+            .post("/user/login", 
+               {
+                  email: usuario.usuario,
+                  password: usuario.password
+               }
+            )
+            .then((res) => {
+               // guardar token en session storage
+               sessionStorage.setItem('AUTHENTICATED', true);
+               sessionStorage.setItem('token', res.data.token);
+               
+               // redireccionar
+               navigate('/inicio');
+            })
+            .catch((error) => {
+               console.log(error);
+               guardarMensajeError('Usuario o contraseña incorrecto');
+            })
       }
    });
    return ( 
@@ -34,6 +60,9 @@ const Login = () => {
          >
             <form onSubmit={formik.handleSubmit} className="container-white">
                <h1 className="texto-primary">Inicia sesión</h1>
+               {mensajeError === '' 
+               ? null
+               : (<p className="error-titulo-rojo">{mensajeError}</p>)}
                <TextField 
                   className="textField mb-1" 
                   id="usuario"
