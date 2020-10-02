@@ -19,6 +19,14 @@ const schema = new mongoose.Schema(
             }
          },
       },
+      telefono: {
+         type: String,
+         required: true,
+      },
+      empresa: {
+         type: String,
+         required: true,
+      },
       password: {
          type: String,
          required: true,
