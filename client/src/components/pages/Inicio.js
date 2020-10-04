@@ -1,12 +1,14 @@
-import React from 'react';
-import {Link} from 'react-router-dom';
-import {Grid} from '@material-ui/core';
+import React from "react";
+import { Link } from "react-router-dom";
+import { Grid } from "@material-ui/core";
 
-import '../../styles/globalStyles.css';
+import "../../styles/globalStyles.css";
+import SideMenu from "../SideMenu/SideMenu";
 
 const Inicio = () => {
-   return ( 
+      return (
       <>
+         <SideMenu />
          <Grid
             container
             direction="column"
@@ -23,6 +25,6 @@ const Inicio = () => {
          </Grid>
       </>
    );
-}
- 
+};
+
 export default Inicio;
