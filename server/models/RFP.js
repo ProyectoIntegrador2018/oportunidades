@@ -71,7 +71,6 @@ const schema = new mongoose.Schema(
       },
       fechaCita: {
          type: Date,
-         required: true,
       },
       createdBy: {
         type: mongoose.Schema.Types.ObjectId,
