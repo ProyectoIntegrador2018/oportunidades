@@ -1,8 +1,9 @@
 const RFP = require("../models/RFP");
 let rfpController = {};
 
-rfpController.createrfp = (rawRFP) => {
+rfpController.createrfp = (rawRFP, id) => {
   return new Promise((resolve, reject) => {
+     rawRFP.createdBy = id;
      const rfp = new RFP(rawRFP);
      rfp
         .save()
@@ -14,10 +15,20 @@ rfpController.createrfp = (rawRFP) => {
         });
   });
 };
-
+const createNewRFP = function(req, res) {
+   const mirfp = new RFP({
+     ...req.body,
+     createdBy: req.user._id
+   })
+   mirfp.save().then(function(){
+     return res.send(mirfp)
+   }).catch(function(error) {
+     return res.status(400).send({ error: error})
+   })
+};
 rfpController.deleterfp = (req, res) => {
   const _id = req.params.id
-  RFP.findByIdAndDelete(_id).then(function(rfp)){
+  RFP.findByIdAndDelete(_id).then(function(rfp) {
     if (!rfp) {
       return res.status(404).send({})
     }

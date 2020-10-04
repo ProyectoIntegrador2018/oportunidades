@@ -16,6 +16,9 @@ mongoose.connect(database, { useNewUrlParser: true });
 const userRouter = require("./server/routes/userapi");
 app.use("/user", userRouter);
 
+const rfpRouter = require("./server/routes/RFPapi");
+app.use("/rfp", rfpRouter);
+
 if (process.env.NODE_ENV === "production") {
    app.use(express.static("client/build"));
    app.get("*", function (req, res) {

@@ -7,6 +7,12 @@ import axios from 'axios';
 
 import '../../styles/globalStyles.css';
 
+const config = {
+   headers: {
+      Authorization: "Bearer " + sessionStorage.getItem("token"),
+      "Content-Type": "application/json",
+   },
+};
 const RegistroOportunidad = () => {
   // state de error
   const [mensajeError, guardarMensajeError] = useState('');
@@ -30,7 +36,8 @@ const RegistroOportunidad = () => {
         aprobadaUsuario: '',
         aprobadaTI: '',
         presupuesto: '',
-        tipo_proy: '',
+        tipo_general: '',
+        tipo_esp: '',
         comment: '',
      },
      validationSchema: Yup.object({
@@ -70,7 +77,7 @@ const RegistroOportunidad = () => {
      onSubmit: rfp => {
         console.log(rfp);
         axios
-           .post("/create-rfp",
+           .post("/RFP/create-rfp",
               {
                  nombrecliente: rfp.name_person,
                  posicioncliente: rfp.position,
@@ -88,13 +95,9 @@ const RegistroOportunidad = () => {
                  comentariosAdicionales: rfp.comment,
                  tipoGeneralProyecto: rfp.tipo_general,
                  tipoEspecificoProyecto: rfp.tipo_esp,
-              }
+              }, config
            )
            .then((res) => {
-              // guardar token en session storage
-              sessionStorage.setItem('AUTHENTICATED', true);
-              sessionStorage.setItem('token', res.data.token);
-
               // redireccionar
               navigate('/inicio');
            })

@@ -12,8 +12,9 @@ const router = express.Router();
  */
 
 router.post("/create-rfp", userMiddleware, (req, res) => {
+   let id = req.user._id;
    rfpController
-      .createrfp(req.body)
+      .createrfp(req.body, id)
       .then((rfp) => {
          return res.send({
            success: 1,
