@@ -92,3 +92,25 @@
    font-weight: 900;
    margin-right: 0.5em;
 }
+
+.toolbar {
+   padding-right: 24;
+}
+
+.toolbarIcon {
+   display: 'flex';
+   align-items: 'center';
+   justify-content: 'flex-end';
+   padding: '0 8px';
+}
+
+.menuButton {
+   margin-right: 36
+}
+.menuButtonHidden {
+   display: "none"
+}
+
+.drawer-icon {
+   color: #EE5D36
+}
