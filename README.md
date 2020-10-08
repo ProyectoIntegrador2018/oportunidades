@@ -50,8 +50,6 @@ You should ask for access to this tools if you don't have it already:
 
 * [Github repo](https://github.com/ProyectoIntegrador2018/oportunidades)
 * [Backlog](https://trello.com/b/a7kksAKp/oportunidades-comerciales)
-* [Heroku](https://crowdfront-staging.herokuapp.com/)
-* [Documentation](https://drive.com)
 
 ## Development
 
