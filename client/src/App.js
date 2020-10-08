@@ -8,6 +8,7 @@ import Signup from './components/pages/Signup';
 import SignupSocio from './components/pages/SignupSocio';
 import RegistroOportunidad from './components/pages/RegistroOportunidad';
 import { createMuiTheme, MuiThemeProvider } from '@material-ui/core';
+import { ProtectedRoute } from './components/ProtectedRoute/ProtectedRoute';
 
 const theme = createMuiTheme({
    palette: {
@@ -23,8 +24,8 @@ function App() {
             <Route path="/" element={<Login />} />
             <Route path="/registro" element={<Signup />} />
             <Route path="/registro-socio" element={<SignupSocio />} />
-            <Route path="/inicio" element={<Inicio />} />
-            <Route path="/registro-oportunidad" element={<RegistroOportunidad />} />
+            <ProtectedRoute path="/inicio" component={Inicio} redirectTo="/" />
+            <ProtectedRoute path="/registro-oportunidad" component={RegistroOportunidad} redirectTo="/" />
          </Routes>
          </MuiThemeProvider>
       </div>
