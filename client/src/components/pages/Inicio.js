@@ -1,27 +1,26 @@
 import React from "react";
-import { Link } from "react-router-dom";
 import { Grid } from "@material-ui/core";
 
 import "../../styles/globalStyles.css";
 import SideMenu from "../SideMenu/SideMenu";
+import RfpCardSocio from "../Cards/RfpCardSocio";
+import FabButton from "../ui/FabButton";
 
 const Inicio = () => {
       return (
       <>
          <SideMenu />
+         <FabButton />
          <Grid
             container
-            direction="column"
-            justify="center"
-            alignItems="center"
-            className="container"
+            direction="row"
+            className="container-dashboard "
          >
-            <div className="container-white">
-               <h1 className="texto-primary">Inicio</h1>
-               <Link to="/registro-oportunidad" className="link ml-1">
-                  Nueva oportunidad
-               </Link>
-            </div>
+            <RfpCardSocio />
+            <RfpCardSocio />
+            <RfpCardSocio />
+            <RfpCardSocio />
+         
          </Grid>
       </>
    );

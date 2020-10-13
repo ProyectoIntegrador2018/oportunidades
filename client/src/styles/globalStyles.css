@@ -28,6 +28,8 @@
    margin-top: 72px;
 }
 
+
+
 @media only screen and (max-width: 960px) {
    .textField-completo {
       width: 90%;
@@ -181,4 +183,48 @@
    flex-direction: column;
    justify-content: center;
    align-content: center;
+}
+
+.container-dashboard {
+   margin-top: 1em;
+   background-color: #EE5D36;
+   min-height: 100vh;
+   padding: 1em;
+   padding-top: 2em;
+   flex-wrap: wrap;
+   align-content: flex-start;
+   justify-content: space-evenly;
+}
+
+.rfp-card {
+   margin-right: 1em;
+   margin-bottom: 1em;
+   @media only screen and (max-width: 614px) {
+      margin-right: 0em;
+   }
+}
+
+.fabIcon {
+   z-index: 1000000;
+   position: relative;
+   top: 40px;
+   display: flex;
+   justify-content: flex-end;
+   margin-right: 2em;
+}
+
+.editIconContainer {
+   display: flex;
+   justify-content: flex-end;
+   margin-right: 1em;
+   margin-top: 1em;
+}
+
+.editIcon {
+   z-index: 1000000;
+   margin-left: 1em;
+}
+
+.cardTitulo {
+   font-weight: 800;
 }
