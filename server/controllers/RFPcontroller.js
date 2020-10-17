@@ -52,6 +52,40 @@ rfpController.updaterfp = (req, res) => {
   })
 };
 
+rfpController.getrfp = () => {
+  return new Promise((resolve, reject) => {
+     RFP.find()
+        .then((rfps) => {
+          return resolve( rfps );
+        })
+        .catch((error) => {
+           return reject({ error });
+        });
+  });
+};
 
+rfpController.getrfpSocio = () => {
+  return new Promise((resolve, reject) => {
+     RFP.find({estatus: 'Activo'})
+        .then((rfps) => {
+          return resolve( rfps );
+        })
+        .catch((error) => {
+           return reject({ error });
+        });
+  });
+};
+
+rfpController.getrfpCliente = (id) => {
+  return new Promise((resolve, reject) => {
+     RFP.find({createdBy: id})
+        .then((rfps) => {
+          return resolve( rfps );
+        })
+        .catch((error) => {
+           return reject({ error });
+        });
+  });
+};
 
 module.exports = rfpController;

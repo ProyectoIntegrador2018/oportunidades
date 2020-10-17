@@ -50,7 +50,7 @@ const useStyles = makeStyles({
   },
 });
 
-export default function SimpleCard() {
+export default function SimpleCard({rfp}) {
   const classes = useStyles();
   const bull = <span className={classes.bullet}>•</span>;
 
@@ -60,17 +60,17 @@ export default function SimpleCard() {
     <FabEditRFP />
       <CardContent>
         <Typography className={classes.title}>
-          Nombre de la oportunidad
+          {rfp.nombreOportunidad}
         </Typography>
         <Typography className={classes.description} gutterBottom>
-          Descripción de la necesidad Descripción de la necesidad Descripción de la necesidad Descripción de la necesidad Descripción de la necesi
+          {rfp.descripcionProblematica}
         </Typography>
         <div className={classes.containerText}>
             <Typography className={classes.estatus}>
                 Estatus: 
             </Typography>
             <Typography className={classes.texto}>
-                Activo
+              {rfp.estatus}
             </Typography>
         </div>
       </CardContent>

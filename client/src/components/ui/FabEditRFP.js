@@ -13,12 +13,12 @@ export default function FloatingActionButtons() {
   return (
       <div className="editIconContainer">
         <div className="editIcon">
-          <Fab size="small" color="#2C82C2" aria-label="edit">
+          <Fab size="small" color="inherit" aria-label="edit">
             <EditIcon />
           </Fab>
         </div>
         <div className="editIcon">
-          <Fab size="small" color="#2C82C2" aria-label="edit">
+          <Fab size="small" color="inherit" aria-label="edit">
               <DeleteIcon />
           </Fab>
         </div>

@@ -56,6 +56,10 @@ const schema = new mongoose.Schema(
       fechaCita: {
          type: Date,
       },
+      estatus: {
+         type: String,
+         default: 'Activo',
+      },
       createdBy: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,

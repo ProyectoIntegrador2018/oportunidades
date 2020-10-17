@@ -6,7 +6,7 @@ import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 
-import FabEditRFP from "../ui/FabEditRFP";
+//import FabEditRFP from "../ui/FabEditRFP";
 
 const useStyles = makeStyles({
   root: {
@@ -51,26 +51,27 @@ const useStyles = makeStyles({
   },
 });
 
-export default function SimpleCard() {
+export default function SimpleCard({rfp}) {
   const classes = useStyles();
   const bull = <span className={classes.bullet}>•</span>;
+  console.log(rfp);
 
   return (
     <div className="rfp-card">
     <Card className={classes.root}>
       <CardContent>
         <Typography className={classes.title}>
-          Nombre de la oportunidad
+          {rfp.nombreOportunidad}
         </Typography>
         <Typography className={classes.description} gutterBottom>
-          Descripción de la necesidad Descripción de la necesidad Descripción de la necesidad Descripción de la necesidad Descripción de la necesi
+          {rfp.descripcionProblematica}
         </Typography>
         <div className={classes.containerText}>
             <Typography className={classes.estatus}>
                 Estatus: 
             </Typography>
             <Typography className={classes.texto}>
-                Activo
+              {rfp.estatus}
             </Typography>
         </div>
       </CardContent>

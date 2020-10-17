@@ -27,7 +27,6 @@ const Login = () => {
                      .required('La contraseña es obligatoria'),
       }),
       onSubmit: usuario => {
-         console.log(usuario);
          axios
             .post("/user/login", 
                {
@@ -36,9 +35,12 @@ const Login = () => {
                }
             )
             .then((res) => {
+               
                // guardar token en session storage
                sessionStorage.setItem('AUTHENTICATED', true);
                sessionStorage.setItem('token', res.data.token);
+               sessionStorage.setItem('userType', res.data.user.userType);
+               console.log(res.data.token);
                
                // redireccionar
                navigate('/inicio');
