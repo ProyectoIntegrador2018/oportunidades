@@ -119,7 +119,7 @@ const RegistroOportunidad = () => {
             direction="row"
             justify="space-between"
             alignItems="flex-start"
-            className=" marginTopMenu"
+            className="marginTopMenu"
          >
             <Grid item xs={12}>
                <h1 className="texto-primary">Registro oportunidad</h1>

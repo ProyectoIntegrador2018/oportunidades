@@ -50,7 +50,7 @@ const schema = new mongoose.Schema(
          type: String,
          required: true,
          validate(value) {
-            const allowedValues = ["cliente", "socio"];
+            const allowedValues = ["cliente", "socio", "admin"];
             if (!allowedValues.includes(value)) {
                throw new Error("Tipo de usuario no valido");
             }
