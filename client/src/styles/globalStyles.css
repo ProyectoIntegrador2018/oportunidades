@@ -237,3 +237,11 @@
 .cardTitulo {
    font-weight: 800;
 }
+
+.cardMensaje {
+   min-width: 300px;
+   min-height: 50px;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+}
