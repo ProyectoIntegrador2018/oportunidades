@@ -1,4 +1,5 @@
 import React from 'react';
+import {useNavigate} from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
@@ -53,8 +54,10 @@ const useStyles = makeStyles({
 
 export default function SimpleCard({rfp}) {
   const classes = useStyles();
-  const bull = <span className={classes.bullet}>•</span>;
   console.log(rfp);
+
+  // hook para redireccionar
+  const navigate = useNavigate();
 
   return (
     <div className="rfp-card">
@@ -77,7 +80,7 @@ export default function SimpleCard({rfp}) {
       </CardContent>
       <CardActions>
           <div className={classes.contenedorBotones}>
-            <Button size="small">SABER MÁS</Button>
+            <Button size="small" onClick={() => { navigate('/detalle', {state: {rfp: rfp}});}}>SABER MÁS</Button>
             <Button type="submit" variant="contained" className="boton">PARTICIPAR</Button>
           </div>
       </CardActions>
