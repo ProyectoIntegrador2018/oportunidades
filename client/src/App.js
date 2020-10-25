@@ -4,6 +4,7 @@ import {Routes, Route} from 'react-router';
 
 import Login from './components/pages/Login';
 import Inicio from './components/pages/Inicio';
+import Detalle from './components/pages/Detalle';
 import Signup from './components/pages/Signup';
 import SignupSocio from './components/pages/SignupSocio';
 import RegistroOportunidad from './components/pages/RegistroOportunidad';
@@ -25,6 +26,7 @@ function App() {
             <Route path="/registro" element={<Signup />} />
             <Route path="/registro-socio" element={<SignupSocio />} />
             <ProtectedRoute path="/inicio" component={Inicio} redirectTo="/" />
+            <ProtectedRoute path="/detalle" component={Detalle} redirectTo="/" />
             <ProtectedRoute path="/registro-oportunidad" component={RegistroOportunidad} redirectTo="/" />
          </Routes>
          </MuiThemeProvider>
