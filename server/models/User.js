@@ -20,12 +20,10 @@ const schema = new mongoose.Schema(
          },
       },
       telefono: {
-         type: String,
-         required: true,
+         type: String
       },
       empresa: {
-         type: String,
-         required: true,
+         type: String
       },
       password: {
          type: String,
@@ -118,6 +116,14 @@ schema.statics.findByCredentials = (email, password) => {
       });
    });
 };
+
+/**
+ * Gets user by email only
+ * @param {String} email 
+ */
+schema.statics.findByEmail = function(email) {
+   return this.findOne({ email }).exec();
+}
 
 /**
  * Hash password before saving user
