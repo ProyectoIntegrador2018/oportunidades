@@ -2,6 +2,9 @@ const User = require('../models/User');
 const nodemailer = require('nodemailer');
 let adminController = {};
 
+/**
+ * @param {Object} rawUser contains the user info to create
+ */
 adminController.createSocio = (rawUser) => {
    return new Promise((resolve, reject) => {
       const user = new User(rawUser);
@@ -25,7 +28,7 @@ adminController.createSocio = (rawUser) => {
                from: '"Jose Antonio Aleman Salazar" <antonio.9714@outlook.com>', // sender address
                to: 'antonio.9714@gmail.com', // list of receivers
                subject: "Tu usuario para Oportunidades Comerciales", // Subject line
-               text: "Hello world?", // plain text body
+               text: "Bienvenido", // plain text body
                html: `
                <b>Bienvenido al sistema de Oportunidades Comerciales del Clúster TIC de Nuevo León<b>
                <b>A continuación están tus credenciales para iniciar sesión en el sistema. Te recomendamos cambiar
@@ -33,7 +36,6 @@ adminController.createSocio = (rawUser) => {
                <p>Username: ${user.email}</p>
                <p>Password: ${rawUser.password}</p>`,
             };
-            console.log("sending email...")
             transporter.sendMail(mailOptions, function(error, info) {
                if(error) {
                   console.log(error)
