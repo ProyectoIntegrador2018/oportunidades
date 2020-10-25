@@ -1,6 +1,10 @@
 const User = require("../models/User");
 let userController = {};
 
+/**
+ * @param {String} email user email
+ * @param {String} password user password
+ */
 userController.login = (email, password) => {
    return new Promise((resolve, reject) => {
       User.findByCredentials(email, password)
@@ -20,6 +24,10 @@ userController.login = (email, password) => {
    });
 };
 
+/**
+ * 
+ * @param {Object} req request
+ */
 userController.logout = (req) => {
    return new Promise((resolve, reject) => {
       req.user.tokens = req.user.tokens.filter((token) => {
@@ -37,6 +45,10 @@ userController.logout = (req) => {
    });
 };
 
+/**
+ * 
+ * @param {Object} rawUser object containing the user info to create
+ */
 userController.createUser = (rawUser) => {
    return new Promise((resolve, reject) => {
       const user = new User(rawUser);
