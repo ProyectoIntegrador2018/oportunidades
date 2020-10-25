@@ -24,6 +24,10 @@
    width: 80%;
 }
 
+.textField-completo-100 {
+   width: 100%;
+}
+
 .marginTopMenu {
    margin-top: 72px;
 }
@@ -189,6 +193,15 @@
    align-content: center;
 }
 
+.container-rfp-edit {
+   background-color: white;
+   display: flex;
+   flex-direction: column;
+   justify-content: center;
+   align-content: center;
+   width: 80%;
+}
+
 .container-dashboard {
    margin-top: 1em;
    background-color: #EE5D36;
@@ -216,6 +229,7 @@
 .rfp-card-detalle {
    display: flex;
    justify-content: center;
+   min-width: 90%;
 }
 
 .fabIcon {

@@ -12,7 +12,7 @@ import FabEditRFP from "../ui/FabEditRFP";
 
 const useStyles = makeStyles({
   root: {
-    minWidth: 250,
+    minWidth: '90%',
     maxWidth: '90%',
   },
   bullet: {
@@ -86,7 +86,7 @@ export default function SimpleCard({rfp}) {
     <Card className={classes.root}>
       <div className={classes.containerHeader}>
         <KeyboardArrowLeft className={classes.icono} onClick={() => {navigate('/inicio')}}/>
-        {userType === 'socio' ? (null) : (<FabEditRFP />)}
+        {userType === 'socio' ? (null) : (<FabEditRFP  rfp={rfp} />)}
       </div>
       <CardContent>
         <Typography className={classes.title}>

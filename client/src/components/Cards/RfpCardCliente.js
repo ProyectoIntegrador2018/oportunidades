@@ -60,7 +60,7 @@ export default function SimpleCard({rfp}) {
   return (
     <div className="rfp-card">
     <Card className={classes.root}>
-    <FabEditRFP />
+    <FabEditRFP  rfp={rfp} />
       <CardContent>
         <Typography className={classes.title}>
           {rfp.nombreOportunidad}
