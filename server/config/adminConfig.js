@@ -5,6 +5,7 @@ const adminEmail = process.env.ADMIN_EMAIL;
 const adminPassword = process.env.ADMIN_PASSWORD;
 const adminName = process.env.ADMIN_NAME;
 
+// If the admin doesn't exists in the DB then create it.
 User.findByEmail(adminEmail).then((admin) => {
    if (!admin) {
       let admin = {};
