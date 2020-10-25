@@ -213,6 +213,11 @@
    }
 }
 
+.rfp-card-detalle {
+   display: flex;
+   justify-content: center;
+}
+
 .fabIcon {
    z-index: 1000000;
    position: relative;
@@ -227,6 +232,7 @@
    justify-content: flex-end;
    margin-right: 1em;
    margin-top: 1em;
+   flex: 1;
 }
 
 .editIcon {
@@ -244,4 +250,15 @@
    display: flex;
    justify-content: center;
    align-items: center;
+}
+
+.container-detalle {
+   margin-top: 1em;
+   background-color: #EE5D36;
+   min-height: 100vh;
+   padding: 1em;
+   padding-top: 2em;
+   flex-wrap: wrap;
+   align-content: flex-start;
+   justify-content: center;
 }
