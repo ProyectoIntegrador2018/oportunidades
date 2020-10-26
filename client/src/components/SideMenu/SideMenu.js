@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import clsx from "clsx";
 import {
    Drawer,
@@ -7,22 +7,24 @@ import {
    List,
    AppBar,
    Toolbar,
-   Typography
+   Typography,
 } from "@material-ui/core";
 import { ChevronLeft, Menu } from "@material-ui/icons";
 import "../../styles/globalStyles.css";
 import useStyles from "../SideMenu/styles";
 import ListItems from "../SideMenu/ListItems";
+import ListItemsAdmin from "../SideMenu/ListItemsAdmin";
 
 const SideMenu = () => {
    const [drawerOpen, setDrawerOpen] = useState(false);
+   const userType = sessionStorage.getItem("userType");
 
    const handleDrawerOpen = () => {
       setDrawerOpen(true);
-   }
+   };
    const handleDrawerClose = () => {
       setDrawerOpen(false);
-   }
+   };
    const classes = useStyles();
 
    return (
@@ -60,7 +62,7 @@ const SideMenu = () => {
             </div>
             <Divider />
             <List>
-               <ListItems></ListItems>
+               {userType === "admin" ? <ListItemsAdmin /> : <ListItems />}
             </List>
          </Drawer>
       </div>
