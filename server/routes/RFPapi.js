@@ -108,16 +108,24 @@ router.delete('/deleterfp', userMiddleware, (req, res) => {
  * @param {Object} req contains the RFP's data in its body.
  * @param {Object} res response for the request
  */
-router.put('/updaterfp', userMiddleware, (req, res) => {
-  rfpController
-     .updaterfp(req)
-     .then(() => {
-        return res.send();
-     })
-     .catch((error) => {
-        return res.status(400).send({ error });
-     });
-});
+router.patch('/updaterfp', userMiddleware, (req, res) => {
+      rfpController
+         .updaterfp(req.user._id, req.body)
+         .then((rfp) => {
+            return res.send({
+               success: 1,
+               rfp,
+            });
+         })
+         .catch((error) => { 
+            return res.status(401).send({
+               success: 0,
+               error,
+            });
+         });
+   });
+
+
 
 
 router.get("/ping", userMiddleware, (req, res) => {

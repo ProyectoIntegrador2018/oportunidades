@@ -107,6 +107,7 @@ export default function SimpleCard({rfp}) {
       tipo_esp: rfp.tipoEspecificoProyecto,
       comment: rfp.comentariosAdicionales,
       estatus: rfp.estatus,
+      id: rfp._id,
     },
     validationSchema: Yup.object({
       name_person: Yup.string()
@@ -142,40 +143,39 @@ export default function SimpleCard({rfp}) {
       estatus: Yup.string()
                   .required('El estatus es obligatorio'),
       comment: Yup.string(),
+      id: Yup.string(),
     }),
     onSubmit: rfp => {
-      console.log('editar');
-      console.log(rfp);
-      navigate(-1);
-      //  axios
-      //     .post("/RFP/create-rfp",
-      //        {
-      //           nombrecliente: rfp.name_person,
-      //           posicioncliente: rfp.position,
-      //           telefono: rfp.phone,
-      //           email: rfp.email,
-      //           nombreOportunidad: rfp.rfpname,
-      //           objetivoOportunidad: rfp.objective,
-      //           fechasRelevantes: rfp.imp_dates,
-      //           descripcionProblematica: rfp.problem,
-      //           descripcionFuncional: rfp.functional,
-      //           requerimientosObligatorios: rfp.requirements,
-      //           aprobadaAreaUsuario: rfp.aprobadaUsuario,
-      //           aprobadaAreaTI: rfp.aprobadaTI,
-      //           presupuestoAsignado: rfp.presupuesto,
-      //           comentariosAdicionales: rfp.comment,
-      //           tipoGeneralProyecto: rfp.tipo_general,
-      //           tipoEspecificoProyecto: rfp.tipo_esp,
-      //        }, config
-      //     )
-      //     .then((res) => {
-      //        // redireccionar
-      //        navigate(-1);
-      //     })
-      //     .catch((error) => {
-      //        console.log(error);
-      //        guardarMensajeError('RFP inválido');
-      //     })
+        axios
+          .patch("/RFP/updaterfp",
+             {
+                nombrecliente: rfp.name_person,
+                posicioncliente: rfp.position,
+                telefono: rfp.phone,
+                email: rfp.email,
+                nombreOportunidad: rfp.rfpname,
+                objetivoOportunidad: rfp.objective,
+                fechasRelevantes: rfp.imp_dates,
+                descripcionProblematica: rfp.problem,
+                descripcionFuncional: rfp.functional,
+                requerimientosObligatorios: rfp.requirements,
+                aprobadaAreaUsuario: rfp.aprobadaUsuario,
+                aprobadaAreaTI: rfp.aprobadaTI,
+                presupuestoAsignado: rfp.presupuesto,
+                comentariosAdicionales: rfp.comment,
+                tipoGeneralProyecto: rfp.tipo_general,
+                tipoEspecificoProyecto: rfp.tipo_esp,
+                id: rfp.id,
+             }, config
+          )
+          .then((res) => {
+             // redireccionar
+             navigate(-1);
+          })
+          .catch((error) => {
+             console.log(error);
+             guardarMensajeError('RFP inválido');
+          })
     }
  });
 
