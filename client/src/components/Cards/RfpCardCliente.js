@@ -10,15 +10,6 @@ import Typography from '@material-ui/core/Typography';
 import FabEditRFP from "../ui/FabEditRFP";
 
 const useStyles = makeStyles({
-  root: {
-    minWidth: 250,
-    maxWidth: 400,
-  },
-  bullet: {
-    display: 'inline-block',
-    margin: '0 2px',
-    transform: 'scale(0.8)',
-  },
   title: {
     fontSize: 18,
     fontWeight: 800,
@@ -59,14 +50,16 @@ export default function SimpleCard({rfp}) {
 
   return (
     <div className="rfp-card">
-    <Card className={classes.root}>
+    <Card className="card-RFP">
     <FabEditRFP  rfp={rfp} />
       <CardContent>
         <Typography className={classes.title}>
           {rfp.nombreOportunidad}
         </Typography>
         <Typography className={classes.description} gutterBottom>
-          {rfp.descripcionProblematica}
+          {rfp.descripcionProblematica.length > 250 
+            ? (rfp.descripcionProblematica.substring(0,250)+'...')
+            : (rfp.descripcionProblematica)}
         </Typography>
         <div className={classes.containerText}>
             <Typography className={classes.estatus}>

@@ -246,7 +246,7 @@
    justify-content: flex-end;
    margin-right: 1em;
    margin-top: 1em;
-   flex: 1;
+   /* flex: 1; */
 }
 
 .editIcon {
@@ -275,4 +275,26 @@
    flex-wrap: wrap;
    align-content: flex-start;
    justify-content: center;
+}
+
+.card-RFP {
+   width: 400px;
+   height: 300px;
+}
+
+@media only screen and (max-width: 500px) {
+   .card-RFP {
+      width: 300px;
+      height: 320px;
+   }
+}
+
+@media only screen and (max-width: 350px) {
+   .card-RFP {
+      width: 200px;
+      height: 450px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+   }
 }
