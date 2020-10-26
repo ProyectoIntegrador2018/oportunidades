@@ -1,5 +1,6 @@
 const KEY = process.env.JWT_KEY;
 const jwt = require("jsonwebtoken");
+const User = require("../models/User");
 
 /**
  * Check if user token belongs to an admin

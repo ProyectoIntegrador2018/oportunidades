@@ -13,11 +13,16 @@ app.use(express.urlencoded({ extended: true }));
 
 mongoose.connect(database, { useNewUrlParser: true });
 
+let adminConfig = require("./server/config/adminConfig");
+
 const userRouter = require("./server/routes/userapi");
 app.use("/user", userRouter);
 
 const rfpRouter = require("./server/routes/RFPapi");
 app.use("/rfp", rfpRouter);
+
+const adminRouter = require('./server/routes/adminapi');
+app.use("/admin", adminRouter);
 
 if (process.env.NODE_ENV === "production") {
    app.use(express.static("client/build"));
