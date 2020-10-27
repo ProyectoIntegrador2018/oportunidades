@@ -249,6 +249,14 @@
    /* flex: 1; */
 }
 
+.editIconContainer-flex {
+   display: flex;
+   justify-content: flex-end;
+   margin-right: 1em;
+   margin-top: 1em;
+   flex: 1;
+}
+
 .editIcon {
    z-index: 1000;
    margin-left: 1em;
@@ -280,6 +288,9 @@
 .card-RFP {
    width: 400px;
    height: 300px;
+   display: flex;
+   flex-direction: column;
+   justify-content: space-between;
 }
 
 @media only screen and (max-width: 500px) {
@@ -293,8 +304,5 @@
    .card-RFP {
       width: 200px;
       height: 450px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
    }
 }
