@@ -38,18 +38,16 @@ rfpController.deleterfp = (req, res) => {
   })
 };
 
-rfpController.updaterfp = (req, res) => {
-  const _id = req.params.id
-  const updates = Object.keys(req.body)
-
-  RFP.findByIdAndUpdate(_id, req.body ).then(function(rfp) {
-    if (!rfp) {
-      return res.status(404).send({})
-    }
-    return res.send(rfp)
-  }).catch(function(error) {
-    res.status(500).send(error)
-  })
+rfpController.updaterfp = (id, updatedRFP) => {
+  return new Promise((resolve, reject) => {
+    RFP.findByIdAndUpdate(updatedRFP.id, updatedRFP)
+       .then((rfp) => {
+          return resolve(rfp);
+       })
+       .catch((error) => {
+          return reject(error);
+       });
+ });
 };
 
 rfpController.getrfp = () => {
