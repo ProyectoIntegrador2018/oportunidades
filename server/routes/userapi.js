@@ -57,13 +57,63 @@ router.post("/create-client-user", (req, res) => {
          });
       })
       .catch((error) => {
-         console.log("error", error)
+         console.log("error", error);
          return res.status(401).send({ error });
       });
 });
 
+// Routes for getting and editing the profile for the user who's making the request.
+router
+   .route("/")
+   .get(userMiddleware, (req, res) => {
+      userController
+         .getMyProfile(req.user._id)
+         .then((user) => {
+            return res.send({
+               success: 1,
+               user,
+            });
+         })
+         .catch((error) => {
+            return res.status(401).send({ error });
+         });
+   })
+   .patch(userMiddleware, (req, res) => {
+      const updates = Object.keys(req.body);
+      const allowedUpdates = [
+         "name",
+         "email",
+         "telefono",
+         "empresa",
+         "password",
+      ];
+      const isValidUpdate = updates.every((update) =>
+         allowedUpdates.includes(update)
+      );
+      if (!isValidUpdate) {
+         return res.status(401).send({
+            error: "invalid update fields",
+            success: 0,
+         });
+      }
+      userController
+         .updateMyProfile(req.user._id, req.body)
+         .then((user) => {
+            return res.send({
+               success: 1,
+               user,
+            });
+         })
+         .catch((error) => {
+            return res.status(401).send({
+               success: 0,
+               error,
+            });
+         });
+   });
+
 router.get("/ping", userMiddleware, (req, res) => {
-   return res.send({info: "ping is working for authorized user"})
+   return res.send({ info: "ping is working for authorized user" });
 });
 
 module.exports = router;
