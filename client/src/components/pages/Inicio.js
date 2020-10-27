@@ -76,7 +76,7 @@ const Inicio = () => {
       <>
          <SideMenu />
          {userType === 'cliente' 
-            ? (<FabButton />)
+            ? (<FabButton link="/registro-oportunidad"/>)
             : (<Grid container className="container-dashboard-margin" ></Grid>)
          }
          

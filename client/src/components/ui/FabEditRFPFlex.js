@@ -10,7 +10,7 @@ export default function FloatingActionButtons({rfp}) {
   const navigate = useNavigate();
 
   return (
-      <div className="editIconContainer">
+      <div className="editIconContainer-flex">
         <div className="editIcon">
           <Fab size="small" color="inherit" aria-label="edit" onClick={() => { navigate('/editar-oportunidad', {state: {rfp: rfp}});}}>
             <EditIcon />

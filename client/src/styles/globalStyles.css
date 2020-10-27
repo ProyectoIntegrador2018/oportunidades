@@ -24,6 +24,10 @@
    width: 80%;
 }
 
+.textField-completo-100 {
+   width: 100%;
+}
+
 .marginTopMenu {
    margin-top: 72px;
 }
@@ -189,6 +193,15 @@
    align-content: center;
 }
 
+.container-rfp-edit {
+   background-color: white;
+   display: flex;
+   flex-direction: column;
+   justify-content: center;
+   align-content: center;
+   width: 80%;
+}
+
 .container-dashboard {
    margin-top: 1em;
    background-color: #EE5D36;
@@ -216,6 +229,7 @@
 .rfp-card-detalle {
    display: flex;
    justify-content: center;
+   min-width: 90%;
 }
 
 .fabIcon {
@@ -228,6 +242,14 @@
 }
 
 .editIconContainer {
+   display: flex;
+   justify-content: flex-end;
+   margin-right: 1em;
+   margin-top: 1em;
+   /* flex: 1; */
+}
+
+.editIconContainer-flex {
    display: flex;
    justify-content: flex-end;
    margin-right: 1em;
@@ -261,4 +283,26 @@
    flex-wrap: wrap;
    align-content: flex-start;
    justify-content: center;
+}
+
+.card-RFP {
+   width: 400px;
+   height: 300px;
+   display: flex;
+   flex-direction: column;
+   justify-content: space-between;
+}
+
+@media only screen and (max-width: 500px) {
+   .card-RFP {
+      width: 300px;
+      height: 320px;
+   }
+}
+
+@media only screen and (max-width: 350px) {
+   .card-RFP {
+      width: 200px;
+      height: 450px;
+   }
 }

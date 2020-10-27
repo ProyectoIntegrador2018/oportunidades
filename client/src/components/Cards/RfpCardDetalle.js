@@ -8,11 +8,11 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 
-import FabEditRFP from "../ui/FabEditRFP";
+import FabEditRFPFlex from "../ui/FabEditRFPFlex";
 
 const useStyles = makeStyles({
   root: {
-    minWidth: 250,
+    minWidth: '90%',
     maxWidth: '90%',
   },
   bullet: {
@@ -86,7 +86,7 @@ export default function SimpleCard({rfp}) {
     <Card className={classes.root}>
       <div className={classes.containerHeader}>
         <KeyboardArrowLeft className={classes.icono} onClick={() => {navigate('/inicio')}}/>
-        {userType === 'socio' ? (null) : (<FabEditRFP />)}
+        {userType === 'socio' ? (null) : (<FabEditRFPFlex  rfp={rfp} />)}
       </div>
       <CardContent>
         <Typography className={classes.title}>
