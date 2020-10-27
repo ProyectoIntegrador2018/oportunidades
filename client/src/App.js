@@ -9,6 +9,8 @@ import EditarOportunidad from './components/pages/EditarOportunidad';
 import Signup from './components/pages/Signup';
 import SignupSocio from './components/pages/SignupSocio';
 import RegistroOportunidad from './components/pages/RegistroOportunidad';
+import RegistroSocio from './components/pages/RegistroSocio';
+import Socios from './components/pages/Socios';
 import { createMuiTheme, MuiThemeProvider } from '@material-ui/core';
 import { ProtectedRoute } from './components/ProtectedRoute/ProtectedRoute';
 
@@ -25,11 +27,12 @@ function App() {
          <Routes>
             <Route path="/" element={<Login />} />
             <Route path="/registro" element={<Signup />} />
-            <Route path="/registro-socio" element={<SignupSocio />} />
             <ProtectedRoute path="/inicio" component={Inicio} redirectTo="/" />
             <ProtectedRoute path="/detalle" component={Detalle} redirectTo="/" />
             <ProtectedRoute path="/editar-oportunidad" component={EditarOportunidad} redirectTo="/" />
             <ProtectedRoute path="/registro-oportunidad" component={RegistroOportunidad} redirectTo="/" />
+            <ProtectedRoute path="/socios" component={Socios} redirectTo="/" />
+            <ProtectedRoute path="/registro-socio" component={RegistroSocio} redirectTo="/" />
          </Routes>
          </MuiThemeProvider>
       </div>
