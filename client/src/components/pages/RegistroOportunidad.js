@@ -75,8 +75,7 @@ const RegistroOportunidad = () => {
                     .required('El tipo es obligatorio'),
         tipo_esp: Yup.string()
                     .required('El tipo es obligatorio'),
-        comment: Yup.string()
-                    .required('Los comentarios son obligatorios'),
+        comment: Yup.string(),
      }),
      onSubmit: rfp => {
         console.log(rfp);
@@ -150,7 +149,6 @@ const RegistroOportunidad = () => {
                   {paso === '1'
                      ? (
                         <Grid item xs={12} container direction="column" alignItems="center">
-                           {/* <h2 className="texto-primary">Datos de contacto</h2>  */}
                            <TextField
                               className="textField-completo mb-1"
                               id="name_person"
@@ -204,7 +202,6 @@ const RegistroOportunidad = () => {
                   {paso === '2'
                      ? (
                         <Grid item xs={12} container direction="column" alignItems="center">
-                           {/* <h2 className="texto-primary">Datos generales</h2> */}
                            <TextField
                               className="textField-completo mb-1"
                               id="rfpname"
@@ -260,7 +257,6 @@ const RegistroOportunidad = () => {
                   {paso === '3'
                      ? (
                         <Grid item xs={12} container direction="column" alignItems="center">
-                           {/* <h2 className="texto-primary">Detalle de la oportunidad</h2> */}
                            <TextField
                               className="textField-completo mb-1"
                               id="functional"
@@ -294,7 +290,6 @@ const RegistroOportunidad = () => {
                   {paso === '4'
                      ? (
                         <Grid item xs={12} container direction="column" alignItems="center">
-                           {/* <h2 className="texto-primary">Estatus de la necesidad</h2> */}
                            <label className="textLeft textField-completo mb-1"> La necesidad: </label>
                            <TextField
                               className="textField-completo mb-1"
@@ -323,7 +318,7 @@ const RegistroOportunidad = () => {
                               className="textField-completo mb-1"
                               id="presupuesto"
                               label="¿Tiene un presupuesto asignado? (Sí/No)"
-                              value={formik.values.pregunta}
+                              value={formik.values.presupuesto}
                               onChange={formik.handleChange}
                               onBlur={formik.handleBlur}
                            />
