@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { TextField, Button, Grid, Paper } from "@material-ui/core";
+import { TextField, Button, Grid, Paper, Snackbar } from "@material-ui/core";
+import MuiAlert from '@material-ui/lab/Alert';
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
@@ -14,6 +15,11 @@ const config = {
       "Content-Type": "application/json",
    },
 };
+
+function Alert(props) {
+   return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
+ 
 const RegistroSocio = () => {
    // state de error
    const [mensajeError, guardarMensajeError] = useState("");
@@ -21,8 +27,18 @@ const RegistroSocio = () => {
    // state de los pasos
    const [paso, guardarPaso] = useState("1");
 
+   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
+
    // hook para redireccionar
    const navigate = useNavigate();
+
+   const handleClose = (event, reason) => {
+      if (reason === 'clickaway') {
+        return;
+      }
+  
+      setIsSnackbarOpen(false);
+    };
 
    // validación y leer los datos del formulario
    const formik = useFormik({
@@ -52,8 +68,11 @@ const RegistroSocio = () => {
                config
             )
             .then((res) => {
+               setIsSnackbarOpen(true);
                // redireccionar
-               navigate("/socios");
+               setTimeout(function() {
+                  navigate("/socios");
+               }, 1500);
             })
             .catch((error) => {
                guardarMensajeError("Hubo un error al registrar el socio.");
@@ -166,6 +185,11 @@ const RegistroSocio = () => {
                   ) : null}
                   
                </form>
+               <Snackbar open={isSnackbarOpen} autoHideDuration={1000} onClose={handleClose}>
+                  <Alert onClose={handleClose} severity="success">
+                     Usuario creado correctamente.
+                  </Alert>
+               </Snackbar>
             </Grid>
          </Grid>
       </>

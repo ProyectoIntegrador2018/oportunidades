@@ -26,8 +26,8 @@ adminController.createSocio = (rawUser) => {
             });
 
             const mailOptions = {
-               from: '"Jose Antonio Aleman Salazar" <antonio.9714@outlook.com>', // sender address
-               to: "antonio.9714@gmail.com", // list of receivers
+               from: '"CSOFT MTY" <antonio.9714@outlook.com>', // sender address
+               to: user.email, // list of receivers
                subject: "Tu usuario para Oportunidades Comerciales", // Subject line
                text: "Bienvenido", // plain text body
                html: `
@@ -54,7 +54,7 @@ adminController.createSocio = (rawUser) => {
 
 adminController.getSocios = () => {
    return new Promise((resolve, reject) => {
-      User.find({})
+      User.find({userType: "socio"})
          .then((users) => {
             resolve(users);
          })
