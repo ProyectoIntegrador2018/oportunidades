@@ -15,6 +15,7 @@ const config = {
    },
 };
 const RegistroOportunidad = () => {
+   console.log("registro oportunidad")
   // state de error
   const [mensajeError, guardarMensajeError] = useState('');
 
