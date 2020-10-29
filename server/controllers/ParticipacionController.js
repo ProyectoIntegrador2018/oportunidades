@@ -8,24 +8,24 @@ participacionController.createParticipacion = (rawPart, id) => {
      participacion
         .save()
         .then(() => {
-           resolve(participacion);
+           return resolve(participacion);
         })
         .catch((error) => {
-           reject(error);
+           return reject(error);
         });
   });
 };
 
-participacionController.deleteParticipacion = (req, res) => {
-  const _id = req.params.id
-  Participacion.findByIdAndDelete(_id).then(function(participacion) {
-    if (!participacion) {
-      return res.status(404).send({})
-    }
-    return res.send(participacion)
-  }).catch(function(error) {
-    res.status(505).send({ error })
-  })
+participacionController.deleteParticipacion = (id) => {
+  return new Promise((resolve, reject) => {
+      Participacion.findByIdAndDelete(id)
+         .then((participacion) => {
+            resolve(participacion);
+         })
+         .catch((error) => {
+            reject(error);
+         });
+   });
 };
 
 participacionController.getParticipacionesSocio = (id) => {

@@ -19,7 +19,7 @@ const config = {
 function Alert(props) {
    return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
- 
+
 const RegistroSocio = () => {
    // state de error
    const [mensajeError, guardarMensajeError] = useState("");
@@ -36,7 +36,7 @@ const RegistroSocio = () => {
       if (reason === 'clickaway') {
         return;
       }
-  
+
       setIsSnackbarOpen(false);
     };
 
@@ -90,7 +90,7 @@ const RegistroSocio = () => {
             className="marginTopMenu"
          >
             <Grid item xs={12}>
-               <h1 className="texto-primary">Registro oportunidad</h1>
+               <h1 className="texto-primary">Registro de socio</h1>
             </Grid>
             <Grid item xs={12} sm={5} md={4} className="container-botones-rfp">
                {paso === "1" ? (
@@ -183,7 +183,7 @@ const RegistroSocio = () => {
                         </Button>
                      </Grid>
                   ) : null}
-                  
+
                </form>
                <Snackbar open={isSnackbarOpen} autoHideDuration={1000} onClose={handleClose}>
                   <Alert onClose={handleClose} severity="success">

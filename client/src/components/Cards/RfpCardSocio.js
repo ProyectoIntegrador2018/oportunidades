@@ -6,8 +6,16 @@ import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
+import axios from 'axios';
 
 //import FabEditRFP from "../ui/FabEditRFP";
+
+const config = {
+   headers: {
+      Authorization: "Bearer " + sessionStorage.getItem("token"),
+      "Content-Type": "application/json",
+   },
+};
 
 const useStyles = makeStyles({
   title: {
@@ -45,10 +53,56 @@ const useStyles = makeStyles({
 
 export default function SimpleCard({rfp}) {
   const classes = useStyles();
-  console.log(rfp);
+  //console.log(rfp);
+
 
   // hook para redireccionar
   const navigate = useNavigate();
+
+  const handleClick = () => {
+
+      axios
+          .post("/participacion/create-participacion",
+             {
+                 rfpInvolucrado: rfp._id,
+             },
+             config)
+          .then((res) => {
+             console.log("Se participó correctamente");
+             window.location.reload();
+          })
+          .catch((error) => {
+             console.log(error);
+             console.log('No se pudo participar correctamente');
+          })
+
+  }
+  const handleDejarDeParticipar = () => {
+      axios
+          .get("/participacion/get-participaciones-socio", config)
+          .then((res) => {
+             for (var i = 0; i < res.data.length; i++) {
+               if (res.data[i].rfpInvolucrado == rfp._id) {
+                 axios
+                     .delete("/participacion/delete-participacion-socio/" + res.data[i]._id,
+                        config)
+                     .then((response) => {
+                         window.location.reload();
+                         console.log("Participación eliminada correctamente");
+                     })
+                     .catch((error) => {
+                         console.log(error);
+                     });
+               }
+             }
+          })
+          .catch((error) => {
+             console.log(error);
+          })
+
+
+  }
+
 
   return (
     <div className="rfp-card">
@@ -58,13 +112,13 @@ export default function SimpleCard({rfp}) {
           {rfp.nombreOportunidad}
         </Typography>
         <Typography className={classes.description} gutterBottom>
-          {rfp.descripcionProblematica.length > 250 
+          {rfp.descripcionProblematica.length > 250
               ? (rfp.descripcionProblematica.substring(0,250)+'...')
               : (rfp.descripcionProblematica)}
         </Typography>
         <div className={classes.containerText}>
             <Typography className={classes.estatus}>
-                Estatus: 
+                Estatus:
             </Typography>
             <Typography className={classes.texto}>
               {rfp.estatus}
@@ -74,7 +128,10 @@ export default function SimpleCard({rfp}) {
       <CardActions>
           <div className={classes.contenedorBotones}>
             <Button size="small" onClick={() => { navigate('/detalle', {state: {rfp: rfp}});}}>SABER MÁS</Button>
-            <Button type="submit" variant="contained" className="boton">PARTICIPAR</Button>
+            {rfp.participandoActual == false
+                ? (<Button type="submit" onClick={() => {handleClick()}} variant="contained" className="boton">PARTICIPAR</Button>)
+                : (<Button type="submit" onClick={() => {handleDejarDeParticipar()}}  variant="contained" className="boton">DEJAR DE PARTICIPAR</Button>)
+            }
           </div>
       </CardActions>
     </Card>

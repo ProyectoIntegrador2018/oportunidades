@@ -11,14 +11,14 @@ const router = express.Router();
  * @param {Object} res respuesta del request.
  */
 
-router.post("/participar-socio-oportunidad", userMiddleware, (req, res) => {
+router.post("/create-participacion", userMiddleware, (req, res) => {
    let id = req.user._id;
    participacionController
       .createParticipacion(req.body, id)
       .then((participacion) => {
          return res.send({
            success: 1,
-           rfp: rfp,
+           participacion: participacion,
          });
       })
       .catch((error) => {
@@ -33,11 +33,11 @@ router.post("/participar-socio-oportunidad", userMiddleware, (req, res) => {
  * @param {Object} req contiene la información de la participación en el body.
  * @param {Object} res respuesta del request.
  */
-router.delete('/delete-participacion-socio', userMiddleware, (req, res) => {
+router.delete('/delete-participacion-socio/:id', userMiddleware, (req, res) => {
   participacionController
-     .deleteParticipacion(req)
-     .then(() => {
-        return res.send();
+     .deleteParticipacion(req.params.id)
+     .then((participacion) => {
+        return res.send({ participacion });
      })
      .catch((error) => {
         return res.status(400).send({ error });
@@ -55,7 +55,7 @@ router.get("/get-participaciones-socio", userMiddleware, (req, res) => {
    participacionController
       .getParticipacionesSocio(req.user.id)
       .then(
-         (rfps) => {return res.send(participaciones)}
+         (participaciones) => {return res.send(participaciones)}
       )
       .catch((error) => {
          console.log("error", error)
