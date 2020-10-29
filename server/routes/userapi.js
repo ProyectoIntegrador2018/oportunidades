@@ -69,10 +69,7 @@ router
       userController
          .getMyProfile(req.user._id)
          .then((user) => {
-            return res.send({
-               success: 1,
-               user,
-            });
+            return res.send({ user });
          })
          .catch((error) => {
             return res.status(401).send({ error });

@@ -60,7 +60,7 @@ const RegistroSocio = () => {
                "/admin/create-socio",
                {
                   name: socio.name_person,
-                  phone: socio.phone,
+                  telefono: socio.phone,
                   email: socio.email,
                   empresa: socio.organization,
                   userType: "socio"
