@@ -93,6 +93,11 @@ your .env file. Please replace with your information
 * `PORT` : The port where the app runs
 * `DATABASE` : The URL of your Mongo Database
 * `JWT_KEY` : Super secret key for JWT.
+* `AMDIN_EMAIL` : The email of the admin user.
+* `ADMIN_PASSWORD` : The password of the admin user.
+* `ADMIN_NAME` : The name of the admin user.
+* `MAILER_USER` : The email of the mailer account. This account is the one who will be sending mails to users. It has to be an Outlook account.
+* `MAILER_PASSWORD` : The password of the email mailer account.
 
 Start the server backend
 
