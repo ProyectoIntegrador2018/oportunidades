@@ -8,6 +8,7 @@ import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import PeopleIcon from "@material-ui/icons/People";
 import AccountBalanceWalletIcon from "@material-ui/icons/AccountBalanceWallet";
 import { useNavigate } from "react-router-dom";
+import Axios from "axios";
 
 const ListItemsAdmin = () => {
    const navigate = useNavigate();
@@ -61,7 +62,25 @@ const ListItemsAdmin = () => {
             </div>
          </ListItem>
 
-         <ListItem button>
+         <ListItem
+            button
+            onClick={() => {
+               const config = {
+                  headers: {
+                     Authorization: "Bearer " + sessionStorage.getItem("token"),
+                     "Content-Type": "application/json",
+                  },
+               };
+               Axios.post("/user/logout", null, config)
+                  .then((res) => {
+                     sessionStorage.clear();
+                     navigate("/");
+                  })
+                  .catch((error) => {
+                     console.log(error);
+                  });
+            }}
+         >
             <ListItemIcon>
                <div className="drawer-icon">
                   <ExitToAppIcon />
