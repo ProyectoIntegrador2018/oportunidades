@@ -7,8 +7,18 @@ import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
+import axios from 'axios';
 
 import FabEditRFPFlex from "../ui/FabEditRFPFlex";
+
+
+const config = {
+   headers: {
+      Authorization: "Bearer " + sessionStorage.getItem("token"),
+      "Content-Type": "application/json",
+   },
+};
+
 
 const useStyles = makeStyles({
   root: {
@@ -81,6 +91,53 @@ export default function SimpleCard({rfp}) {
   // Obtener tipo de usuario
   const userType = sessionStorage.getItem("userType");
 
+  const handleClick = () => {
+      rfp.participandoActual = true;
+      axios
+          .post("/participacion/create-participacion",
+             {
+                 rfpInvolucrado: rfp._id,
+             },
+             config)
+          .then((res) => {
+             console.log("Se participó correctamente");
+             //window.location.reload();
+             navigate('/inicio');
+          })
+          .catch((error) => {
+             console.log(error);
+             console.log('No se pudo participar correctamente');
+          })
+
+  }
+  const handleDejarDeParticipar = () => {
+      rfp.participandoActual = false;
+      axios
+          .get("/participacion/get-participaciones-socio", config)
+          .then((res) => {
+             for (var i = 0; i < res.data.length; i++) {
+               if (res.data[i].rfpInvolucrado == rfp._id) {
+                 axios
+                     .delete("/participacion/delete-participacion-socio/" + res.data[i]._id,
+                        config)
+                     .then((response) => {
+                         //window.location.reload();
+                         navigate('/inicio');
+                         console.log("Participación eliminada correctamente");
+                     })
+                     .catch((error) => {
+                         console.log(error);
+                     });
+               }
+             }
+          })
+          .catch((error) => {
+             console.log(error);
+          })
+
+
+  }
+
   return (
     <div className="rfp-card-detalle">
     <Card className={classes.root}>
@@ -97,7 +154,7 @@ export default function SimpleCard({rfp}) {
         </Typography>
         <div className={classes.containerText}>
           <Typography className={classes.estatus}>
-              Estatus: 
+              Estatus:
           </Typography>
           <Typography className={classes.texto}>
             {rfp.estatus}
@@ -123,7 +180,7 @@ export default function SimpleCard({rfp}) {
         </Typography>
         <div className={classes.containerText}>
           <Typography className={classes.estatus}>
-              Fechas relevantes: 
+              Fechas relevantes:
           </Typography>
           <Typography className={classes.texto}>
             {rfp.fechasRelevantes}
@@ -131,7 +188,7 @@ export default function SimpleCard({rfp}) {
         </div>
         <div className={classes.containerText}>
           <Typography className={classes.estatus}>
-              ¿Ha sido aprobada por el área usuaria? 
+              ¿Ha sido aprobada por el área usuaria?
           </Typography>
           <Typography className={classes.texto}>
             {rfp.aprobadaAreaUsuario}
@@ -139,7 +196,7 @@ export default function SimpleCard({rfp}) {
         </div>
         <div className={classes.containerText}>
           <Typography className={classes.estatus}>
-              ¿Ha sido aprobada por el área de TI? 
+              ¿Ha sido aprobada por el área de TI?
           </Typography>
           <Typography className={classes.texto}>
             {rfp.aprobadaAreaTI}
@@ -147,7 +204,7 @@ export default function SimpleCard({rfp}) {
         </div>
         <div className={classes.containerText}>
           <Typography className={classes.estatus}>
-            ¿Tiene un presupuesto asignado? 
+            ¿Tiene un presupuesto asignado?
           </Typography>
           <Typography className={classes.texto}>
             {rfp.presupuestoAsignado}
@@ -181,7 +238,7 @@ export default function SimpleCard({rfp}) {
         )}
         <div className={classes.containerText}>
           <Typography className={classes.estatus}>
-            Feha de la primer reunión: 
+            Feha de la primer reunión:
           </Typography>
           <Typography className={classes.texto}>
             {rfp.fechaCita}
@@ -192,7 +249,7 @@ export default function SimpleCard({rfp}) {
         </Typography>
         <div className={classes.containerText}>
           <Typography className={classes.estatus}>
-            Nombre: 
+            Nombre:
           </Typography>
           <Typography className={classes.texto}>
             {rfp.nombrecliente}
@@ -200,7 +257,7 @@ export default function SimpleCard({rfp}) {
         </div>
         <div className={classes.containerText}>
           <Typography className={classes.estatus}>
-            Posición: 
+            Posición:
           </Typography>
           <Typography className={classes.texto}>
             {rfp.posicioncliente}
@@ -208,7 +265,7 @@ export default function SimpleCard({rfp}) {
         </div>
         <div className={classes.containerText}>
           <Typography className={classes.estatus}>
-            Teléfono: 
+            Teléfono:
           </Typography>
           <Typography className={classes.texto}>
             {rfp.telefono}
@@ -216,7 +273,7 @@ export default function SimpleCard({rfp}) {
         </div>
         <div className={classes.containerText}>
           <Typography className={classes.estatus}>
-            Correo electrónico: 
+            Correo electrónico:
           </Typography>
           <Typography className={classes.texto}>
             {rfp.email}
@@ -225,9 +282,12 @@ export default function SimpleCard({rfp}) {
       </CardContent>
       <CardActions>
           <div className={classes.contenedorBotones}>
-            {userType === 'socio' ? (
-              <Button type="submit" variant="contained" className="boton">PARTICIPAR</Button>
-            ) : (null)}
+            {userType === 'socio'
+                ? rfp.participandoActual == false
+                    ? (<Button type="submit" onClick={() => {handleClick()}} variant="contained" className="boton">PARTICIPAR</Button>)
+                    : (<Button type="submit" onClick={() => {handleDejarDeParticipar()}}  variant="contained" className="boton">DEJAR DE PARTICIPAR</Button>)
+                : (null)
+            }
           </div>
       </CardActions>
     </Card>
