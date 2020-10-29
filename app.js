@@ -24,6 +24,9 @@ app.use("/rfp", rfpRouter);
 const adminRouter = require('./server/routes/adminapi');
 app.use("/admin", adminRouter);
 
+const participacionRouter = require('./server/routes/participacionapi');
+app.use("/participacion", participacionRouter);
+
 if (process.env.NODE_ENV === "production") {
    app.use(express.static("client/build"));
    app.get("*", function (req, res) {
