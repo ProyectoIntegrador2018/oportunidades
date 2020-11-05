@@ -10,13 +10,6 @@ import RfpCardCliente from "../Cards/RfpCardCliente";
 import RfpCardSocio from "../Cards/RfpCardSocio";
 import FabButton from "../ui/FabButton";
 
-const config = {
-   headers: {
-      Authorization: "Bearer " + sessionStorage.getItem("token"),
-      "Content-Type": "application/json",
-   },
-};
-
 const Inicio = () => {
    // state de lista de RFPs
    const [listaRfps, guardarListaRfps] = useState([]);
@@ -30,6 +23,13 @@ const Inicio = () => {
    const userType = sessionStorage.getItem("userType");
 
    useEffect(() => {
+      const config = {
+         headers: {
+            Authorization: "Bearer " + sessionStorage.getItem("token"),
+            "Content-Type": "application/json",
+         },
+      };
+
       const obtenerListaRfpsAdmin = () => {
         axios
             .get("/RFP/get-rfp", config)
@@ -85,6 +85,7 @@ const Inicio = () => {
       if (userType === 'cliente') obtenerListaRfpsCliente();
       if (userType === 'socio') obtenerListaRfpsSocio();
     }, []);
+
     for (var i = 0; i < listaRfps.length; i++) {
        listaRfps[i].participandoActual = false;
        for (var j = 0; j < listaParticipaciones.length; j++) {
