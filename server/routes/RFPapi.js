@@ -93,12 +93,12 @@ router.get("/get-rfp-cliente", userMiddleware, (req, res) => {
  */
 router.delete('/deleterfp', userMiddleware, (req, res) => {
   rfpController
-     .deleterfp(req)
+     .deleterfp(req.query.id)
      .then(() => {
-        return res.send();
+        return res.send({success: 1});
      })
      .catch((error) => {
-        return res.status(400).send({ error });
+        return res.status(400).send({success: 0, error});
      });
 });
 
