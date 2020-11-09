@@ -26,16 +26,17 @@ const createNewRFP = function(req, res) {
      return res.status(400).send({ error: error})
    })
 };
-rfpController.deleterfp = (req, res) => {
-  const _id = req.params.id
-  RFP.findByIdAndDelete(_id).then(function(rfp) {
-    if (!rfp) {
-      return res.status(404).send({})
-    }
-    return res.send(rfp)
-  }).catch(function(error) {
-    res.status(505).send({ error })
-  })
+
+rfpController.deleterfp = (id) => {
+  return new Promise((resolve, reject) => {
+    RFP.findByIdAndDelete(id)
+       .then((rfp) => {
+          return resolve(rfp);
+       })
+       .catch((error) => {
+          return reject(error);
+       });
+ });
 };
 
 rfpController.updaterfp = (id, updatedRFP) => {
