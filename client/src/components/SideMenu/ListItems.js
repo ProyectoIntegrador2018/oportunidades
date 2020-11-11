@@ -11,6 +11,8 @@ import Axios from "axios";
 
 const ListItems = () => {
    const navigate = useNavigate();
+   // Obtener tipo de usuario
+   const userType = sessionStorage.getItem("userType");
    return (
       <div>
          <ListItem
@@ -44,23 +46,25 @@ const ListItems = () => {
                <ListItemText primary="Mi perfil" />
             </div>
          </ListItem>
-
-         <ListItem
-            button
-            onClick={() => {
-               navigate("/mis-oportunidades");
-            }}
-         >
-            <ListItemIcon>
-               <div className="drawer-icon">
-                  <AccountBalanceWalletIcon />
+         {userType === 'socio'
+            ? (<ListItem
+               button
+               onClick={() => {
+                  navigate("/mis-oportunidades");
+               }}
+            >
+               <ListItemIcon>
+                  <div className="drawer-icon">
+                     <AccountBalanceWalletIcon />
+                  </div>
+               </ListItemIcon>
+               <div className="texto-primary">
+                  <ListItemText primary="Mis oportunidades" />
                </div>
-            </ListItemIcon>
-            <div className="texto-primary">
-               <ListItemText primary="Mis oportunidades" />
-            </div>
-         </ListItem>
-
+            </ListItem>)
+            : console.log('no es socio')
+         }
+         
          <ListItem
             button
             onClick={() => {
