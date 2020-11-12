@@ -8,15 +8,6 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import axios from 'axios';
 
-//import FabEditRFP from "../ui/FabEditRFP";
-
-const config = {
-   headers: {
-      Authorization: "Bearer " + sessionStorage.getItem("token"),
-      "Content-Type": "application/json",
-   },
-};
-
 const useStyles = makeStyles({
   title: {
     fontSize: 18,
@@ -52,6 +43,13 @@ const useStyles = makeStyles({
 });
 
 export default function SimpleCard({rfp}) {
+  const config = {
+    headers: {
+       Authorization: "Bearer " + sessionStorage.getItem("token"),
+       "Content-Type": "application/json",
+    },
+ };
+
   const classes = useStyles();
   //console.log(rfp);
 

@@ -6,14 +6,13 @@ import "../../styles/globalStyles.css";
 import SideMenu from "../SideMenu/SideMenu";
 import RfpCardDetalle from "../Cards/RfpCardDetalle";
 
-const config = {
-   headers: {
-      Authorization: "Bearer " + sessionStorage.getItem("token"),
-      "Content-Type": "application/json",
-   },
-};
-
 const Inicio = ({route}) => {
+   const config = {
+      headers: {
+         Authorization: "Bearer " + sessionStorage.getItem("token"),
+         "Content-Type": "application/json",
+      },
+   };
 
    const {state} = useLocation();
    const {rfp} = state;

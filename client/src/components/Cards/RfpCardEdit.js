@@ -1,17 +1,16 @@
 import React, {useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
-import {TextField, Button, Card, CardActions, CardContent, Typography, Grid} from '@material-ui/core';
+import {TextField, Button, Card, FormLabel, CardContent, Typography, Grid} from '@material-ui/core';
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import {useFormik} from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
+import moment from 'moment';
 
-const config = {
-  headers: {
-     Authorization: "Bearer " + sessionStorage.getItem("token"),
-     "Content-Type": "application/json",
-  },
-};
+
+
 
 const useStyles = makeStyles({
   root: {
@@ -76,10 +75,26 @@ const useStyles = makeStyles({
 });
 
 export default function SimpleCard({rfp}) {
+
+  const config = {
+    headers: {
+       Authorization: "Bearer " + sessionStorage.getItem("token"),
+       "Content-Type": "application/json",
+    },
+  };
+
   const classes = useStyles();
 
   // state de error
   const [mensajeError, guardarMensajeError] = useState('');
+
+  // state de fecha
+  const [startDate, setStartDate] = useState(moment(rfp.fechaCita).toDate());
+
+  // Función para date picker
+  let handleColor = time => {
+    return time.getHours() > 12 ? "text-success" : "text-error";
+  };
 
   // hook para redireccionar
   const navigate = useNavigate();
@@ -166,6 +181,7 @@ export default function SimpleCard({rfp}) {
                 tipoGeneralProyecto: rfp.tipo_general,
                 tipoEspecificoProyecto: rfp.tipo_esp,
                 id: rfp.id,
+                fechaCita: startDate,
              }, config
           )
           .then((res) => {
@@ -236,7 +252,22 @@ export default function SimpleCard({rfp}) {
             {formik.touched.email && formik.errors.email
               ? (<p className="error-titulo-rfp textField-completo-100"><span className="error-texto">*</span>{formik.errors.email}</p>)
               : null }
-                <TextField
+            <div className="textField-completo contenedor-fecha">
+              <FormLabel>Selecciona la fecha de la siguiente reunión</FormLabel>
+           </div>
+           <div className="textField-completo mb-1 contenedor-fecha">
+              <DatePicker
+                showTimeSelect
+                selected={startDate}
+                onChange={date => setStartDate(date)}
+                timeClassName={handleColor}
+                minDate={new Date()}
+                //timeIntervals="15"
+                locale="es"
+                title="Selecciona un horario"
+             />
+            </div>
+            <TextField
               className="textField-completo-100 mb-1"
               id="rfpname"
               label="Nombre de la oportunidad"
