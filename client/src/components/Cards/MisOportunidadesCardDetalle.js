@@ -8,7 +8,6 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import axios from 'axios';
-import moment from 'moment';
 
 import FabEditRFPFlex from "../ui/FabEditRFPFlex";
 
@@ -84,9 +83,6 @@ export default function SimpleCard({rfp}) {
 
   const classes = useStyles();
 
-  // Opciones para mostrar la fecha en string
-  const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-
   // hook para redireccionar
   const navigate = useNavigate();
 
@@ -104,7 +100,7 @@ export default function SimpleCard({rfp}) {
           .then((res) => {
              console.log("Se participó correctamente");
              //window.location.reload();
-             navigate('/inicio');
+             navigate('/mis-oportunidades');
           })
           .catch((error) => {
              console.log(error);
@@ -124,7 +120,7 @@ export default function SimpleCard({rfp}) {
                         config)
                      .then((response) => {
                          //window.location.reload();
-                         navigate('/inicio');
+                         navigate('/mis-oportunidades');
                          console.log("Participación eliminada correctamente");
                      })
                      .catch((error) => {
@@ -136,13 +132,15 @@ export default function SimpleCard({rfp}) {
           .catch((error) => {
              console.log(error);
           })
-  };
+
+
+  }
 
   return (
     <div className="rfp-card-detalle">
     <Card className={classes.root}>
       <div className={classes.containerHeader}>
-        <KeyboardArrowLeft className={classes.icono} onClick={() => {navigate('/inicio')}}/>
+        <KeyboardArrowLeft className={classes.icono} onClick={() => {navigate('/mis-oportunidades')}}/>
         {userType === 'socio' ? (null) : (<FabEditRFPFlex  rfp={rfp} />)}
       </div>
       <CardContent>
@@ -238,12 +236,10 @@ export default function SimpleCard({rfp}) {
         )}
         <div className={classes.containerText}>
           <Typography className={classes.estatus}>
-            Fecha de la siguiente reunión:
+            Feha de la primer reunión:
           </Typography>
           <Typography className={classes.texto}>
-            {moment.utc(rfp.fechaCita).toDate().toLocaleDateString('es-ES', options)}
-            {' '}
-            {moment.utc(rfp.fechaCita).toDate().toLocaleTimeString('en-US')}
+            {rfp.fechaCita}
           </Typography>
         </div>
         <Typography className={classes.contacto}>

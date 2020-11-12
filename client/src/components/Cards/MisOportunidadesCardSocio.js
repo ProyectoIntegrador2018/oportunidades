@@ -125,7 +125,7 @@ export default function SimpleCard({rfp}) {
       </CardContent>
       <CardActions>
           <div className={classes.contenedorBotones}>
-            <Button size="small" onClick={() => { navigate('/detalle', {state: {rfp: rfp}});}}>SABER MÁS</Button>
+            <Button size="small" onClick={() => { navigate('/detalle-mi-oportunidad', {state: {rfp: rfp}});}}>SABER MÁS</Button>
             {rfp.participandoActual == false
                 ? (<Button type="submit" onClick={() => {handleClick()}} variant="contained" className="boton">PARTICIPAR</Button>)
                 : (<Button type="submit" onClick={() => {handleDejarDeParticipar()}}  variant="contained" className="boton">DEJAR DE PARTICIPAR</Button>)

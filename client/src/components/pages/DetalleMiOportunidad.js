@@ -4,7 +4,7 @@ import { Grid } from "@material-ui/core";
 
 import "../../styles/globalStyles.css";
 import SideMenu from "../SideMenu/SideMenu";
-import RfpCardDetalle from "../Cards/RfpCardDetalle";
+import MisOportunidadesCardDetalle from "../Cards/MisOportunidadesCardDetalle";
 
 const Inicio = ({route}) => {
    const config = {
@@ -30,7 +30,7 @@ const Inicio = ({route}) => {
             direction="row"
             className="container-detalle "
          >
-            <RfpCardDetalle key={rfp._id} rfp={rfp} />
+            <MisOportunidadesCardDetalle key={rfp._id} rfp={rfp} />
          </Grid>
       </>
    );
