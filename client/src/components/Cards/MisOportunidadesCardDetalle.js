@@ -11,15 +11,6 @@ import axios from 'axios';
 
 import FabEditRFPFlex from "../ui/FabEditRFPFlex";
 
-
-const config = {
-   headers: {
-      Authorization: "Bearer " + sessionStorage.getItem("token"),
-      "Content-Type": "application/json",
-   },
-};
-
-
 const useStyles = makeStyles({
   root: {
     minWidth: '90%',
@@ -83,6 +74,13 @@ const useStyles = makeStyles({
 });
 
 export default function SimpleCard({rfp}) {
+  const config = {
+    headers: {
+       Authorization: "Bearer " + sessionStorage.getItem("token"),
+       "Content-Type": "application/json",
+    },
+ };
+
   const classes = useStyles();
 
   // hook para redireccionar

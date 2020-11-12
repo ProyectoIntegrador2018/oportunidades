@@ -1,26 +1,44 @@
 import React, {useState} from 'react';
 import {useNavigate} from 'react-router-dom';
-import {TextField, Button, Grid, Paper} from '@material-ui/core';
+import {TextField, Button, Grid, Paper, FormLabel} from '@material-ui/core';
 import {useFormik} from 'formik';
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import * as Yup from 'yup';
 import axios from 'axios';
+import { addDays } from 'date-fns';
+import { registerLocale,setDefaultLocale } from  "react-datepicker";
+import es from 'date-fns/locale/es';
 
 import '../../styles/globalStyles.css';
 import SideMenu from "../SideMenu/SideMenu";
 
-const config = {
-   headers: {
-      Authorization: "Bearer " + sessionStorage.getItem("token"),
-      "Content-Type": "application/json",
-   },
-};
+
 const RegistroOportunidad = () => {
-   console.log("registro oportunidad")
+   registerLocale('es', es);
+   setDefaultLocale('es');
+
+   const config = {
+      headers: {
+         Authorization: "Bearer " + sessionStorage.getItem("token"),
+         "Content-Type": "application/json",
+      },
+   };
+
   // state de error
   const [mensajeError, guardarMensajeError] = useState('');
 
   // state de los pasos
   const [paso, guardarPaso] = useState('1');
+
+  // state y funciones del calendario
+  const [startDate, setStartDate] = useState(addDays(new Date(), 7), new Date());
+  
+   // Función para date picker
+  let handleColor = time => {
+    return time.getHours() > 12 ? "text-success" : "text-error";
+  };
+
 
   // hook para redireccionar
   const navigate = useNavigate();
@@ -79,7 +97,6 @@ const RegistroOportunidad = () => {
         comment: Yup.string(),
      }),
      onSubmit: rfp => {
-        console.log(rfp);
         axios
            .post("/RFP/create-rfp",
               {
@@ -99,6 +116,7 @@ const RegistroOportunidad = () => {
                  comentariosAdicionales: rfp.comment,
                  tipoGeneralProyecto: rfp.tipo_general,
                  tipoEspecificoProyecto: rfp.tipo_esp,
+                 fechaCita: startDate,
               }, config
            )
            .then((res) => {
@@ -124,7 +142,7 @@ const RegistroOportunidad = () => {
             <Grid item xs={12}>
                <h1 className="texto-primary">Registro oportunidad</h1>
             </Grid>
-            <Grid item xs={12} sm={5} md={4} className="container-botones-rfp">
+            <Grid item xs={12} sm={12} md={4} className="container-botones-rfp">
                {paso === '1'
                   ? (<Paper className="botonSeleccionar activo" >Datos de contacto</Paper>)
                   : (<Paper className="botonSeleccionar" >Datos de contacto</Paper>)
@@ -142,7 +160,7 @@ const RegistroOportunidad = () => {
                   : (<Paper className="botonSeleccionar" >Estatus de la necesidad</Paper>)
                }
             </Grid>
-            <Grid item xs={12} sm={7} md={8}>
+            <Grid item xs={12} sm={12} md={8}>
                <form onSubmit={formik.handleSubmit} className="container-rfp">
                   {mensajeError === ''
                   ? null
@@ -195,6 +213,21 @@ const RegistroOportunidad = () => {
                            {formik.touched.email && formik.errors.email
                               ? (<p className="error-titulo-rfp textField-completo"><span className="error-texto">*</span>{formik.errors.email}</p>)
                               : null }
+                           <div className="textField-completo contenedor-fecha">
+                              <FormLabel>Selecciona la fecha de la siguiente reunión</FormLabel>
+                           </div>
+                           <div className="textField-completo mb-1 contenedor-fecha">
+                              <DatePicker
+                                 showTimeSelect
+                                 selected={startDate}
+                                 onChange={date => setStartDate(date)}
+                                 timeClassName={handleColor}
+                                 minDate={(addDays(new Date(), 7))}
+                                 //timeIntervals="15"
+                                 locale="es"
+                                 title="Selecciona un horario"
+                              />
+                           </div>
                            <Button variant="contained" className="boton" onClick={() => guardarPaso('2')}>Continuar</Button>
                         </Grid>
                      )

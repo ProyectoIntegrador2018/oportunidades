@@ -7,14 +7,14 @@ import SocioCard from "../Cards/SocioCard";
 import FabButton from "../ui/FabButton";
 import "../../styles/globalStyles.css";
 
-const config = {
-   headers: {
-      Authorization: "Bearer " + sessionStorage.getItem("token"),
-      "Content-Type": "application/json",
-   },
-};
-
 const Socios = () => {
+   const config = {
+      headers: {
+         Authorization: "Bearer " + sessionStorage.getItem("token"),
+         "Content-Type": "application/json",
+      },
+   };
+
    const [sociosList, setSociosList] = useState([]);
    const [isLoading, setIsLoading] = useState(true);
    useEffect(() => {

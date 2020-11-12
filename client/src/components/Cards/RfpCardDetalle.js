@@ -8,17 +8,9 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import axios from 'axios';
+import moment from 'moment';
 
 import FabEditRFPFlex from "../ui/FabEditRFPFlex";
-
-
-const config = {
-   headers: {
-      Authorization: "Bearer " + sessionStorage.getItem("token"),
-      "Content-Type": "application/json",
-   },
-};
-
 
 const useStyles = makeStyles({
   root: {
@@ -83,7 +75,17 @@ const useStyles = makeStyles({
 });
 
 export default function SimpleCard({rfp}) {
+  const config = {
+    headers: {
+       Authorization: "Bearer " + sessionStorage.getItem("token"),
+       "Content-Type": "application/json",
+    },
+ };
+
   const classes = useStyles();
+
+  // Opciones para mostrar la fecha en string
+  const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
 
   // hook para redireccionar
   const navigate = useNavigate();
@@ -134,9 +136,7 @@ export default function SimpleCard({rfp}) {
           .catch((error) => {
              console.log(error);
           })
-
-
-  }
+  };
 
   return (
     <div className="rfp-card-detalle">
@@ -238,10 +238,12 @@ export default function SimpleCard({rfp}) {
         )}
         <div className={classes.containerText}>
           <Typography className={classes.estatus}>
-            Feha de la primer reunión:
+            Fecha de la siguiente reunión:
           </Typography>
           <Typography className={classes.texto}>
-            {rfp.fechaCita}
+            {moment.utc(rfp.fechaCita).toDate().toLocaleDateString('es-ES', options)}
+            {' '}
+            {moment.utc(rfp.fechaCita).toDate().toLocaleTimeString('en-US')}
           </Typography>
         </div>
         <Typography className={classes.contacto}>
