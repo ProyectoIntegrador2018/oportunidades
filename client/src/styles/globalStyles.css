@@ -5,6 +5,18 @@
    background-color: #EE5D36;
 }
 
+.container-calendar-white {
+   height: 100vh;
+   background-color: white;
+   display: flex;
+   margin-top: 4em;
+}
+
+.container-calendar {
+   height: 400px;
+   margin: 0 2em;
+}
+
 .container-white {
    background-color: white;
    display: flex;
