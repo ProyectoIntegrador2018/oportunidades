@@ -4,6 +4,7 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import DashboardIcon from "@material-ui/icons/Dashboard";
 import ProfileIcon from "@material-ui/icons/Person";
+import CalendarIcon from "@material-ui/icons/CalendarToday";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import PeopleIcon from "@material-ui/icons/People";
 import AccountBalanceWalletIcon from "@material-ui/icons/AccountBalanceWallet";
@@ -27,6 +28,22 @@ const ListItemsAdmin = () => {
             </ListItemIcon>
             <div className="texto-primary">
                <ListItemText primary="Inicio" />
+            </div>
+         </ListItem>
+
+         <ListItem
+            button
+            onClick={() => {
+               navigate("/calendario");
+            }}
+         >
+            <ListItemIcon>
+               <div className="drawer-icon">
+                  <CalendarIcon />
+               </div>
+            </ListItemIcon>
+            <div className="texto-primary">
+               <ListItemText primary="Calendario" />
             </div>
          </ListItem>
 
