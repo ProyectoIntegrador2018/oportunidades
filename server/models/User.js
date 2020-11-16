@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const validator = require("validator");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const Event = require("./Event");
 
 const schema = new mongoose.Schema(
    {
@@ -103,7 +104,14 @@ schema.methods.addEvent = function(eventId) {
 schema.methods.retrieveEvents = function() {
    const user = this;
    let userEvents = user.events;
-   return userEvents;
+   return new Promise((resolve, reject) => {
+      Event.find({ '_id': { $in: userEvents } })
+      .then(events => {
+         resolve(events)
+      }).catch(err => {
+         reject(err)
+      })
+   })
 }
 
 /**

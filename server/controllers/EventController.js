@@ -7,7 +7,12 @@ eventController.getUserEvents = (userId) => {
    return new Promise((resolve, reject) => {
       User.findById(userId)
          .then((user) => {
-            resolve(user.retrieveEvents);
+            user.retrieveEvents()
+            .then(events => {
+               resolve(events)
+            }).catch(err => {
+               reject(err)
+            })
          })
          .catch((error) => {
             reject(error);
