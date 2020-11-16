@@ -31,15 +31,6 @@ const RegistroOportunidad = () => {
   // state de los pasos
   const [paso, guardarPaso] = useState('1');
 
-  // state y funciones del calendario
-  const [startDate, setStartDate] = useState(addDays(new Date(), 7), new Date());
-  
-   // Función para date picker
-  let handleColor = time => {
-    return time.getHours() > 12 ? "text-success" : "text-error";
-  };
-
-
   // hook para redireccionar
   const navigate = useNavigate();
 
@@ -116,7 +107,6 @@ const RegistroOportunidad = () => {
                  comentariosAdicionales: rfp.comment,
                  tipoGeneralProyecto: rfp.tipo_general,
                  tipoEspecificoProyecto: rfp.tipo_esp,
-                 fechaCita: startDate,
               }, config
            )
            .then((res) => {
@@ -213,21 +203,6 @@ const RegistroOportunidad = () => {
                            {formik.touched.email && formik.errors.email
                               ? (<p className="error-titulo-rfp textField-completo"><span className="error-texto">*</span>{formik.errors.email}</p>)
                               : null }
-                           <div className="textField-completo contenedor-fecha">
-                              <FormLabel>Selecciona la fecha de la siguiente reunión</FormLabel>
-                           </div>
-                           <div className="textField-completo mb-1 contenedor-fecha">
-                              <DatePicker
-                                 showTimeSelect
-                                 selected={startDate}
-                                 onChange={date => setStartDate(date)}
-                                 timeClassName={handleColor}
-                                 minDate={(addDays(new Date(), 7))}
-                                 //timeIntervals="15"
-                                 locale="es"
-                                 title="Selecciona un horario"
-                              />
-                           </div>
                            <Button variant="contained" className="boton" onClick={() => guardarPaso('2')}>Continuar</Button>
                         </Grid>
                      )

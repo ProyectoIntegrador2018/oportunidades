@@ -11,6 +11,7 @@ import axios from 'axios';
 import moment from 'moment';
 
 import FabEditRFPFlex from "../ui/FabEditRFPFlex";
+import ListaEventos from "./ListaEventos";
 
 const useStyles = makeStyles({
   root: {
@@ -281,6 +282,7 @@ export default function SimpleCard({rfp}) {
             {rfp.email}
           </Typography>
         </div>
+        {userType === 'cliente' ? <ListaEventos key={rfp._id} rfp={rfp} /> : null}
       </CardContent>
       <CardActions>
           <div className={classes.contenedorBotones}>

@@ -181,7 +181,7 @@ export default function SimpleCard({rfp}) {
                 tipoGeneralProyecto: rfp.tipo_general,
                 tipoEspecificoProyecto: rfp.tipo_esp,
                 id: rfp.id,
-                fechaCita: startDate,
+                //fechaCita: startDate,
              }, config
           )
           .then((res) => {
@@ -255,7 +255,7 @@ export default function SimpleCard({rfp}) {
             <div className="textField-completo contenedor-fecha">
               <FormLabel>Selecciona la fecha de la siguiente reunión</FormLabel>
            </div>
-           <div className="textField-completo mb-1 contenedor-fecha">
+           {/* <div className="textField-completo mb-1 contenedor-fecha">
               <DatePicker
                 showTimeSelect
                 selected={startDate}
@@ -266,7 +266,7 @@ export default function SimpleCard({rfp}) {
                 locale="es"
                 title="Selecciona un horario"
              />
-            </div>
+            </div> */}
             <TextField
               className="textField-completo-100 mb-1"
               id="rfpname"
