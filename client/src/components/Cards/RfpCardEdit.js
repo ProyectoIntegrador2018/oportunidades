@@ -6,6 +6,9 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import {useFormik} from 'formik';
@@ -114,6 +117,23 @@ export default function SimpleCard({rfp}) {
   // Obtener tipo de usuario
   const userType = sessionStorage.getItem("userType");
 
+  // state de los radio buttons
+  const [aprobadaUsuario, guardarAprobadaUsuario] = useState(rfp.aprobadaAreaUsuario);
+  const [aprobadaTI, guardarAprobadaTI] = useState(rfp.aprobadaAreaTI);
+  const [presupuesto, guardarPresupuesto] = useState(rfp.presupuestoAsignado);
+
+  const handleAprobadaUsuario = (event) => {
+   guardarAprobadaUsuario(event.target.value);
+  };
+
+  const handleAprobadaTI = (event) => {
+   guardarAprobadaTI(event.target.value);
+  };
+
+  const handlePresupuesto = (event) => {
+   guardarPresupuesto(event.target.value);
+  };
+
   // validación y leer los datos del formulario
   const formik = useFormik({
     initialValues: {
@@ -127,9 +147,6 @@ export default function SimpleCard({rfp}) {
       problem: rfp.descripcionProblematica,
       functional: rfp.descripcionFuncional,
       requirements: rfp.requerimientosObligatorios,
-      aprobadaUsuario: rfp.aprobadaAreaUsuario,
-      aprobadaTI: rfp.aprobadaAreaTI,
-      presupuesto: rfp.presupuestoAsignado,
       tipo_general: rfp.tipoGeneralProyecto,
       tipo_esp: rfp.tipoEspecificoProyecto,
       comment: rfp.comentariosAdicionales,
@@ -156,12 +173,6 @@ export default function SimpleCard({rfp}) {
                   .required('La descripción es obligatoria'),
       requirements: Yup.string()
                   .required('Los requerimientos son obligatorios'),
-      aprobadaUsuario: Yup.string()
-                  .required('La pregunta es obligatoria'),
-      aprobadaTI: Yup.string()
-                  .required('La pregunta es obligatoria'),
-      presupuesto: Yup.string()
-                  .required('La pregunta es obligatoria'),
       tipo_general: Yup.string()
                   .required('El tipo es obligatorio'),
       tipo_esp: Yup.string()
@@ -183,9 +194,9 @@ export default function SimpleCard({rfp}) {
                 descripcionProblematica: rfp.problem,
                 descripcionFuncional: rfp.functional,
                 requerimientosObligatorios: rfp.requirements,
-                aprobadaAreaUsuario: rfp.aprobadaUsuario,
-                aprobadaAreaTI: rfp.aprobadaTI,
-                presupuestoAsignado: rfp.presupuesto,
+                aprobadaAreaUsuario: aprobadaUsuario,
+                aprobadaAreaTI: aprobadaTI,
+                presupuestoAsignado: presupuesto,
                 comentariosAdicionales: rfp.comment,
                 tipoGeneralProyecto: rfp.tipo_general,
                 tipoEspecificoProyecto: rfp.tipo_esp,
@@ -196,7 +207,7 @@ export default function SimpleCard({rfp}) {
           )
           .then((res) => {
              // redireccionar
-             navigate(-1);
+             navigate('/inicio');
           })
           .catch((error) => {
              console.log(error);
@@ -262,9 +273,9 @@ export default function SimpleCard({rfp}) {
             {formik.touched.email && formik.errors.email
               ? (<p className="error-titulo-rfp textField-completo-100"><span className="error-texto">*</span>{formik.errors.email}</p>)
               : null }
-            <div className="textField-completo contenedor-fecha">
+            {/* <div className="textField-completo contenedor-fecha">
               <FormLabel>Selecciona la fecha de la siguiente reunión</FormLabel>
-           </div>
+           </div> */}
            {/* <div className="textField-completo mb-1 contenedor-fecha">
               <DatePicker
                 showTimeSelect
@@ -344,7 +355,7 @@ export default function SimpleCard({rfp}) {
               ? (<p className="error-titulo-rfp textField-completo-100"><span className="error-texto">*</span>{formik.errors.requirements}</p>)
               : null }
             <label className="textLeft textField-completo-100 mb-1"> La necesidad: </label>
-            <TextField
+            {/* <TextField
               className="textField-completo-100 mb-1"
               id="aprobadaUsuario"
               label="¿Ha sido aprobada por el área usuaria? (Sí/No)"
@@ -376,7 +387,34 @@ export default function SimpleCard({rfp}) {
             />
             {formik.touched.presupuesto && formik.errors.presupuesto
               ? (<p className="error-titulo-rfp textField-completo-100"><span className="error-texto">*</span>{formik.errors.presupuesto}</p>)
-              : null }
+              : null } */}
+            <div className="container-radios">
+              <FormControl component="fieldset">
+                <FormLabel component="legend">¿Ha sido aprobada por el área usuaria?</FormLabel>
+                <RadioGroup aria-label="gender" name="gender1" value={aprobadaUsuario} onChange={handleAprobadaUsuario}>
+                    <FormControlLabel value="Sí" control={<Radio color="primary"/>} label="Sí" />
+                    <FormControlLabel value="No" control={<Radio color="primary"/>} label="No" />
+                </RadioGroup>
+              </FormControl> 
+            </div>
+            <div className="container-radios">
+              <FormControl component="fieldset">
+                <FormLabel component="legend">¿Ha sido aprobada por el área de TI?</FormLabel>
+                <RadioGroup aria-label="gender" name="gender1" value={aprobadaTI} onChange={handleAprobadaTI}>
+                    <FormControlLabel value="Sí" control={<Radio color="primary"/>} label="Sí" />
+                    <FormControlLabel value="No" control={<Radio color="primary"/>} label="No" />
+                </RadioGroup>
+              </FormControl> 
+            </div>
+            <div className="container-radios">
+              <FormControl component="fieldset">
+                <FormLabel component="legend">¿Tiene un presupuesto asignado?</FormLabel>
+                <RadioGroup aria-label="gender" name="gender1" value={presupuesto} onChange={handlePresupuesto}>
+                    <FormControlLabel value="Sí" control={<Radio color="primary"/>} label="Sí" />
+                    <FormControlLabel value="No" control={<Radio color="primary"/>} label="No" />
+                </RadioGroup>
+              </FormControl> 
+            </div>
             <TextField
               className="textField-completo-100 mb-1"
               id="tipo_general"

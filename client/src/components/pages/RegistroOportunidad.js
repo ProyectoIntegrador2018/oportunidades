@@ -1,6 +1,10 @@
 import React, {useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {TextField, Button, Grid, Paper, FormLabel} from '@material-ui/core';
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormControl from '@material-ui/core/FormControl';
 import {useFormik} from 'formik';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -31,6 +35,23 @@ const RegistroOportunidad = () => {
   // state de los pasos
   const [paso, guardarPaso] = useState('1');
 
+  // state de los radio buttons
+  const [aprobadaUsuario, guardarAprobadaUsuario] = useState('Sí');
+  const [aprobadaTI, guardarAprobadaTI] = useState('Sí');
+  const [presupuesto, guardarPresupuesto] = useState('Sí');
+
+  const handleAprobadaUsuario = (event) => {
+   guardarAprobadaUsuario(event.target.value);
+  };
+
+  const handleAprobadaTI = (event) => {
+   guardarAprobadaTI(event.target.value);
+  };
+
+  const handlePresupuesto = (event) => {
+   guardarPresupuesto(event.target.value);
+  };
+
   // hook para redireccionar
   const navigate = useNavigate();
 
@@ -47,9 +68,6 @@ const RegistroOportunidad = () => {
         problem: '',
         functional: '',
         requirements: '',
-        aprobadaUsuario: '',
-        aprobadaTI: '',
-        presupuesto: '',
         tipo_general: '',
         tipo_esp: '',
         comment: '',
@@ -75,12 +93,6 @@ const RegistroOportunidad = () => {
                     .required('La descripción es obligatoria'),
         requirements: Yup.string()
                     .required('Los requerimientos son obligatorios'),
-        aprobadaUsuario: Yup.string()
-                    .required('La pregunta es obligatoria'),
-        aprobadaTI: Yup.string()
-                    .required('La pregunta es obligatoria'),
-        presupuesto: Yup.string()
-                    .required('La pregunta es obligatoria'),
         tipo_general: Yup.string()
                     .required('El tipo es obligatorio'),
         tipo_esp: Yup.string()
@@ -101,9 +113,9 @@ const RegistroOportunidad = () => {
                  descripcionProblematica: rfp.problem,
                  descripcionFuncional: rfp.functional,
                  requerimientosObligatorios: rfp.requirements,
-                 aprobadaAreaUsuario: rfp.aprobadaUsuario,
-                 aprobadaAreaTI: rfp.aprobadaTI,
-                 presupuestoAsignado: rfp.presupuesto,
+                 aprobadaAreaUsuario: aprobadaUsuario,
+                 aprobadaAreaTI: aprobadaTI,
+                 presupuestoAsignado: presupuesto,
                  comentariosAdicionales: rfp.comment,
                  tipoGeneralProyecto: rfp.tipo_general,
                  tipoEspecificoProyecto: rfp.tipo_esp,
@@ -300,40 +312,33 @@ const RegistroOportunidad = () => {
                      ? (
                         <Grid item xs={12} container direction="column" alignItems="center">
                            <label className="textLeft textField-completo mb-1"> La necesidad: </label>
-                           <TextField
-                              className="textField-completo mb-1"
-                              id="aprobadaUsuario"
-                              label="¿Ha sido aprobada por el área usuaria? (Sí/No)"
-                              value={formik.values.aprobadaUsuario}
-                              onChange={formik.handleChange}
-                              onBlur={formik.handleBlur}
-                           />
-                           {formik.touched.aprobadaUsuario && formik.errors.aprobadaUsuario
-                              ? (<p className="error-titulo-rfp textField-completo"><span className="error-texto">*</span>{formik.errors.aprobadaUsuario}</p>)
-                              : null }
-                           <TextField
-                              className="textField-completo mb-1"
-                              id="aprobadaTI"
-                              label="¿Ha sido aprobada por el área de TI? (Sí/No)"
-                              value={formik.values.aprobadaTI}
-                              onChange={formik.handleChange}
-                              onBlur={formik.handleBlur}
-                           />
-                           {formik.touched.aprobadaTI && formik.errors.aprobadaTI
-                              ? (<p className="error-titulo-rfp textField-completo"><span className="error-texto">*</span>{formik.errors.aprobadaTI}</p>)
-                              : null }
-
-                           <TextField
-                              className="textField-completo mb-1"
-                              id="presupuesto"
-                              label="¿Tiene un presupuesto asignado? (Sí/No)"
-                              value={formik.values.presupuesto}
-                              onChange={formik.handleChange}
-                              onBlur={formik.handleBlur}
-                           />
-                           {formik.touched.presupuesto && formik.errors.presupuesto
-                              ? (<p className="error-titulo-rfp textField-completo"><span className="error-texto">*</span>{formik.errors.presupuesto}</p>)
-                              : null }
+                           <div className="container-radios">
+                              <FormControl component="fieldset">
+                                 <FormLabel component="legend">¿Ha sido aprobada por el área usuaria?</FormLabel>
+                                 <RadioGroup aria-label="gender" name="gender1" value={aprobadaUsuario} onChange={handleAprobadaUsuario}>
+                                    <FormControlLabel value="Sí" control={<Radio color="primary"/>} label="Sí" />
+                                    <FormControlLabel value="No" control={<Radio color="primary"/>} label="No" />
+                                 </RadioGroup>
+                              </FormControl> 
+                           </div>
+                           <div className="container-radios">
+                              <FormControl component="fieldset">
+                                 <FormLabel component="legend">¿Ha sido aprobada por el área de TI?</FormLabel>
+                                 <RadioGroup aria-label="gender" name="gender1" value={aprobadaTI} onChange={handleAprobadaTI}>
+                                    <FormControlLabel value="Sí" control={<Radio color="primary"/>} label="Sí" />
+                                    <FormControlLabel value="No" control={<Radio color="primary"/>} label="No" />
+                                 </RadioGroup>
+                              </FormControl> 
+                           </div>
+                           <div className="container-radios">
+                              <FormControl component="fieldset">
+                                 <FormLabel component="legend">¿Tiene un presupuesto asignado?</FormLabel>
+                                 <RadioGroup aria-label="gender" name="gender1" value={presupuesto} onChange={handlePresupuesto}>
+                                    <FormControlLabel value="Sí" control={<Radio color="primary"/>} label="Sí" />
+                                    <FormControlLabel value="No" control={<Radio color="primary"/>} label="No" />
+                                 </RadioGroup>
+                              </FormControl> 
+                           </div>
                            <TextField
                               className="textField-completo mb-1"
                               id="tipo_general"
