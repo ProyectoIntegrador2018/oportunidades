@@ -2,6 +2,13 @@ import React, {useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import {TextField, Button, Card, FormLabel, CardContent, Typography, Grid} from '@material-ui/core';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import {useFormik} from 'formik';
@@ -91,6 +98,14 @@ export default function SimpleCard({rfp}) {
   // state de fecha
   const [startDate, setStartDate] = useState(moment(rfp.fechaCita).toDate());
 
+  // State del select de status
+  const [estatus, guardarEstatus] = useState(rfp.estatus);
+  const handleStatusChange = (e) => {
+    console.log(e.target.value);
+    guardarEstatus(e.target.value);
+    console.log(estatus);
+  };
+
   // Función para date picker
   let handleColor = time => {
     return time.getHours() > 12 ? "text-success" : "text-error";
@@ -101,6 +116,23 @@ export default function SimpleCard({rfp}) {
 
   // Obtener tipo de usuario
   const userType = sessionStorage.getItem("userType");
+
+  // state de los radio buttons
+  const [aprobadaUsuario, guardarAprobadaUsuario] = useState(rfp.aprobadaAreaUsuario);
+  const [aprobadaTI, guardarAprobadaTI] = useState(rfp.aprobadaAreaTI);
+  const [presupuesto, guardarPresupuesto] = useState(rfp.presupuestoAsignado);
+
+  const handleAprobadaUsuario = (event) => {
+   guardarAprobadaUsuario(event.target.value);
+  };
+
+  const handleAprobadaTI = (event) => {
+   guardarAprobadaTI(event.target.value);
+  };
+
+  const handlePresupuesto = (event) => {
+   guardarPresupuesto(event.target.value);
+  };
 
   // validación y leer los datos del formulario
   const formik = useFormik({
@@ -115,13 +147,9 @@ export default function SimpleCard({rfp}) {
       problem: rfp.descripcionProblematica,
       functional: rfp.descripcionFuncional,
       requirements: rfp.requerimientosObligatorios,
-      aprobadaUsuario: rfp.aprobadaAreaUsuario,
-      aprobadaTI: rfp.aprobadaAreaTI,
-      presupuesto: rfp.presupuestoAsignado,
       tipo_general: rfp.tipoGeneralProyecto,
       tipo_esp: rfp.tipoEspecificoProyecto,
       comment: rfp.comentariosAdicionales,
-      estatus: rfp.estatus,
       id: rfp._id,
     },
     validationSchema: Yup.object({
@@ -145,18 +173,10 @@ export default function SimpleCard({rfp}) {
                   .required('La descripción es obligatoria'),
       requirements: Yup.string()
                   .required('Los requerimientos son obligatorios'),
-      aprobadaUsuario: Yup.string()
-                  .required('La pregunta es obligatoria'),
-      aprobadaTI: Yup.string()
-                  .required('La pregunta es obligatoria'),
-      presupuesto: Yup.string()
-                  .required('La pregunta es obligatoria'),
       tipo_general: Yup.string()
                   .required('El tipo es obligatorio'),
       tipo_esp: Yup.string()
                   .required('El tipo es obligatorio'),
-      estatus: Yup.string()
-                  .required('El estatus es obligatorio'),
       comment: Yup.string(),
       id: Yup.string(),
     }),
@@ -174,19 +194,20 @@ export default function SimpleCard({rfp}) {
                 descripcionProblematica: rfp.problem,
                 descripcionFuncional: rfp.functional,
                 requerimientosObligatorios: rfp.requirements,
-                aprobadaAreaUsuario: rfp.aprobadaUsuario,
-                aprobadaAreaTI: rfp.aprobadaTI,
-                presupuestoAsignado: rfp.presupuesto,
+                aprobadaAreaUsuario: aprobadaUsuario,
+                aprobadaAreaTI: aprobadaTI,
+                presupuestoAsignado: presupuesto,
                 comentariosAdicionales: rfp.comment,
                 tipoGeneralProyecto: rfp.tipo_general,
                 tipoEspecificoProyecto: rfp.tipo_esp,
                 id: rfp.id,
+                estatus: estatus,
                 //fechaCita: startDate,
              }, config
           )
           .then((res) => {
              // redireccionar
-             navigate(-1);
+             navigate('/inicio');
           })
           .catch((error) => {
              console.log(error);
@@ -252,9 +273,9 @@ export default function SimpleCard({rfp}) {
             {formik.touched.email && formik.errors.email
               ? (<p className="error-titulo-rfp textField-completo-100"><span className="error-texto">*</span>{formik.errors.email}</p>)
               : null }
-            <div className="textField-completo contenedor-fecha">
+            {/* <div className="textField-completo contenedor-fecha">
               <FormLabel>Selecciona la fecha de la siguiente reunión</FormLabel>
-           </div>
+           </div> */}
            {/* <div className="textField-completo mb-1 contenedor-fecha">
               <DatePicker
                 showTimeSelect
@@ -334,7 +355,7 @@ export default function SimpleCard({rfp}) {
               ? (<p className="error-titulo-rfp textField-completo-100"><span className="error-texto">*</span>{formik.errors.requirements}</p>)
               : null }
             <label className="textLeft textField-completo-100 mb-1"> La necesidad: </label>
-            <TextField
+            {/* <TextField
               className="textField-completo-100 mb-1"
               id="aprobadaUsuario"
               label="¿Ha sido aprobada por el área usuaria? (Sí/No)"
@@ -366,7 +387,34 @@ export default function SimpleCard({rfp}) {
             />
             {formik.touched.presupuesto && formik.errors.presupuesto
               ? (<p className="error-titulo-rfp textField-completo-100"><span className="error-texto">*</span>{formik.errors.presupuesto}</p>)
-              : null }
+              : null } */}
+            <div className="container-radios">
+              <FormControl component="fieldset">
+                <FormLabel component="legend">¿Ha sido aprobada por el área usuaria?</FormLabel>
+                <RadioGroup aria-label="gender" name="gender1" value={aprobadaUsuario} onChange={handleAprobadaUsuario}>
+                    <FormControlLabel value="Sí" control={<Radio color="primary"/>} label="Sí" />
+                    <FormControlLabel value="No" control={<Radio color="primary"/>} label="No" />
+                </RadioGroup>
+              </FormControl> 
+            </div>
+            <div className="container-radios">
+              <FormControl component="fieldset">
+                <FormLabel component="legend">¿Ha sido aprobada por el área de TI?</FormLabel>
+                <RadioGroup aria-label="gender" name="gender1" value={aprobadaTI} onChange={handleAprobadaTI}>
+                    <FormControlLabel value="Sí" control={<Radio color="primary"/>} label="Sí" />
+                    <FormControlLabel value="No" control={<Radio color="primary"/>} label="No" />
+                </RadioGroup>
+              </FormControl> 
+            </div>
+            <div className="container-radios">
+              <FormControl component="fieldset">
+                <FormLabel component="legend">¿Tiene un presupuesto asignado?</FormLabel>
+                <RadioGroup aria-label="gender" name="gender1" value={presupuesto} onChange={handlePresupuesto}>
+                    <FormControlLabel value="Sí" control={<Radio color="primary"/>} label="Sí" />
+                    <FormControlLabel value="No" control={<Radio color="primary"/>} label="No" />
+                </RadioGroup>
+              </FormControl> 
+            </div>
             <TextField
               className="textField-completo-100 mb-1"
               id="tipo_general"
@@ -400,17 +448,21 @@ export default function SimpleCard({rfp}) {
             {formik.touched.comment && formik.errors.comment
               ? (<p className="error-titulo-rfp textField-completo-100"><span className="error-texto">*</span>{formik.errors.comment}</p>)
               : null }
-              <TextField
-              className="textField-completo-100 mb-1"
-              id="estatus"
-              label="Estatus"
-              value={formik.values.estatus}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-            />
-            {formik.touched.estatus && formik.errors.estatus
-              ? (<p className="error-titulo-rfp textField-completo-100"><span className="error-texto">*</span>{formik.errors.estatus}</p>)
-              : null }
+            <FormControl className={classes.formControl}>
+              <InputLabel id="demo-simple-select-label">Estatus</InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={estatus}
+                onChange={e => handleStatusChange(e)}
+              >
+                <MenuItem value={'Activo'}>Activo</MenuItem>
+                <MenuItem value={'Sesión 1 llevada a cabo'}>Sesión 1 llevada a cabo</MenuItem>
+                <MenuItem value={'Sesión 2 llevada a cabo'}>Sesión 2 llevada a cabo</MenuItem>
+                <MenuItem value={'Esperando respuesta'}>Esperando respuesta</MenuItem>
+                <MenuItem value={'Cerrada'}>Cerrada</MenuItem>
+              </Select>
+            </FormControl>
           <div className={classes.contenedorBotones}>
             <Button size="small" onClick={() => { navigate(-1)}}>CANCELAR</Button>
             <Button type="submit" variant="contained" className="boton">GUARDAR</Button>
