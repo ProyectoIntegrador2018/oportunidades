@@ -2,6 +2,10 @@ import React, {useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import {TextField, Button, Card, FormLabel, CardContent, Typography, Grid} from '@material-ui/core';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import {useFormik} from 'formik';
@@ -91,6 +95,14 @@ export default function SimpleCard({rfp}) {
   // state de fecha
   const [startDate, setStartDate] = useState(moment(rfp.fechaCita).toDate());
 
+  // State del select de status
+  const [estatus, guardarEstatus] = useState(rfp.estatus);
+  const handleStatusChange = (e) => {
+    console.log(e.target.value);
+    guardarEstatus(e.target.value);
+    console.log(estatus);
+  };
+
   // Función para date picker
   let handleColor = time => {
     return time.getHours() > 12 ? "text-success" : "text-error";
@@ -121,7 +133,6 @@ export default function SimpleCard({rfp}) {
       tipo_general: rfp.tipoGeneralProyecto,
       tipo_esp: rfp.tipoEspecificoProyecto,
       comment: rfp.comentariosAdicionales,
-      estatus: rfp.estatus,
       id: rfp._id,
     },
     validationSchema: Yup.object({
@@ -155,8 +166,6 @@ export default function SimpleCard({rfp}) {
                   .required('El tipo es obligatorio'),
       tipo_esp: Yup.string()
                   .required('El tipo es obligatorio'),
-      estatus: Yup.string()
-                  .required('El estatus es obligatorio'),
       comment: Yup.string(),
       id: Yup.string(),
     }),
@@ -181,6 +190,7 @@ export default function SimpleCard({rfp}) {
                 tipoGeneralProyecto: rfp.tipo_general,
                 tipoEspecificoProyecto: rfp.tipo_esp,
                 id: rfp.id,
+                estatus: estatus,
                 //fechaCita: startDate,
              }, config
           )
@@ -400,17 +410,21 @@ export default function SimpleCard({rfp}) {
             {formik.touched.comment && formik.errors.comment
               ? (<p className="error-titulo-rfp textField-completo-100"><span className="error-texto">*</span>{formik.errors.comment}</p>)
               : null }
-              <TextField
-              className="textField-completo-100 mb-1"
-              id="estatus"
-              label="Estatus"
-              value={formik.values.estatus}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-            />
-            {formik.touched.estatus && formik.errors.estatus
-              ? (<p className="error-titulo-rfp textField-completo-100"><span className="error-texto">*</span>{formik.errors.estatus}</p>)
-              : null }
+            <FormControl className={classes.formControl}>
+              <InputLabel id="demo-simple-select-label">Estatus</InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={estatus}
+                onChange={e => handleStatusChange(e)}
+              >
+                <MenuItem value={'Activo'}>Activo</MenuItem>
+                <MenuItem value={'Sesión 1 llevada a cabo'}>Sesión 1 llevada a cabo</MenuItem>
+                <MenuItem value={'Sesión 2 llevada a cabo'}>Sesión 2 llevada a cabo</MenuItem>
+                <MenuItem value={'Esperando respuesta'}>Esperando respuesta</MenuItem>
+                <MenuItem value={'Cerrada'}>Cerrada</MenuItem>
+              </Select>
+            </FormControl>
           <div className={classes.contenedorBotones}>
             <Button size="small" onClick={() => { navigate(-1)}}>CANCELAR</Button>
             <Button type="submit" variant="contained" className="boton">GUARDAR</Button>
