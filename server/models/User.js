@@ -54,6 +54,10 @@ const schema = new mongoose.Schema(
             }
          },
       },
+      events: [{
+         type: mongoose.Schema.Types.ObjectId,
+         ref: "Event"
+      }]
    },
    {
       toObject: {
@@ -89,6 +93,18 @@ schema.methods.generateToken = function () {
          });
    });
 };
+
+schema.methods.addEvent = function(eventId) {
+   const user = this
+   this.events.push(eventId);
+   user.save();
+}
+
+schema.methods.retrieveEvents = function() {
+   const user = this;
+   let userEvents = user.events;
+   return userEvents;
+}
 
 /**
  * Gets user that matches email and validates password
