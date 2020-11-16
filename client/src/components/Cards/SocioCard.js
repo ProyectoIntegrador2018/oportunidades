@@ -110,7 +110,7 @@ export default function SocioCard({ socio }) {
                </div>
             </CardActions>
             <ConfirmDialog
-               title="Borrar socio?"
+               title="¿Está seguro de que desea borrar el socio?"
                open={isConfirmationOpen}
                setOpen={setIsConfirmationOpen}
                onConfirm={deleteSocio}

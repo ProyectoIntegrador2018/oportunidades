@@ -9,7 +9,12 @@ import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
+import DatePicker from "react-datepicker";
+import {FormLabel} from '@material-ui/core';
+import "react-datepicker/dist/react-datepicker.css";
 import Axios from "axios";
+import moment from 'moment';
+
 const styles = (theme) => ({
    root: {
       margin: 0,
@@ -26,8 +31,15 @@ const styles = (theme) => ({
       marginRight: theme.spacing(1),
       width: 200,
    },
+   fechaDiv: {
+      height: 200,
+      margin: theme.spacing(2),
+   },
    title: {
       
+   },
+   marginBott: {
+      marginBottom: theme.spacing(1),
    }
 });
 
@@ -62,12 +74,17 @@ const DialogActions = withStyles((theme) => ({
    },
 }))(MuiDialogActions);
 
-export default function EditarPerfil(params) {
+ // Función para date picker
+ let handleColor = time => {
+   return time.getHours() > 12 ? "text-success" : "text-error";
+ };
+
+export default function EditarEvento(params) {
    const [open, setOpen] = React.useState(false);
-   const [name, setName] = React.useState(params.userName);
-   const [email, setEmail] = React.useState(params.userEmail);
-   const [empresa, setEmpresa] = React.useState(params.userEmpresa);
-   const [telefono, setTelefono] = React.useState(params.userTelefono);
+   const [nombre, guardarNombre] = React.useState(params.nombre);
+   const [fecha, guardarFecha] = React.useState(moment(params.fecha).toDate());
+   const [link, guardarLink] = React.useState(params.link);
+   const [id, guardarId] = React.useState(params.id);
 
    const config = {
       headers: {
@@ -85,16 +102,17 @@ export default function EditarPerfil(params) {
       setOpen(false);
    };
    const handleSave = () => {
-      Axios.patch("/user/", {
-         name,
-         email,
-         empresa,
-         telefono
-      }, config).then(res => {
-         window.location.reload();
-      }).catch(error => {
-         console.log(error);
-      })
+      // Axios.patch("/user/", {
+      //    name,
+      //    email,
+      //    empresa,
+      //    telefono
+      // }, config).then(res => {
+      //    window.location.reload();
+      // }).catch(error => {
+      //    console.log(error);
+      // })
+      window.location.reload();
    };
 
    return (
@@ -103,19 +121,26 @@ export default function EditarPerfil(params) {
             onClose={handleClose}
             aria-labelledby="customized-dialog-title"
             open={open}
+            maxWidth='md'
+            fullWidth={true}
+            scroll="paper"
          >
             <DialogTitle id="customized-dialog-title" onClose={handleClose}>
-               Editar Perfil
+               Editar Evento
             </DialogTitle>
             <DialogContent dividers>
-               <TextField
-                  id="email"
-                  className={styles.textField}
-                  label="Email"
-                  margin="normal"
-                  fullWidth
-                  defaultValue={email}
-                  onChange={(event) => setEmail(event.target.value)}
+               <div className="mb-0">
+                  <FormLabel className="mb-1">Selecciona la fecha de la siguiente reunión</FormLabel>
+               </div>
+               <DatePicker
+                    showTimeSelect
+                    selected={fecha}
+                    onChange={fecha => guardarFecha(fecha)}
+                    timeClassName={handleColor}
+                    minDate={new Date()}
+                    //timeIntervals="15"
+                    locale="es"
+                    title="Selecciona un horario"
                />
                <TextField
                   id="nombre"
@@ -123,29 +148,21 @@ export default function EditarPerfil(params) {
                   label="Nombre"
                   margin="normal"
                   fullWidth
-                  defaultValue={name}
-                  onChange={(event) => setName(event.target.value)}
+                  defaultValue={nombre}
+                  onChange={(event) => guardarNombre(event.target.value)}
                />
                <TextField
-                  id="empresa"
-                  className={styles.textField}
-                  label="Empresa"
+                  id="link"
+                  className={[styles.textField, styles.marginBott]}
+                  label="Link"
                   margin="normal"
                   fullWidth
-                  defaultValue={empresa}
-                  onChange={(event) => setEmpresa(event.target.value)}
+                  defaultValue={link}
+                  onChange={(event) => guardarLink(event.target.value)}
                />
-               <TextField
-                  id="telefono"
-                  className={styles.textField}
-                  label="Teléfono"
-                  margin="normal"
-                  fullWidth
-                  defaultValue={telefono}
-                  onChange={(event) => setTelefono(event.target.value)}
-               />
+               <div className="mb-4">  </div>
             </DialogContent>
-            <DialogActions>
+            <DialogActions >
                <Button autoFocus onClick={handleSave} color="primary">
                   GUARDAR CAMBIOS
                </Button>

@@ -28,6 +28,21 @@
    margin: 2em;
 }
 
+.container-eventos {
+   display: flex;
+   flex-direction: column;
+   justify-content: flex-start;
+   align-items: flex-start;
+}
+
+.container-evento {
+   display: flex;
+   flex-direction: column;
+   justify-content: flex-start;
+   align-items: flex-start;
+   margin-top: 1.5em;
+}
+
 .textField {
    width: 300px;
 }
@@ -110,8 +125,16 @@
    margin-left: 1em !important;
 }
 
+.mb-0 {
+   margin-bottom: 0.8em !important;
+}
+
 .mb-1 {
    margin-bottom: 1em !important;
+}
+
+.mb-4 {
+   margin-bottom: 4em !important;
 }
 
 .textLeft {
@@ -322,3 +345,4 @@
       height: 450px;
    }
 }
+
