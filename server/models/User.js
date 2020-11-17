@@ -101,6 +101,7 @@ schema.methods.addEvent = function(eventId) {
    user.save();
 }
 
+//TODO: add return to promise
 schema.methods.retrieveEvents = function() {
    const user = this;
    let userEvents = user.events;
