@@ -38,9 +38,9 @@ eventController.createEvent = (rawEvent) => {
    });
 };
 
-eventController.assignToUsers = (opportunityId, eventId, evento) => {
+eventController.assignToUsers = (opportunityId, eventId, evento, oppOwnerId) => {
    return new Promise((resolve, reject) => {
-      let involvedUsersIds = [];
+      let involvedUsersIds = [oppOwnerId];
       Participacion.find({ rfpInvolucrado: opportunityId })
          .then((participaciones) => {
             participaciones.map((participacion) => {
@@ -103,6 +103,18 @@ eventController.deleteUserFromEvent = (userId, eventId) => {
       User.update({ _id: userId }, { $pull: { events: eventId } })
          .then((user) => {
             resolve(user);
+         })
+         .catch((err) => {
+            reject(err);
+         });
+   });
+};
+
+eventController.getRFPEvents = (rfpId) => {
+   return new Promise((resolve, reject) => {
+      Event.find({ rfp: rfpId })
+         .then((events) => {
+            resolve(events);
          })
          .catch((err) => {
             reject(err);
