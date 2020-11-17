@@ -46,10 +46,10 @@ export default function EventoCliente({evento}) {
   const navigate = useNavigate();
 
   // State de los valores
-  const [nombre, guardarNombre] = useState(evento.nombre);
-  const [fecha, guardarFecha] = useState(evento.fecha);
+  const [nombre, guardarNombre] = useState(evento.name);
+  const [fecha, guardarFecha] = useState(evento.date);
   const [link, guardarLink] = useState(evento.link);
-  const [id, guardarId] = useState(evento.id);
+  const [id, guardarId] = useState(evento._id);
 
   // State del modal de editar evento
   const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -88,7 +88,7 @@ export default function EventoCliente({evento}) {
         title="¿Está seguro de que desea borrar el evento?"
         open={isConfirmationOpen}
         setOpen={setIsConfirmationOpen}
-        onConfirm={deleteEvento()}
+        onConfirm={deleteEvento}
       />
       <div className="container-evento">
         <Typography className={classes.estatus}>
