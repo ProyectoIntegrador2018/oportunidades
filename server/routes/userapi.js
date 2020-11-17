@@ -46,7 +46,6 @@ router.post("/logout", userMiddleware, (req, res) => {
  * @param {Object} req contains the user info
  * @param {Object} res response for the request
  */
-
 router.post("/create-client-user", (req, res) => {
    userController
       .createUser(req.body)
@@ -60,6 +59,23 @@ router.post("/create-client-user", (req, res) => {
          console.log("error", error);
          return res.status(401).send({ error });
       });
+});
+
+/**
+ * Route to get a socio by ID
+ * @implements {userMiddleWare} Function to check if the request is sent by a logged user
+ * @param {Object} req
+ * @param {Object} res response for the request
+ */
+router.get("/get-socio/:id", userMiddleware, (req, res) => {
+    userController
+       .getSocioInfo(req.params.id)
+       .then((user) => {
+          return res.send({ user });
+       })
+       .catch((error) => {
+          return res.status(401).send({ error });
+       });
 });
 
 // Routes for getting and editing the profile for the user who's making the request.
