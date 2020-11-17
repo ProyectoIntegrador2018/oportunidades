@@ -366,3 +366,10 @@
       height: 450px;
    }
 }
+
+.container-radios {
+   display: flex;
+   align-items: flex-start;
+   justify-content: flex-start;
+   width: 80%;
+}
