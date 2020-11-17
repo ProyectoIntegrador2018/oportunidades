@@ -80,6 +80,7 @@ const DialogActions = withStyles((theme) => ({
  };
 
 export default function EditarEvento(params) {
+   console.log(params)
    const [open, setOpen] = React.useState(false);
    const [nombre, guardarNombre] = React.useState(params.nombre);
    const [fecha, guardarFecha] = React.useState(moment(params.fecha).toDate());

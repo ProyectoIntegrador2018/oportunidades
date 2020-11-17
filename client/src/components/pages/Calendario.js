@@ -1,24 +1,39 @@
-import React, {useState, useEffect} from "react";
-import { Grid, Typography } from "@material-ui/core";
+import React, { useState, useEffect } from "react";
+import {
+   Button,
+   Dialog,
+   DialogActions,
+   DialogContent,
+   DialogTitle,
+   Grid,
+   Typography,
+} from "@material-ui/core";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import Card from '@material-ui/core/Card';
-import axios from 'axios';
+import Card from "@material-ui/core/Card";
+import TextField from "@material-ui/core/TextField";
+import axios from "axios";
 
-import { Calendar, momentLocalizer, Views } from 'react-big-calendar'
+import { Calendar, momentLocalizer, Views } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
-import moment from 'moment'
-
+import moment from "moment";
 
 import "../../styles/globalStyles.css";
 import SideMenu from "../SideMenu/SideMenu";
 import FabButton from "../ui/FabButton";
 
+const addHours = function (d) {
+   let hours = d.getHours();
+   let minutes = d.getMinutes();
+   console.log(hours, minutes);
+   d.setHours(hours + 1, minutes + 30, 0, 0);
+   return d;
+};
 const ColoredDateCellWrapper = ({ children }) =>
-  React.cloneElement(React.Children.only(children), {
-    style: {
-      backgroundColor: '#EE5D36',
-    },
-  })
+   React.cloneElement(React.Children.only(children), {
+      style: {
+         backgroundColor: "#EE5D36",
+      },
+   });
 
 const Calendario = () => {
    // state de lista de RFPs
@@ -27,7 +42,13 @@ const Calendario = () => {
    const [listaParticipaciones, guardarListaParticipaciones] = useState([]);
 
    // state de control de si ya se hizo la llamada a la base de datos
-   const [llamada, guardarLlamada] = useState('false');
+   const [llamada, guardarLlamada] = useState("false");
+
+   const [startDate, setStartDate] = useState(new Date());
+   const [selectedEventName, setSelectedEventName] = useState("");
+   const [selectedEventDate, setSelectedEventDate] = useState("");
+   const [selectedEventLink, setSelectedEventLink] = useState("");
+   const [selectedEventTime, setSelectedEventTime] = useState("")
 
    // Obtener tipo de usuario
    const userType = sessionStorage.getItem("userType");
@@ -36,21 +57,50 @@ const Calendario = () => {
    // to the correct localizer.
    //const localizer = BigCalendar.momentLocalizer(moment) // or globalizeLocalizer
    const [myEventsList, guardarmyEventsList] = useState([]);
-   var events = [
-      {
-         id: 2,
-         title: 'Evento 1',
-         start: new Date(2020, 10, 15, 0, 0, 0),
-         end: new Date(2020, 10, 15, 1, 0, 0),
-       },
-       {
-         id: 3,
-         title: 'Evento 2',
-         start: new Date(2020, 10, 25, 0, 0, 0),
-         end: new Date(2020, 10, 25, 1, 0, 0),
-       },
-   ];
-   const localizer = momentLocalizer(moment)
+
+   const [isModalOpen, setIsModalOpen] = useState(false);
+
+   const localizer = momentLocalizer(moment);
+
+   const closeModal = () => {
+      setIsModalOpen(false);
+   }
+   const openModal = () => {
+      setIsModalOpen(true);
+   }
+
+   const handleSelectedEvent = (theEvent) => {
+      // Opciones para mostrar la fecha en string
+      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      console.log(theEvent)
+      setSelectedEventName(theEvent.title)
+      let spanishDate = translateDate(theEvent.start)
+      setSelectedEventDate(moment.utc(theEvent.start).toDate().toLocaleDateString('es-ES', options))
+      setSelectedEventTime(moment.utc(theEvent.start).toDate().toLocaleTimeString('en-US'))
+      setSelectedEventLink(theEvent.link)
+      openModal()
+   }
+
+   const translateDate = (theDate) => {
+      const months = [
+         "Enero",
+         "Febrero",
+         "Marzo",
+         "Abril",
+         "Mayo",
+         "Junio",
+         "Julio",
+         "Agosto",
+         "Septiembre",
+         "Octubre",
+         "Noviembre",
+         "Diciembre",
+      ];
+      let month = months[theDate.getMonth()];
+      let day = theDate.getDay();
+      let year = theDate.getFullYear()
+      return `${day} de ${month} del ${year}`;
+   }
 
    useEffect(() => {
       const config = {
@@ -60,81 +110,53 @@ const Calendario = () => {
          },
       };
 
-      const obtenerListaRfpsAdmin = () => {
-        axios
-            .get("/RFP/get-rfp", config)
-            .then((res) => {
-               // guardar lista de RFPs en state
-               guardarListaRfps(res.data);
-               // actualizar variable de control
-               guardarLlamada('true');
-            })
-            .catch((error) => {
-               console.log(error);
-            })
-      };
-      const obtenerListaRfpsCliente = () => {
+      const getUserEvents = () => {
          axios
-             .get("/RFP/get-rfp-cliente", config)
-             .then((res) => {
-                // guardar lista de RFPs en state
-                guardarListaRfps(res.data);
-                // actualizar variable de control
-               guardarLlamada('true');
-             })
-             .catch((error) => {
-                console.log(error);
-             })
-       };
-       const obtenerListaRfpsSocio = () => {
-          axios
-              .get("/RFP/get-rfp-socio", config)
-              .then((res) => {
-                 // guardar lista de RFPs en state
-                 guardarListaRfps(res.data);
-                 // actualizar variable de control
-                 guardarLlamada('true');
-              })
-              .catch((error) => {
-                 console.log(error);
-              })
-          axios
-              .get("/participacion/get-participaciones-socio", config)
-              .then((res) => {
-                 // guardar lista de RFPs en state
-                 guardarListaParticipaciones(res.data);
-                 // actualizar variable de control
-                 guardarLlamada('true');
-              })
-              .catch((error) => {
-                 console.log(error);
-              })
-       };
+            .get("/events/get-user-events", config)
+            .then((res) => {
+               console.log(res.data);
+               let events = [];
+               res.data.events.forEach((evento) => {
+                  events.push({
+                     id: evento._id,
+                     title: evento.name,
+                     start: new Date(evento.date),
+                     end: addHours(new Date(evento.date)),
+                     link: "https://zoom.com",
+                  });
+               });
+               guardarmyEventsList(events);
+            })
+            .catch((err) => {
+               console.log(err);
+            });
+      };
+      getUserEvents();
 
-      if (userType === 'admin') obtenerListaRfpsAdmin();
-      if (userType === 'cliente') obtenerListaRfpsCliente();
-      if (userType === 'socio') obtenerListaRfpsSocio();
-    }, []);
+      // if (userType === "admin") obtenerListaRfpsAdmin();
+      // if (userType === "cliente") obtenerListaRfpsCliente();
+      // if (userType === "socio") obtenerListaRfpsSocio();
+   }, []);
 
-    for (var i = 0; i < listaRfps.length; i++) {
-       listaRfps[i].participandoActual = false;
-       for (var j = 0; j < listaParticipaciones.length; j++) {
-           if (listaRfps[i]._id == listaParticipaciones[j].rfpInvolucrado) {
-               listaRfps[i].participandoActual = true;
-           }
-       }
-    }
+   for (var i = 0; i < listaRfps.length; i++) {
+      listaRfps[i].participandoActual = false;
+      for (var j = 0; j < listaParticipaciones.length; j++) {
+         if (listaRfps[i]._id == listaParticipaciones[j].rfpInvolucrado) {
+            listaRfps[i].participandoActual = true;
+         }
+      }
+   }
 
-    let allViews = Object.keys(Views).map(k => Views[k])
-    console.log(events);
+   let allViews = Object.keys(Views).map((k) => Views[k]);
 
-      return (
+   return (
       <>
          <SideMenu />
-         {userType === 'cliente'
-            ? (<FabButton link="/registro-oportunidad"/>)
-            : (<Grid container className="container-dashboard-margin" ></Grid>)
-         }
+         {userType === "cliente" ? (
+            <FabButton link="/registro-oportunidad" />
+         ) : (
+            <Grid container className="container-dashboard-margin"></Grid>
+         )}
 
          <Grid
             container
@@ -148,18 +170,62 @@ const Calendario = () => {
                endAccessor="end"
             /> */}
             <div className="container-calendar">
-               <Calendar 
-                  localizer={localizer} 
-                  events={events}
+               <Dialog open={isModalOpen} onClose={closeModal}>
+                  <DialogTitle>
+                     {" "}
+                     {`Detalles sobre evento ${selectedEventName}`}
+                  </DialogTitle>
+                  <DialogContent>
+                     <TextField
+                        label="Nombre del evento"
+                        defaultValue={selectedEventName}
+                        disabled={true}
+                        margin="dense"
+                        fullWidth
+                     />
+                     <br />
+                     <TextField
+                        label="Fecha"
+                        defaultValue={selectedEventDate}
+                        disabled={true}
+                        fullWidth
+                     />
+                     <br />
+                     <TextField
+                        label="Hora"
+                        defaultValue={selectedEventTime}
+                        disabled={true}
+                        fullWidth
+                     />
+                     <br />
+                     <TextField
+                        label="Liga del evento"
+                        defaultValue={selectedEventLink}
+                        disabled={true}
+                        fullWidth
+                     />
+                  </DialogContent>
+
+                  <DialogActions>
+                     <Button
+                        onClick={closeModal}
+                        color="primary"
+                     >
+                        OK
+                     </Button>
+                  </DialogActions>
+               </Dialog>
+               <Calendar
+                  localizer={localizer}
+                  events={myEventsList}
                   views={allViews}
                   step={60}
                   components={{
                      timeSlotWrapper: ColoredDateCellWrapper,
-                   }}
+                  }}
+                  onSelectEvent={selectedEvent => handleSelectedEvent(selectedEvent)}
                />
             </div>
-            
-           
          </Grid>
       </>
    );

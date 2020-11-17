@@ -20,7 +20,7 @@ router.post("/", userMiddleware, (req, res) => {
    eventController
       .createEvent(req.body)
       .then((newEvent) => {
-         eventController.assignToUsers(req.body.rfp, newEvent._id, newEvent);
+         eventController.assignToUsers(req.body.rfp, newEvent._id, newEvent, req.user._id);
       })
       .then((usersIds) => {
          return res.send({
@@ -48,6 +48,17 @@ router.post("/add-to-event/:id", userMiddleware, (req, res) => {
       .addUserToEvent(req.user._id, req.params.id)
       .then((update) => {
          return res.send(update);
+      })
+      .catch((err) => {
+         return res.status(401).send({ err });
+      });
+});
+
+router.get("/get-rfp-events/:id", userMiddleware, (req, res) => {
+   eventController
+      .getRFPEvents(req.params.id)
+      .then((events) => {
+         return res.send({ events });
       })
       .catch((err) => {
          return res.status(401).send({ err });
