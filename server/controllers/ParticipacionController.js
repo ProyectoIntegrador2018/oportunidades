@@ -40,6 +40,16 @@ participacionController.getParticipacionesSocio = (id) => {
   });
 };
 
-
+participacionController.getParticipacionesRFP = (id) => {
+  return new Promise((resolve, reject) => {
+     Participacion.find({rfpInvolucrado: id})
+        .then((participaciones) => {
+          return resolve( participaciones );
+        })
+        .catch((error) => {
+           return reject({ error });
+        });
+  });
+};
 
 module.exports = participacionController;

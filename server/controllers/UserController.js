@@ -96,4 +96,20 @@ userController.updateMyProfile = (id, updates) => {
    });
 };
 
+/**
+ * Function for getting the user's info by Id.
+ * @param {String} id user's id
+ */
+userController.getSocioInfo = (id) => {
+   return new Promise((resolve, reject) => {
+      User.findById(id)
+         .then((user) => {
+            return resolve( user );
+         })
+         .catch((error) => {
+            return reject(error);
+         });
+   });
+};
+
 module.exports = userController;
