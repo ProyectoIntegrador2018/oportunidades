@@ -27,6 +27,9 @@ app.use("/admin", adminRouter);
 const participacionRouter = require('./server/routes/participacionapi');
 app.use("/participacion", participacionRouter);
 
+const eventRouter = require('./server/routes/eventapi');
+app.use("/events", eventRouter);
+
 if (process.env.NODE_ENV === "production") {
    app.use(express.static("client/build"));
    app.get("*", function (req, res) {
