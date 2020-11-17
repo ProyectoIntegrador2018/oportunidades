@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const validator = require("validator");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const Event = require("./Event");
 
 const schema = new mongoose.Schema(
    {
@@ -54,6 +55,10 @@ const schema = new mongoose.Schema(
             }
          },
       },
+      events: [{
+         type: mongoose.Schema.Types.ObjectId,
+         ref: "Event"
+      }]
    },
    {
       toObject: {
@@ -89,6 +94,26 @@ schema.methods.generateToken = function () {
          });
    });
 };
+
+schema.methods.addEvent = function(eventId) {
+   const user = this
+   this.events.push(eventId);
+   user.save();
+}
+
+//TODO: add return to promise
+schema.methods.retrieveEvents = function() {
+   const user = this;
+   let userEvents = user.events;
+   return new Promise((resolve, reject) => {
+      Event.find({ '_id': { $in: userEvents } })
+      .then(events => {
+         resolve(events)
+      }).catch(err => {
+         reject(err)
+      })
+   })
+}
 
 /**
  * Gets user that matches email and validates password
