@@ -10,7 +10,6 @@ const router = express.Router();
  * @param {Object} req contiene la información de la participación en el body.
  * @param {Object} res respuesta del request.
  */
-
 router.post("/create-participacion", userMiddleware, (req, res) => {
    let id = req.user._id;
    participacionController
@@ -45,12 +44,11 @@ router.delete('/delete-participacion-socio/:id', userMiddleware, (req, res) => {
 });
 
 /**
- * Route to get the existing RFPs que hayan sido creadas por cierto id
+ * Ruta para obtener las participaciones en las que esté involucrado un socio
  * @implements {userMiddleWare} Function to check if the request is sent by a logged user
- * @param {Object} req contains the RFP's data in its body.
- * @param {Object} res response for the request
+ * @param {Object} req contiene el id del socio
+ * @param {Object} res respuesta del request
  */
-
 router.get("/get-participaciones-socio", userMiddleware, (req, res) => {
    participacionController
       .getParticipacionesSocio(req.user.id)
@@ -63,6 +61,23 @@ router.get("/get-participaciones-socio", userMiddleware, (req, res) => {
       });
 });
 
+/**
+ * Ruta para obtener las participaciones de un RFP en específico
+ * @implements {userMiddleWare} Function to check if the request is sent by a logged user
+ * @param {Object} req contiene el id del rfp
+ * @param {Object} res respuesta del request
+ */
+router.get("/get-participaciones-rfp/:id", userMiddleware, (req, res) => {
+   participacionController
+      .getParticipacionesRFP(req.params.id)
+      .then(
+         (participaciones) => {return res.send(participaciones)}
+      )
+      .catch((error) => {
+         console.log("error", error)
+         return res.status(400).send({ error });
+      });
+});
 
 
 router.get("/ping", userMiddleware, (req, res) => {
