@@ -102,18 +102,19 @@ export default function NuevoEvento(params) {
       setOpen(false);
    };
    const handleSave = () => {
+      console.log(params.rfp)
       // Guardar el nuevo usuario en la base de datos
-      // Axios.patch("/user/", {
-      //    name,
-      //    email,
-      //    empresa,
-      //    telefono
-      // }, config).then(res => {
-      //    window.location.reload();
-      // }).catch(error => {
-      //    console.log(error);
-      // })
-      window.location.reload();
+      Axios.post("/events/", {
+         name: nombre,
+         date: fecha,
+         link: link,
+         rfp: params.rfp
+      }, config).then(res => {
+         window.location.reload();
+      }).catch(error => {
+         console.log(error);
+      })
+      //window.location.reload();
    };
 
    return (
@@ -127,7 +128,7 @@ export default function NuevoEvento(params) {
             scroll="paper"
          >
             <DialogTitle id="customized-dialog-title" onClose={handleClose}>
-               Editar Evento
+               Agregar Evento
             </DialogTitle>
             <DialogContent dividers>
                <div className="mb-0">
