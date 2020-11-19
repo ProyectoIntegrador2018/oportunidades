@@ -89,6 +89,7 @@ export default function ListaEventos({rfp}) {
       <NuevoEvento
         isOpen={modalIsOpen}
         setModalIsOpen={setModalIsOpen}
+        rfp={rfp._id}
      />
       <Typography className={classes.title}>
         Eventos

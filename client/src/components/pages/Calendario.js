@@ -122,7 +122,7 @@ const Calendario = () => {
                      title: evento.name,
                      start: new Date(evento.date),
                      end: addHours(new Date(evento.date)),
-                     link: "https://zoom.com",
+                     link: evento.link
                   });
                });
                guardarmyEventsList(events);
@@ -152,11 +152,14 @@ const Calendario = () => {
    return (
       <>
          <SideMenu />
-         {userType === "cliente" ? (
+
+         <Grid container className="container-dashboard-margin"></Grid>
+         
+         {/* {userType === "cliente" ? (
             <FabButton link="/registro-oportunidad" />
          ) : (
             <Grid container className="container-dashboard-margin"></Grid>
-         )}
+         )} */}
 
          <Grid
             container
