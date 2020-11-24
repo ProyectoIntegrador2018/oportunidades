@@ -40,11 +40,9 @@ export default function ListaEventos({rfp}) {
   useEffect(() => {
     // Función que regresa la lista de eventos de la oportunidad
     const obtenerEventos = () => {
-      console.log(rfp)
       axios
          .get("/events/get-rfp-events/" + rfp._id, config)
          .then((res) => {
-            console.log(res.data)
             // guardar lista de eventos de la oportunidad en state
             guardarEventos(res.data.events);
             // actualizar variable de control

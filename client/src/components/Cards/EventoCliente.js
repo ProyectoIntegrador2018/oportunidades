@@ -62,15 +62,15 @@ export default function EventoCliente({evento}) {
 
  
 
-  const deleteEvento = () => {
-    console.log('evento borrado');
-    // Axios.delete("/admin/socio/" + socio._id, config)
-    //   .then((response) => {
-    //       window.location.reload();
-    //   })
-    //   .catch((error) => {
-    //       console.log(error);
-    //   });
+  const deleteEvento = () => {    
+    console.log(evento._id);
+    axios.delete("/events/" + evento._id, config)
+      .then((response) => {
+          window.location.reload();
+      })
+      .catch((error) => {
+          console.log(error);
+      });
   };
 
 
