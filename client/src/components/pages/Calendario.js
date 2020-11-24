@@ -131,7 +131,29 @@ const Calendario = () => {
                console.log(err);
             });
       };
-      getUserEvents();
+   
+      if(userType === "admin") {
+         axios
+            .get("/events/all-events", config)
+            .then((res) => {
+               let events = [];
+               res.data.events.forEach((evento) => {
+                  events.push({
+                     id: evento._id,
+                     title: evento.name,
+                     start: new Date(evento.date),
+                     end: addHours(new Date(evento.date)),
+                     link: evento.link
+                  });
+               });
+               guardarmyEventsList(events);
+            })
+            .catch((err) => {
+               console.log(err);
+            });
+      } else {
+         getUserEvents();
+      }
 
       // if (userType === "admin") obtenerListaRfpsAdmin();
       // if (userType === "cliente") obtenerListaRfpsCliente();

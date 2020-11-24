@@ -110,6 +110,30 @@ eventController.deleteUserFromEvent = (userId, eventId) => {
    });
 };
 
+eventController.editEvent = (eventId, updates) => {
+   return new Promise((resolve, reject) => {
+      Event.findByIdAndUpdate(eventId, updates)
+      .then(eventUpdated => {
+         resolve(eventUpdated);
+      })
+      .catch(err => {
+         reject(err);
+      })
+   })
+}
+
+eventController.deleteEvent = (eventId) => {
+   return new Promise((resolve, reject) => {
+      Event.findByIdAndDelete(eventId)
+      .then(deletedEvent => {
+         resolve(deletedEvent);
+      })
+      .catch(err => {
+         reject(err);
+      })
+   })
+}
+
 eventController.getRFPEvents = (rfpId) => {
    return new Promise((resolve, reject) => {
       Event.find({ rfp: rfpId })
@@ -133,5 +157,17 @@ eventController.addUserToEvent = (userId, eventId) => {
          });
    });
 };
+
+eventController.getAllEvents = () => {
+   return new Promise((resolve, reject) => {
+      Event.find({})
+      .then(events => {
+         resolve(events);
+      })
+      .catch(err => {
+         reject(err);
+      })
+   })
+}
 
 module.exports = eventController;

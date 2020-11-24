@@ -1,5 +1,6 @@
 const express = require("express");
 const userMiddleware = require("../middleware/User");
+const adminMiddleware = require("../middleware/Admin");
 const eventController = require("../controllers/EventController");
 
 const router = express.Router();
@@ -64,5 +65,45 @@ router.get("/get-rfp-events/:id", userMiddleware, (req, res) => {
          return res.status(401).send({ err });
       });
 });
+
+router.patch("/:id", userMiddleware, (req, res) => {
+   const updates = req.body;
+   const allowedUpdates = ["name", "date", "link"];
+   const isValidUpdate = Object.keys(updates).every((update) => allowedUpdates.includes(update));
+   if (!isValidUpdate) {
+      return res.status(401).send({
+         error: "invalid update fields",
+         success: 0,
+      });
+   }
+   eventController
+      .editEvent(req.params.id, updates)
+      .then((updatedEvent) => {
+         return res.send({ updatedEvent });
+      })
+      .catch((err) => {
+         return res.status(401).send({ err });
+      });
+});
+
+router.delete("/:id", userMiddleware, (req, res) => {
+   eventController.deleteEvent(req.params.id)
+   .then(deletedEvent => {
+      return res.send({ deletedEvent });
+   })
+   .catch(err => {
+      return res.status(401).send({ err });
+   })
+})
+
+router.get("/all-events", adminMiddleware, (req, res) => {
+   eventController.getAllEvents()
+   .then(events => {
+      return res.send({ events });
+   })
+   .catch(err => {
+      return res.status(401).send({ err });
+   })
+})
 
 module.exports = router;

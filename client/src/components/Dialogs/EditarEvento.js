@@ -80,7 +80,6 @@ const DialogActions = withStyles((theme) => ({
  };
 
 export default function EditarEvento(params) {
-   console.log(params)
    const [open, setOpen] = React.useState(false);
    const [nombre, guardarNombre] = React.useState(params.nombre);
    const [fecha, guardarFecha] = React.useState(moment(params.fecha).toDate());
@@ -103,17 +102,15 @@ export default function EditarEvento(params) {
       setOpen(false);
    };
    const handleSave = () => {
-      // Axios.patch("/user/", {
-      //    name,
-      //    email,
-      //    empresa,
-      //    telefono
-      // }, config).then(res => {
-      //    window.location.reload();
-      // }).catch(error => {
-      //    console.log(error);
-      // })
-      window.location.reload();
+      Axios.patch("/events/" + params.id, {
+         name: nombre,
+         date: fecha,
+         link: link,
+      }, config).then(res => {
+         window.location.reload();
+      }).catch(error => {
+         console.log(error);
+      })
    };
 
    return (
