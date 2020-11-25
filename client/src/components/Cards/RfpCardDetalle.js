@@ -282,7 +282,7 @@ export default function SimpleCard({rfp}) {
             {rfp.email}
           </Typography>
         </div>
-        {userType === 'cliente' ? <ListaEventos key={rfp._id} rfp={rfp} /> : null}
+        {userType === 'socio' ? null : <ListaEventos key={rfp._id} rfp={rfp}/> }
       </CardContent>
       <CardActions>
           <div className={classes.contenedorBotones}>
