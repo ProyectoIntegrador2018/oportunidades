@@ -60,6 +60,10 @@ const schema = new mongoose.Schema(
          type: String,
          default: 'Activo',
       },
+      causa: {
+         type: String,
+         default: '',
+      },
       createdBy: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
