@@ -117,6 +117,10 @@
    justify-content: center;
 }
 
+.mt-1 {
+   margin-top: 1em !important;
+}
+
 .mt-4 {
    margin-top: 4em !important;
 }
@@ -342,7 +346,7 @@
    justify-content: space-between;
 }
 .card-Socio {
-   width: 350px;
+   min-width: 400px;
    height: 135px;
    display: flex;
    flex-direction: column;

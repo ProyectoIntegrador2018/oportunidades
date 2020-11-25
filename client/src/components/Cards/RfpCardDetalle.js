@@ -161,6 +161,16 @@ export default function SimpleCard({rfp}) {
             {rfp.estatus}
           </Typography>
         </div>
+        {rfp.causa !== ''
+          ? <div className={classes.containerText}>
+              <Typography className={classes.estatus}>
+                  Causa de estatus cerrado:
+              </Typography>
+              <Typography className={classes.texto}>
+                {rfp.causa}
+              </Typography>
+            </div>
+          : null}
         <Typography className={classes.estatus}>
           Objetivo de la oportunidad
         </Typography>
@@ -282,7 +292,7 @@ export default function SimpleCard({rfp}) {
             {rfp.email}
           </Typography>
         </div>
-        {userType === 'cliente' ? <ListaEventos key={rfp._id} rfp={rfp} /> : null}
+        {userType === 'socio' ? null : <ListaEventos key={rfp._id} rfp={rfp}/> }
       </CardContent>
       <CardActions>
           <div className={classes.contenedorBotones}>

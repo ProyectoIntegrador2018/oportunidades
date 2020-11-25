@@ -9,15 +9,10 @@ import Select from '@material-ui/core/Select';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import {useFormik} from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
-import moment from 'moment';
-
-
-
 
 const useStyles = makeStyles({
   root: {
@@ -95,27 +90,26 @@ export default function SimpleCard({rfp}) {
   // state de error
   const [mensajeError, guardarMensajeError] = useState('');
 
-  // state de fecha
-  const [startDate, setStartDate] = useState(moment(rfp.fechaCita).toDate());
-
   // State del select de status
   const [estatus, guardarEstatus] = useState(rfp.estatus);
+  const [cerrada, guardarCerrada] = useState(rfp.estatus === 'Cerrada');
+  const [causaEstatus, guardarCausaEstatus] = useState(rfp.causa);
+
   const handleStatusChange = (e) => {
-    console.log(e.target.value);
     guardarEstatus(e.target.value);
-    console.log(estatus);
+    if (e.target.value === 'Cerrada') {
+      guardarCerrada(true);
+    } else {
+      guardarCerrada(false);
+    }
   };
 
-  // Función para date picker
-  let handleColor = time => {
-    return time.getHours() > 12 ? "text-success" : "text-error";
+  const handleCausaChange = (estatus) => {
+    guardarCausaEstatus(estatus.target.value);
   };
 
   // hook para redireccionar
   const navigate = useNavigate();
-
-  // Obtener tipo de usuario
-  const userType = sessionStorage.getItem("userType");
 
   // state de los radio buttons
   const [aprobadaUsuario, guardarAprobadaUsuario] = useState(rfp.aprobadaAreaUsuario);
@@ -181,6 +175,7 @@ export default function SimpleCard({rfp}) {
       id: Yup.string(),
     }),
     onSubmit: rfp => {
+      if (estatus === 'Cerrada') {
         axios
           .patch("/RFP/updaterfp",
              {
@@ -202,7 +197,7 @@ export default function SimpleCard({rfp}) {
                 tipoEspecificoProyecto: rfp.tipo_esp,
                 id: rfp.id,
                 estatus: estatus,
-                //fechaCita: startDate,
+                causa: causaEstatus
              }, config
           )
           .then((res) => {
@@ -212,7 +207,42 @@ export default function SimpleCard({rfp}) {
           .catch((error) => {
              console.log(error);
              guardarMensajeError('RFP inválido');
+          });
+      } else {
+        axios
+          .patch("/RFP/updaterfp",
+             {
+                nombrecliente: rfp.name_person,
+                posicioncliente: rfp.position,
+                telefono: rfp.phone,
+                email: rfp.email,
+                nombreOportunidad: rfp.rfpname,
+                objetivoOportunidad: rfp.objective,
+                fechasRelevantes: rfp.imp_dates,
+                descripcionProblematica: rfp.problem,
+                descripcionFuncional: rfp.functional,
+                requerimientosObligatorios: rfp.requirements,
+                aprobadaAreaUsuario: aprobadaUsuario,
+                aprobadaAreaTI: aprobadaTI,
+                presupuestoAsignado: presupuesto,
+                comentariosAdicionales: rfp.comment,
+                tipoGeneralProyecto: rfp.tipo_general,
+                tipoEspecificoProyecto: rfp.tipo_esp,
+                id: rfp.id,
+                estatus: estatus,
+                causa: ''
+             }, config
+          )
+          .then((res) => {
+             // redireccionar
+             navigate('/inicio');
           })
+          .catch((error) => {
+             console.log(error);
+             guardarMensajeError('RFP inválido');
+          });
+      }
+        
     }
  });
 
@@ -273,21 +303,6 @@ export default function SimpleCard({rfp}) {
             {formik.touched.email && formik.errors.email
               ? (<p className="error-titulo-rfp textField-completo-100"><span className="error-texto">*</span>{formik.errors.email}</p>)
               : null }
-            {/* <div className="textField-completo contenedor-fecha">
-              <FormLabel>Selecciona la fecha de la siguiente reunión</FormLabel>
-           </div> */}
-           {/* <div className="textField-completo mb-1 contenedor-fecha">
-              <DatePicker
-                showTimeSelect
-                selected={startDate}
-                onChange={date => setStartDate(date)}
-                timeClassName={handleColor}
-                minDate={new Date()}
-                //timeIntervals="15"
-                locale="es"
-                title="Selecciona un horario"
-             />
-            </div> */}
             <TextField
               className="textField-completo-100 mb-1"
               id="rfpname"
@@ -355,39 +370,6 @@ export default function SimpleCard({rfp}) {
               ? (<p className="error-titulo-rfp textField-completo-100"><span className="error-texto">*</span>{formik.errors.requirements}</p>)
               : null }
             <label className="textLeft textField-completo-100 mb-1"> La necesidad: </label>
-            {/* <TextField
-              className="textField-completo-100 mb-1"
-              id="aprobadaUsuario"
-              label="¿Ha sido aprobada por el área usuaria? (Sí/No)"
-              value={formik.values.aprobadaUsuario}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-            />
-            {formik.touched.aprobadaUsuario && formik.errors.aprobadaUsuario
-              ? (<p className="error-titulo-rfp textField-completo-100"><span className="error-texto">*</span>{formik.errors.aprobadaUsuario}</p>)
-              : null }
-            <TextField
-              className="textField-completo-100 mb-1"
-              id="aprobadaTI"
-              label="¿Ha sido aprobada por el área de TI? (Sí/No)"
-              value={formik.values.aprobadaTI}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-            />
-            {formik.touched.aprobadaTI && formik.errors.aprobadaTI
-              ? (<p className="error-titulo-rfp textField-completo-100"><span className="error-texto">*</span>{formik.errors.aprobadaTI}</p>)
-              : null }
-            <TextField
-              className="textField-completo-100 mb-1"
-              id="presupuesto"
-              label="¿Tiene un presupuesto asignado? (Sí/No)"
-              value={formik.values.presupuesto}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-            />
-            {formik.touched.presupuesto && formik.errors.presupuesto
-              ? (<p className="error-titulo-rfp textField-completo-100"><span className="error-texto">*</span>{formik.errors.presupuesto}</p>)
-              : null } */}
             <div className="container-radios">
               <FormControl component="fieldset">
                 <FormLabel component="legend">¿Ha sido aprobada por el área usuaria?</FormLabel>
@@ -463,6 +445,14 @@ export default function SimpleCard({rfp}) {
                 <MenuItem value={'Cerrada'}>Cerrada</MenuItem>
               </Select>
             </FormControl>
+            {cerrada
+              ? <TextField
+                  className="textField-completo-100 mt-1"
+                  label="Causa de oportunidad cerrada"
+                  value={causaEstatus}
+                  onChange={(estatus) => {handleCausaChange(estatus)}}
+                />
+              : null}
           <div className={classes.contenedorBotones}>
             <Button size="small" onClick={() => { navigate(-1)}}>CANCELAR</Button>
             <Button type="submit" variant="contained" className="boton">GUARDAR</Button>
