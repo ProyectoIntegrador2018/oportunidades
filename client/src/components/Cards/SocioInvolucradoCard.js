@@ -24,10 +24,6 @@ const useStyles = makeStyles({
     fontSize: 18,
     textAlign: 'left',
   },
-  containerText: {
-    display: 'flex',
-    flexDirection: 'row',
-  },
 });
 
 export default function SimpleCard({user}) {
@@ -73,7 +69,7 @@ export default function SimpleCard({user}) {
         <Typography className={classes.title}>
           {nombre}
         </Typography>
-        <div className={classes.containerText}>
+        <div className="container-text-socioInvolucrado">
             <Typography className={classes.estatus}>
                 Email:
             </Typography>
@@ -81,7 +77,7 @@ export default function SimpleCard({user}) {
               {email}
             </Typography>
         </div>
-        <div className={classes.containerText}>
+        <div className="container-text-socioInvolucrado">
             <Typography className={classes.estatus}>
                 Empresa:
             </Typography>

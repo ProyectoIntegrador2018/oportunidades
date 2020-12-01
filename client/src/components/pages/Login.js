@@ -40,7 +40,6 @@ const Login = () => {
                sessionStorage.setItem('AUTHENTICATED', true);
                sessionStorage.setItem('token', res.data.token);
                sessionStorage.setItem('userType', res.data.user.userType);
-               console.log(res.data.token);
                
                // redireccionar
                navigate('/inicio');

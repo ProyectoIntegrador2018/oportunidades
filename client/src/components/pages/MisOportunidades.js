@@ -79,11 +79,11 @@ const MisOportunidades = () => {
             {llamada === 'true'
                ? (listaRFPsFinal.length === 0
                   ? (<Card className="cardMensaje"><Typography>No estás participando en ninguna oportunidad actualmente</Typography></Card>)
-                  : console.log('Existe'))
+                  : null)
                : null}
             {userType === 'socio'
                ? (listaRFPsFinal.map(rfp => (<MisOportunidadesCardSocio key={rfp._id} rfp={rfp} />)))
-               : console.log('no es socio')
+               : null
             }
 
          </Grid>

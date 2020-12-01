@@ -98,13 +98,11 @@ export default function SimpleCard({rfp}) {
              },
              config)
           .then((res) => {
-             console.log("Se participó correctamente");
              //window.location.reload();
              navigate('/mis-oportunidades');
           })
           .catch((error) => {
              console.log(error);
-             console.log('No se pudo participar correctamente');
           })
 
   }
@@ -121,7 +119,6 @@ export default function SimpleCard({rfp}) {
                      .then((response) => {
                          //window.location.reload();
                          navigate('/mis-oportunidades');
-                         console.log("Participación eliminada correctamente");
                      })
                      .catch((error) => {
                          console.log(error);

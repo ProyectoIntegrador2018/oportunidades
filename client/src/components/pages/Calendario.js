@@ -24,7 +24,6 @@ import FabButton from "../ui/FabButton";
 const addHours = function (d) {
    let hours = d.getHours();
    let minutes = d.getMinutes();
-   console.log(hours, minutes);
    d.setHours(hours + 1, minutes + 30, 0, 0);
    return d;
 };
@@ -72,7 +71,6 @@ const Calendario = () => {
    const handleSelectedEvent = (theEvent) => {
       // Opciones para mostrar la fecha en string
       const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-      console.log(theEvent)
       setSelectedEventName(theEvent.title)
       let spanishDate = translateDate(theEvent.start)
       setSelectedEventDate(moment.utc(theEvent.start).toDate().toLocaleDateString('es-ES', options))
@@ -114,7 +112,6 @@ const Calendario = () => {
          axios
             .get("/events/get-user-events", config)
             .then((res) => {
-               console.log(res.data);
                let events = [];
                res.data.events.forEach((evento) => {
                   events.push({
