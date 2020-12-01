@@ -79,7 +79,7 @@ const ListItems = () => {
                   <ListItemText primary="Mis oportunidades" />
                </div>
             </ListItem>)
-            : console.log('no es socio')
+            : null
          }
          
          <ListItem

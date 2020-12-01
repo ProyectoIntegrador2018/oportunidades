@@ -6,7 +6,6 @@ const eventController = require("../controllers/EventController");
 const router = express.Router();
 
 router.get("/get-user-events", userMiddleware, (req, res) => {
-   console.log(req.user)
    eventController
       .getUserEvents(req.user._id)
       .then((events) => {

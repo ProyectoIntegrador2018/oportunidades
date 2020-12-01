@@ -91,7 +91,6 @@ export default function MiPerfil() {
       axios
          .get("/user/", config)
          .then((res) => {
-            console.log(res);
             setUserEmail(res.data.user.email);
             setUserName(res.data.user.name);
             setUserPhone(res.data.user.telefono);
