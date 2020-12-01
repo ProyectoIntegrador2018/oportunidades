@@ -23,6 +23,7 @@ import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import SideMenu from "../SideMenu/SideMenu";
 import axios from "axios";
 import EditarPerfil from "../Dialogs/EditarPerfil";
+import EditarPassword from "../Dialogs/EditarPassword";
 //import '../Login.css'
 const drawerWidth = 240;
 const useStyles = makeStyles((theme) => ({
@@ -74,6 +75,7 @@ export default function MiPerfil() {
    const [userPhone, setUserPhone] = React.useState("");
    const [modalIsOpen, setModalIsOpen] = React.useState(false);
    const [loading, setLoading] = React.useState(true);
+   const [editPwOpen, setEditPwOpen] = React.useState(false);
 
    const config = {
       headers: {
@@ -106,6 +108,10 @@ export default function MiPerfil() {
       setModalIsOpen(true);
    };
 
+   const handlePasswordClick = () => {
+      setEditPwOpen(true);
+   }
+
    return (
       <div className={classes.root}>
          <SideMenu />
@@ -123,6 +129,10 @@ export default function MiPerfil() {
                      userTelefono={userPhone}
                      setModalIsOpen={setModalIsOpen}
                   />
+                  <EditarPassword
+                     isOpen={editPwOpen}
+                     setModalIsOpen={setEditPwOpen}
+                   />
                   <div className={classes.appBarSpacer} />
                   <Container maxWidth="lg" className={classes.container}>
                      <Grid container spacing={3}>
@@ -211,6 +221,16 @@ export default function MiPerfil() {
                            >
                               Eliminar Cuenta
                            </Button> */}
+
+                           <Button
+                              variant="contained"
+                              color="secondary"
+                              className={classes.button}
+                              onClick={handlePasswordClick}
+                           >
+                              Cambiar contraseña
+                           </Button>
+
                            <Button
                               variant="contained"
                               color="primary"

@@ -1,7 +1,6 @@
 const Event = require("../models/Event");
 const User = require("../models/User");
 const Participacion = require("../models/Participaciones");
-const nodemailer = require("nodemailer");
 let eventController = {};
 
 eventController.getUserEvents = (userId) => {
@@ -52,38 +51,6 @@ eventController.assignToUsers = (opportunityId, eventId, evento, oppOwnerId) => 
                   involvedUsers.map((involvedUser) => {
                      emailsList.push(involvedUser.email)
                      involvedUser.addEvent(eventId);
-                  });
-
-                  let transporter = nodemailer.createTransport({
-                     host: "smtp-mail.outlook.com",
-                     port: 587,
-                     secure: false,
-                     tls: {
-                        ciphers: "SSLv3",
-                     },
-                     auth: {
-                        user: process.env.MAILER_USER,
-                        pass: process.env.MAILER_PASSWORD,
-                     },
-                  });
-      
-                  const mailOptions = {
-                     from: `"CSOFT MTY" <${process.env.MAILER_USER}>`, // sender address
-                     to: emailsList, // list of receivers
-                     subject: "Nuevo evento para oportunidad", // Subject line
-                     text: "Nuevo evento", // plain text body
-                     html: `
-                     <b>Un nuevo evento de una oportunidad que te interesa ha sido creado.<b>
-                     <p>Nombre del evento: ${evento.name}</p>
-                     <p>Fecha: ${evento.date}</p>
-                     <p>Liga: ${evento.link}</p>`,
-                  };
-                  transporter.sendMail(mailOptions, function (error, info) {
-                     if (error) {
-                        console.log(error);
-                     } else {
-                        console.log("se envio el correo");
-                     }
                   });
                   resolve(involvedUsers);
                })
