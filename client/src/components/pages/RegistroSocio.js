@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { TextField, Button, Grid, Paper, Snackbar } from "@material-ui/core";
-import MuiAlert from '@material-ui/lab/Alert';
+import MuiAlert from "@material-ui/lab/Alert";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
@@ -29,16 +29,19 @@ const RegistroSocio = () => {
 
    const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
 
+   const [isSnackbarErrorOpen, setIsSnackbarErrorOpen] = useState(false);
+
    // hook para redireccionar
    const navigate = useNavigate();
 
    const handleClose = (event, reason) => {
-      if (reason === 'clickaway') {
-        return;
+      if (reason === "clickaway") {
+         return;
       }
 
       setIsSnackbarOpen(false);
-    };
+      setIsSnackbarErrorOpen(false);
+   };
 
    // validación y leer los datos del formulario
    const formik = useFormik({
@@ -53,6 +56,7 @@ const RegistroSocio = () => {
          phone: Yup.string().required("El teléfono es obligatorio"),
          email: Yup.string().required("El correo es obligatorio"),
          organization: Yup.string().required("La empresa es obligatoria"),
+         password: Yup.string().test('len', 'Mínimo 8 caracteres.', val => val.length >= 8).required("El password es obligatorio"),
       }),
       onSubmit: (socio) => {
          axios
@@ -63,19 +67,20 @@ const RegistroSocio = () => {
                   telefono: socio.phone,
                   email: socio.email,
                   empresa: socio.organization,
-                  userType: "socio"
+                  userType: "socio",
+                  password: socio.password,
                },
                config
             )
             .then((res) => {
                setIsSnackbarOpen(true);
                // redireccionar
-               setTimeout(function() {
+               setTimeout(function () {
                   navigate("/socios");
                }, 1500);
             })
             .catch((error) => {
-               guardarMensajeError("Hubo un error al registrar el socio.");
+               setIsSnackbarErrorOpen(true);
             });
       },
    });
@@ -168,10 +173,27 @@ const RegistroSocio = () => {
                            onChange={formik.handleChange}
                            onBlur={formik.handleBlur}
                         />
-                        {formik.touched.organization && formik.errors.organization ? (
+                        {formik.touched.organization &&
+                        formik.errors.organization ? (
                            <p className="error-titulo-rfp textField-completo">
                               <span className="error-texto">*</span>
-                              {formik.errors.email}
+                              {formik.errors.organization}
+                           </p>
+                        ) : null}
+                        
+                        <TextField
+                           className="textField-completo mb-1"
+                           id="password"
+                           label="Password"
+                           value={formik.values.password}
+                           onChange={formik.handleChange}
+                           onBlur={formik.handleBlur}
+                        />
+                        {formik.touched.password &&
+                        formik.errors.password ? (
+                           <p className="error-titulo-rfp textField-completo">
+                              <span className="error-texto">*</span>
+                              {formik.errors.password}
                            </p>
                         ) : null}
                         <Button
@@ -183,11 +205,24 @@ const RegistroSocio = () => {
                         </Button>
                      </Grid>
                   ) : null}
-
                </form>
-               <Snackbar open={isSnackbarOpen} autoHideDuration={1000} onClose={handleClose}>
+               <Snackbar
+                  open={isSnackbarOpen}
+                  autoHideDuration={1000}
+                  onClose={handleClose}
+               >
                   <Alert onClose={handleClose} severity="success">
                      Usuario creado correctamente.
+                  </Alert>
+               </Snackbar>
+
+               <Snackbar
+                  open={isSnackbarErrorOpen}
+                  autoHideDuration={1500}
+                  onClose={handleClose}
+               >
+                  <Alert onClose={handleClose} severity="error">
+                     Hubo un error al registrar el usuario.
                   </Alert>
                </Snackbar>
             </Grid>

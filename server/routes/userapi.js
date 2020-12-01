@@ -78,6 +78,16 @@ router.get("/get-socio/:id", userMiddleware, (req, res) => {
        });
 });
 
+router.patch("/change-password", userMiddleware, (req, res) => {
+   userController.changePassword(req.user._id, req.body.password)
+   .then(user => {
+      return res.send({ user });
+   })
+   .catch(err => {
+      return res.status(401).send({ err });
+   })
+})
+
 // Routes for getting and editing the profile for the user who's making the request.
 router
    .route("/")
