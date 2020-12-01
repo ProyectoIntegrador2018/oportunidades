@@ -102,7 +102,6 @@ export default function NuevoEvento(params) {
       setOpen(false);
    };
    const handleSave = () => {
-      console.log(params.rfp)
       // Guardar el nuevo usuario en la base de datos
       Axios.post("/events/", {
          name: nombre,
@@ -114,7 +113,6 @@ export default function NuevoEvento(params) {
       }).catch(error => {
          console.log(error);
       })
-      //window.location.reload();
    };
 
    return (

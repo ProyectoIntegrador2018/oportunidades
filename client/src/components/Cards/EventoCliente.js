@@ -63,7 +63,6 @@ export default function EventoCliente({evento}) {
  
 
   const deleteEvento = () => {    
-    console.log(evento._id);
     axios.delete("/events/" + evento._id, config)
       .then((response) => {
           window.location.reload();

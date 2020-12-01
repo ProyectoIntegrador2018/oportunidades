@@ -111,7 +111,7 @@ const Inicio = () => {
             {llamada === 'true'
                ? (listaRfps.length === 0
                   ? (<Card className="cardMensaje"><Typography>No hay RFPs para mostrar</Typography></Card>)
-                  : console.log('Existe'))
+                  : null)
                : null}
             {userType === 'socio'
                ? (listaRfps.map(rfp => (<RfpCardSocio key={rfp._id} rfp={rfp} />)))
