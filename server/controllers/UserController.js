@@ -1,3 +1,4 @@
+const bcrypt = require("bcrypt");
 const User = require("../models/User");
 let userController = {};
 
@@ -96,6 +97,25 @@ userController.updateMyProfile = (id, updates) => {
    });
 };
 
+userController.changePassword = (id, password) => {
+   return new Promise((resolve, reject) => {
+      bcrypt
+         .hash(password, 8)
+         .then(function (hash) {
+            User.findByIdAndUpdate(id, { password: hash })
+               .then((user) => {
+                  resolve(user);
+               })
+               .catch((err) => {
+                  reject(err);
+               });
+         })
+         .catch(function (error) {
+            reject(error);
+         });
+   });
+};
+
 /**
  * Function for getting the user's info by Id.
  * @param {String} id user's id
@@ -104,7 +124,7 @@ userController.getSocioInfo = (id) => {
    return new Promise((resolve, reject) => {
       User.findById(id)
          .then((user) => {
-            return resolve( user );
+            return resolve(user);
          })
          .catch((error) => {
             return reject(error);
