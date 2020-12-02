@@ -1,15 +1,31 @@
 ### Prerequisites
 
-Before you start, make sure you have **node** and **npm** installed in your computer.
+Before you start, make sure you have **heroku cli** and **git** installed in your computer.
 
-To check this, run the following commands:
+## Create new app in Heroku
+
+Login into your Heroku account, click on New > New App. Give it a name.
+
+## Setup environment variables in your app
+
+Go to settings and then go to the environment variables section to add the following:
+
+* `DATABASE` : The URL of your Mongo Production Database
+* `JWT_KEY` : Super secret key for JWT.
+* `ADMIN_EMAIL` = The system administrator email. This is the email the System Admin will use to login into the system.
+* `ADMIN_PASSWORD` = The system administrator password. This password can be changed once the system admin logins into the system.
+* `ADMIN_NAME` = The system administrator name.
+
+
+## Login to Heroku in your terminal
 
 ```
-node -v
-npm -v
+$ heroku login
 ```
+This will open up a tab in your browser for you to login into your Heroku account. 
 
-### Setup the project
+
+## Setup the project for deployment
 
 1. Clone the repo into your computer
 
@@ -17,52 +33,21 @@ npm -v
 $ git clone https://github.com/ProyectoIntegrador2018/oportunidades
 ```
 
-
-#### Backend setup
-
-Change to the server directory
-
+### Move into the project
 ```
-cd server
+$ cd oportunidades
 ```
 
-Install dependencies with:
-
+### Add the created Heroku app to your repo
+Replace `<your-app-name>` with your app's name
 ```
-npm install
-```
-
-Create a .env file in the root directory. In this repo you will find a .env.config file, please feel free to copy its contents into
-your .env file. Please replace with your information
-
-* `PORT` : The port where the app runs
-* `DATABASE` : The URL of your Mongo Database
-* `JWT_KEY` : Super secret key for JWT.
-
-Start the server backend
-
-```
-npm run dev
+$ heroku git:remote -a <your-app-name> 
 ```
 
-#### Frontend Setup
-
-Switch to the client directory
+#### Deploy to Heroku
 
 ```
-cd client
+$ git push heroku master
 ```
 
-Install dependencies
-
-```
-npm install
-````
-
-Run the frontend
-
-```
-npm run start
-```
-
-Your browser should automatically open the front end running.
+Once it's done, your app will be deployed. Check on your Heroku Dashboard to see the url for your app.

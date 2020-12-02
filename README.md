@@ -5,31 +5,24 @@ Desarrollar una plataforma para recibir oportunidades comerciales y hacercelas l
 
 * [Client Details](#client-details)
 * [Environment URLS](#environment-urls)
-* [Da Team](#team)
+* [The Team](#the-team)
 * [Technology Stack](#technology-stack)
-* [Management resources](#management-resources)
 * [Setup the project](#setup-the-project)
-* [Running the stack for development](#running-the-stack-for-development)
-* [Stop the project](#stop-the-project)
-* [Restoring the database](#restoring-the-database)
-* [Debugging](#debugging)
-* [Running specs](#running-specs)
-* [Checking code for potential issues](#checking-code-for-potential-issues)
 
 
 ### Client Details
 
 | Name               | Email                   | Role     |
 | ------------------ | ----------------------- | -------- |
-| Mario Peña         | mario.pena@csoftmty.org | Pending  |
+| Mario Peña         | mario.pena@csoftmty.org | Client  |
 
 
 ### Environment URLS
 
-* **Production** - [TBD](TBD)
-* **Development** - [TBD](TBD)
+* **Production** - [Production](http://csoftmty-oportunidades.herokuapp.com/)
+* **Development** - [Development](https://oportunidades-comerciales.herokuapp.com/)
 
-### Da team
+### The Team
 
 | Name                              | Email              | Role                 |
 | --------------------------------- | ------------------ | -------------------- |
@@ -96,8 +89,6 @@ your .env file. Please replace with your information
 * `AMDIN_EMAIL` : The email of the admin user.
 * `ADMIN_PASSWORD` : The password of the admin user.
 * `ADMIN_NAME` : The name of the admin user.
-* `MAILER_USER` : The email of the mailer account. This account is the one who will be sending mails to users. It has to be an Outlook account.
-* `MAILER_PASSWORD` : The password of the email mailer account.
 
 Start the server backend
 
