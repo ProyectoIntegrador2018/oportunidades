@@ -3,11 +3,18 @@ Desarrollar una plataforma para recibir oportunidades comerciales y hacercelas l
 
 ## Table of contents
 
-* [Client Details](#client-details)
-* [Environment URLS](#environment-urls)
-* [The Team](#the-team)
-* [Technology Stack](#technology-stack)
-* [Setup the project](#setup-the-project)
+- [Oportunidades Comerciales](#oportunidades-comerciales)
+  - [Table of contents](#table-of-contents)
+    - [Client Details](#client-details)
+    - [Environment URLS](#environment-urls)
+    - [Previous Team](#previous-team)
+    - [Technology Stack](#technology-stack)
+    - [Management tools](#management-tools)
+  - [Development](#development)
+    - [Prerequisites](#prerequisites)
+    - [Setup the project](#setup-the-project)
+      - [Backend setup](#backend-setup)
+      - [Frontend Setup](#frontend-setup)
 
 
 ### Client Details
@@ -22,7 +29,7 @@ Desarrollar una plataforma para recibir oportunidades comerciales y hacercelas l
 * **Production** - [Production](http://csoftmty-oportunidades.herokuapp.com/)
 * **Development** - [Development](https://oportunidades-comerciales.herokuapp.com/)
 
-### The Team
+### Previous Team
 
 | Name                              | Email              | Role                 |
 | --------------------------------- | ------------------ | -------------------- |
