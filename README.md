@@ -22,7 +22,16 @@ Desarrollar una plataforma para recibir oportunidades comerciales y hacercelas l
 * **Production** - [Production](http://csoftmty-oportunidades.herokuapp.com/)
 * **Development** - [Development](https://oportunidades-comerciales.herokuapp.com/)
 
-### The Team
+### Team February-June 2021
+
+| Name                              | Email              | Role                 |
+| --------------------------------- | ------------------ | -------------------- |
+| Arturo Arenas Esparza             | a00820982@itesm.mx | SCRUM Master         |
+| Ariel Méndez Santillán            | a01020690@itesm.mx | Product Owner Proxy  |
+| Martha Cristina Arnaud Pacheco    | a01410560@itesm.mx | Project Administrator|
+| Raúl Ernesto Herrera Salinas      | a00820257@itesm.mx | Configuration Administrator|
+
+### Team August-December 2020
 
 | Name                              | Email              | Role                 |
 | --------------------------------- | ------------------ | -------------------- |
