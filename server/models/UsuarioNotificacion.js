@@ -15,6 +15,6 @@ const schema = new mongoose.Schema({
   },
 });
 
-const UsuarioNotifiacion = mongoose.model("Notifiacion", schema);
+const UsuarioNotificacion = mongoose.model("UsuarioNotificacion", schema);
 
-module.exports = UsuarioNotifiacion;
+module.exports = UsuarioNotificacion;
