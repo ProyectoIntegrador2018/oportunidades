@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const schema = new mongoose.Schema({
-  admin: {
+  participante: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   },
