@@ -7,9 +7,9 @@ const schema = new mongoose.Schema({
   },
   notificacion: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Notifiacion",
+    ref: "Notificacion",
   },
-  usuer: {
+  user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   },
