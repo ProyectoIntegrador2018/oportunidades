@@ -15,7 +15,7 @@ const schema = new mongoose.Schema({
     ref: "User",
   },
   estatus: {
-    type: String, // TODO: agregar require: True
+    type: String, // TODO: agregar require: True cuando se integre con el front
   },
   feedback: {
     type: String,
