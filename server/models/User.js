@@ -58,6 +58,10 @@ const schema = new mongoose.Schema(
       events: [{
          type: mongoose.Schema.Types.ObjectId,
          ref: "Event"
+      }],
+      notificaciones: [{
+         type: mongoose.Schema.Types.ObjectId,
+         ref: "UsuarioNotificacion"
       }]
    },
    {
