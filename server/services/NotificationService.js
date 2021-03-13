@@ -1,4 +1,5 @@
 const UserModel = require("../models/User");
+const notificationTypes = require("../utils/NotificationTypes");
 const detallesNotifController = require("../controllers/DetallesNotificacionController");
 const notificacionController = require("../controllers/NotificacionController");
 const usuarioNotificacion = require("../controllers/UsuarioNotificacionController");
@@ -11,9 +12,8 @@ notificationService.notificacionNuevaOportunidad = (rfp) => {
     detallesNotifController
       .createDetalles(detalles)
       .then((detallesNotif) => {
-        console.log("esto es un nuevo detalles notif", detallesNotif);
         const rawNotificacion = {
-          tipo: "NUEVA_OPORTUNIDAD",
+          tipo: notificationTypes.NUEVA_OPORTUNIDAD,
           date: new Date(),
           detalles: detallesNotif._id,
         };
@@ -27,9 +27,7 @@ notificationService.notificacionNuevaOportunidad = (rfp) => {
           });
       })
       .then((notificacion) => {
-        console.log("esta es la notificacion", notificacion);
         UserModel.findByUserType("socio").then((socios) => {
-          console.log("estos son los socios", socios);
           socios.map((socio) => {
             const rawUsuarioNotif = {
               read: false,
@@ -39,11 +37,9 @@ notificationService.notificacionNuevaOportunidad = (rfp) => {
             usuarioNotificacion
               .createUsuarioNotificacion(rawUsuarioNotif)
               .then((usuarioNotif) => {
-                console.log("esto es un usuario notif", usuarioNotif);
                 UserModel.findById(socio._id)
                   .then((user) => {
                     user.addNotificacion(usuarioNotif._id);
-                    console.log("esto es un user", user);
                   })
                   .catch((error) => {
                     reject(error);

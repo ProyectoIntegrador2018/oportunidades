@@ -19,7 +19,6 @@ rfpController.createrfp = (rawRFP, id) => {
           });
       })
       .then((rfp) => {
-        console.log("getting into this resolve", rfp);
         resolve(rfp);
       })
       .catch((error) => {
