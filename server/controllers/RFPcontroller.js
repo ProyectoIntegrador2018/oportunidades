@@ -1,20 +1,32 @@
+const notificationService = require("../services/NotificationService");
 const RFP = require("../models/RFP");
 let rfpController = {};
 
 rfpController.createrfp = (rawRFP, id) => {
   return new Promise((resolve, reject) => {
-     rawRFP.createdBy = id;
-     const rfp = new RFP(rawRFP);
-     rfp
-        .save()
-        .then(() => {
-           resolve(rfp);
-        })
-        .catch((error) => {
-           reject(error);
-        });
+    rawRFP.createdBy = id;
+    const rfp = new RFP(rawRFP);
+    rfp
+      .save()
+      .then(() => {
+        return notificationService
+          .notificacionNuevaOportunidad(rfp)
+          .then((rfp) => {
+            return rfp;
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      })
+      .then((rfp) => {
+        resolve(rfp);
+      })
+      .catch((error) => {
+        reject(error);
+      });
   });
 };
+
 const createNewRFP = function(req, res) {
    const mirfp = new RFP({
      ...req.body,

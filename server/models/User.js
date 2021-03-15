@@ -105,6 +105,12 @@ schema.methods.addEvent = function(eventId) {
    user.save();
 }
 
+schema.methods.addNotificacion = function (notificacionId) {
+  const user = this;
+  this.notificaciones.push(notificacionId);
+  user.save();
+};
+
 //TODO: add return to promise
 schema.methods.retrieveEvents = function() {
    const user = this;
@@ -153,6 +159,18 @@ schema.statics.findByCredentials = (email, password) => {
 schema.statics.findByEmail = function(email) {
    return this.findOne({ email }).exec();
 }
+
+/**
+ * Gets users by type
+ * @param {String} userType 
+ */
+schema.statics.findByUserType = function (userType) {
+  return new Promise((resolve, reject) => {
+    this.find({ userType: { $eq: userType } })
+      .then((socios) => resolve(socios))
+      .catch((error) => reject(error));
+  });
+};
 
 /**
  * Hash password before saving user
