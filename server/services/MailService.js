@@ -18,9 +18,8 @@ exports.sendEmail = function(notificationType, rfp, destinatarios) {
   });
 
   var mailOptions = {
-    from: "Oportunidades Comerciales CSOFTMTY <info@csoftmty.org>",
-    //to: mailsDestinatarios,
-    to: ["raul_ehs@hotmail.com", "a00820257@itesm.mx"]
+    from: `Oportunidades Comerciales CSOFTMTY <${process.env.MAIL_USER}>`,
+    to: mailsDestinatarios
   };
 
   switch(notificationType) {
