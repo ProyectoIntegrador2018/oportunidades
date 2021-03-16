@@ -3,6 +3,7 @@ const notificationTypes = require("../utils/NotificationTypes");
 const detallesNotifController = require("../controllers/DetallesNotificacionController");
 const notificacionController = require("../controllers/NotificacionController");
 const usuarioNotificacion = require("../controllers/UsuarioNotificacionController");
+const mailService = require("../services/MailService");
 
 const notificationService = {};
 
@@ -28,6 +29,7 @@ notificationService.notificacionNuevaOportunidad = (rfp) => {
       })
       .then((notificacion) => {
         UserModel.findByUserType("socio").then((socios) => {
+          mailService.sendEmail(notificationTypes.NUEVA_OPORTUNIDAD, rfp, socios);
           socios.map((socio) => {
             const rawUsuarioNotif = {
               read: false,
