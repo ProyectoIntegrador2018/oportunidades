@@ -173,6 +173,18 @@ schema.statics.findByUserType = function (userType) {
 };
 
 /**
+ *  Get client who posted RFP
+ * @param rfpInvolucrado
+ */
+schema.statics.findClientByRFP = function (rfpInvolucrado){
+   return new Promise((resolve,reject)=>{
+      //sacar createdBy, y ese id sera el cliente a quien mandarle
+      this.find(rfpInvolucrado.createdBy)
+      .then((cliente) => resolve (cliente))
+      .catch((error)=> reject (error));
+   });
+};
+/**
  * Hash password before saving user
  */
 schema.pre("save", function (next) {

@@ -57,5 +57,55 @@ notificationService.notificacionNuevaOportunidad = (rfp) => {
       });
   });
 };
+notificationService.notificacionNuevaParticipacion = (participacion) => {
+  return new Promise((resolve, reject) => {
+    const detalles = { rfpInvolucrado: participacion.rfpInvolucrado, socioInvolucrado:participacion.socioInvolucrado };
+    detallesNotifController
+    .createDetalles(detalles)
+    .then((detallesNotif) => {
+      const rawNotificacion = {
+        tipo: notificationTypes.NUEVA_PARTICIPACION,
+        date: new Date(),
+        detalles: detallesNotif._id,
+      };
+      return notificacionController
+        .createNotificacion(rawNotificacion)
+        .then((notificacion) => {
+          return notificacion;
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    })
+    .then((notificacion) => {
+      UserModel.findClientByRFP(rfpInvolucrado).then((cliente) => {
+        const rawUsuarioNotif = {
+          read: false,
+          notificacion: notificacion._id,
+          user: cliente._id,
+        };
+        usuarioNotificacion
+          .createUsuarioNotificacion(rawUsuarioNotif)
+          .then((usuarioNotif) => {
+            UserModel.findById(cliente._id)
+              .then((user) => {
+                user.addNotificacion(usuarioNotif._id);
+              })
+              .catch((error) => {
+                reject(error);
+              });
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      
+      resolve(rfp);
+      });
+    })
+    .catch((error) => {
+      reject(error);
+    });
+  })    
+};
 
 module.exports = notificationService;
