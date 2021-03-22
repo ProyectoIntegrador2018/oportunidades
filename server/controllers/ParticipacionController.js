@@ -14,21 +14,21 @@ participacionController.createParticipacion = (rawPart, id) => {
             Event.find({ rfp: rawPart.rfpInvolucrado }).then((events) => {
                User.update({ _id: id }, { $push: { events: events } })
                   .then((update) => {
-                     return resolve(participacion);
+                     return;
                   })
                   .catch((err) => {
                      return reject(err);
                   });
+            });
+         })
+         .then(() => {
+            return notificationService
+            .notificacionNuevaParticipacion(participacion)
+            .then(() => {
+               return resolve(participacion);
             })
-            .then(()=>{
-               return notificationService
-               .notificacionNuevaParticipacion(participacion)
-               .then((participacion) => {
-                  return participacion;
-               })
-               .catch((error) => {
-               reject(error);
-               });
+            .catch((error) => {
+             return reject(error);
             });
          })
          .catch((error) => {

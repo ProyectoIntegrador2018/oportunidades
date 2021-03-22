@@ -3,6 +3,7 @@ const validator = require("validator");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const Event = require("./Event");
+const RFP = require("./RFP");
 
 const schema = new mongoose.Schema(
    {
@@ -174,12 +175,12 @@ schema.statics.findByUserType = function (userType) {
 
 /**
  *  Get client who posted RFP
- * @param rfpInvolucrado
+ * @param {ObjectId} rfpInvolucrado
  */
 schema.statics.findClientByRFP = function (rfpInvolucrado){
    return new Promise((resolve,reject)=>{
       //sacar createdBy, y ese id sera el cliente a quien mandarle
-      this.find(rfpInvolucrado.createdBy)
+      RFP.find({createdBy:rfpInvolucrado.createdBy})
       .then((cliente) => resolve (cliente))
       .catch((error)=> reject (error));
    });
