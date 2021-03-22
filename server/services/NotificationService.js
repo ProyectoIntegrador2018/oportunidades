@@ -1,4 +1,7 @@
 const UserModel = require("../models/User");
+const NotificacionModel = require("../models/Notificacion");
+const UsuarioNotificacionModel = require("../models/UsuarioNotificacion");
+const DetallesNotificacionModel = require("../models/DetallesNotificacion");
 const notificationTypes = require("../utils/NotificationTypes");
 const detallesNotifController = require("../controllers/DetallesNotificacionController");
 const notificacionController = require("../controllers/NotificacionController");
@@ -55,6 +58,78 @@ notificationService.notificacionNuevaOportunidad = (rfp) => {
       .catch((error) => {
         reject(error);
       });
+  });
+};
+
+notificationService.deleteNotificacionesRfp = (rfpId) => {
+  return new Promise((resolve, reject) => {
+    DetallesNotificacionModel.findDetallesNotificacionByRfpId(rfpId)
+      .then((detallesNotificaciones) => {
+        const detallesNotifIds = detallesNotificaciones.map((detalles) => {
+          return detalles._id;
+        });
+        return DetallesNotificacionModel.deleteManyDetallesNotificacionByIds(
+          detallesNotifIds
+        )
+          .then((deleteResp) => {
+            return detallesNotifIds;
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      })
+      .then((detallesNotifIds) => {
+        return NotificacionModel.findNotificacionByDetallesNotifIds(detallesNotifIds)
+          .then((notificaciones) => {
+            const notifIds = notificaciones.map((notificaciones) => {
+              return notificaciones._id;
+            });
+            return NotificacionModel.deleteManyNotificacionByIds(notifIds)
+              .then((deleteResp) => {
+                return notifIds;
+              })
+              .catch((error) => reject(error));
+          })
+          .catch((error) => reject(error));
+      })
+      .then((notifIds) => {
+        UsuarioNotificacionModel.findUsuarioNotificacionByNotificacionIds(
+          notifIds
+        )
+          .then((usuarioNotificaciones) => {
+            return usuarioNotificaciones.map((usuarioNotificacion) => {
+              const {
+                user: userId,
+                notificacion: notifId,
+              } = usuarioNotificacion;
+              UserModel.findById(userId)
+                .then((user) => {
+                  user.notificaciones.pull({ _id: notifId });
+                  user
+                    .save()
+                    .then(() => {
+                      return;
+                    })
+                    .catch((error) => reject(error));
+                })
+                .catch((error) => reject(error));
+              return notifId;
+            });
+          })
+          .then((usuarioNotifIds) => {
+            UsuarioNotificacionModel.deleteManyUsuarioNotifByIds(
+              usuarioNotifIds
+            )
+              .then((deleteResp) => {
+                resolve();
+              })
+              .catch((error) => reject(error));
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      })
+      .catch((error) => reject(error));
   });
 };
 
