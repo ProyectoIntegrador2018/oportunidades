@@ -2,21 +2,21 @@ const UserModel = require("../models/User");
 const NotificacionModel = require("../models/Notificacion");
 const UsuarioNotificacionModel = require("../models/UsuarioNotificacion");
 const DetallesNotificacionModel = require("../models/DetallesNotificacion");
-const notificationTypes = require("../utils/NotificationTypes");
+const { NUEVA_OPORTUNIDAD } = require("../utils/NotificationTypes");
 const detallesNotifController = require("../controllers/DetallesNotificacionController");
 const notificacionController = require("../controllers/NotificacionController");
 const usuarioNotificacion = require("../controllers/UsuarioNotificacionController");
 
 const notificationService = {};
 
-notificationService.notificacionNuevaOportunidad = (rfp) => {
+notificationService.notificacionNuevaOportunidad = (job) => {
   return new Promise((resolve, reject) => {
-    const detalles = { rfp: rfp._id };
+    const detalles = { rfp: job.rfpId };
     detallesNotifController
       .createDetalles(detalles)
       .then((detallesNotif) => {
         const rawNotificacion = {
-          tipo: notificationTypes.NUEVA_OPORTUNIDAD,
+          tipo: NUEVA_OPORTUNIDAD,
           date: new Date(),
           detalles: detallesNotif._id,
         };
@@ -52,7 +52,7 @@ notificationService.notificacionNuevaOportunidad = (rfp) => {
                 reject(error);
               });
           });
-          resolve(rfp);
+          resolve();
         });
       })
       .catch((error) => {

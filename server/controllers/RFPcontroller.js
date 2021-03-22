@@ -1,5 +1,7 @@
-const notificationService = require("../services/NotificationService");
 const RFP = require("../models/RFP");
+const notificationQueue = require("../services/NotificationQueue");
+const { NUEVA_OPORTUNIDAD } = require("../utils/NotificationTypes");
+
 let rfpController = {};
 
 rfpController.createrfp = (rawRFP, id) => {
@@ -9,14 +11,10 @@ rfpController.createrfp = (rawRFP, id) => {
     rfp
       .save()
       .then(() => {
-        return notificationService
-          .notificacionNuevaOportunidad(rfp)
-          .then((rfp) => {
-            return rfp;
-          })
-          .catch((error) => {
-            reject(error);
-          });
+        const job = {
+          rfpId: rfp._id,
+        };
+        return notificationQueue.add(NUEVA_OPORTUNIDAD, job);
       })
       .then((rfp) => {
         resolve(rfp);
