@@ -1,5 +1,6 @@
 const RFP = require("../models/RFP");
 const notificationQueue = require("../services/NotificationQueue");
+const notificationService = require("../services/NotificationService");
 const { NUEVA_OPORTUNIDAD } = require("../utils/NotificationTypes");
 
 let rfpController = {};
