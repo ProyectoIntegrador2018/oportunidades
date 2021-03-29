@@ -79,7 +79,9 @@ notificationService.deleteNotificacionesRfp = (rfpId) => {
           });
       })
       .then((detallesNotifIds) => {
-        return NotificacionModel.findNotificacionByDetallesNotifIds(detallesNotifIds)
+        return NotificacionModel.findNotificacionByDetallesNotifIds(
+          detallesNotifIds
+        )
           .then((notificaciones) => {
             const notifIds = notificaciones.map((notificaciones) => {
               return notificaciones._id;
@@ -93,27 +95,19 @@ notificationService.deleteNotificacionesRfp = (rfpId) => {
           .catch((error) => reject(error));
       })
       .then((notifIds) => {
-        UsuarioNotificacionModel.findUsuarioNotificacionByNotificacionIds(
+        return UsuarioNotificacionModel.findUsuarioNotificacionByNotificacionIds(
           notifIds
         )
           .then((usuarioNotificaciones) => {
             return usuarioNotificaciones.map((usuarioNotificacion) => {
-              const {
-                user: userId,
-                notificacion: notifId,
-              } = usuarioNotificacion;
+              const { user: userId, _id: usuarioNotifId } = usuarioNotificacion;
               UserModel.findById(userId)
                 .then((user) => {
-                  user.notificaciones.pull({ _id: notifId });
-                  user
-                    .save()
-                    .then(() => {
-                      return;
-                    })
-                    .catch((error) => reject(error));
+                  user.notificaciones.pull({ _id: usuarioNotifId });
+                  user.save();
                 })
                 .catch((error) => reject(error));
-              return notifId;
+              return usuarioNotifId;
             });
           })
           .then((usuarioNotifIds) => {
@@ -125,11 +119,11 @@ notificationService.deleteNotificacionesRfp = (rfpId) => {
               })
               .catch((error) => reject(error));
           })
-          .catch((error) => {
-            reject(error);
-          });
+          .catch((error) => reject(error));
       })
-      .catch((error) => reject(error));
+      .catch((error) => {
+        reject(error);
+      });
   });
 };
 
