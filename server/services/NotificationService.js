@@ -2,21 +2,23 @@ const UserModel = require("../models/User");
 const NotificacionModel = require("../models/Notificacion");
 const UsuarioNotificacionModel = require("../models/UsuarioNotificacion");
 const DetallesNotificacionModel = require("../models/DetallesNotificacion");
-const { NUEVA_OPORTUNIDAD } = require("../utils/NotificationTypes");
+const {
+  NUEVA_OPORTUNIDAD,
+  OPORTUNIDAD_ELIMINADA,
+} = require("../utils/NotificationTypes");
 const detallesNotifController = require("../controllers/DetallesNotificacionController");
 const notificacionController = require("../controllers/NotificacionController");
 const usuarioNotificacion = require("../controllers/UsuarioNotificacionController");
 
 const notificationService = {};
 
-notificationService.notificacionNuevaOportunidad = (job) => {
+const notificacionTodosSocios = function (tipoNotificacion, detalles) {
   return new Promise((resolve, reject) => {
-    const detalles = { rfp: job.data.rfpId };
     detallesNotifController
       .createDetalles(detalles)
       .then((detallesNotif) => {
         const rawNotificacion = {
-          tipo: NUEVA_OPORTUNIDAD,
+          tipo: tipoNotificacion,
           date: new Date(),
           detalles: detallesNotif._id,
         };
@@ -52,12 +54,36 @@ notificationService.notificacionNuevaOportunidad = (job) => {
                 reject(error);
               });
           });
-          resolve();
+          resolve({ status: 200 });
         });
       })
       .catch((error) => {
         reject(error);
       });
+  });
+};
+
+notificationService.notificacionNuevaOportunidad = (job) => {
+  return new Promise((resolve, reject) => {
+    const detalles = { rfp: job.data.rfpId };
+    notificacionTodosSocios(NUEVA_OPORTUNIDAD, detalles)
+      .then((resp) => {
+        resolve(resp);
+      })
+      .catch((error) => reject(error));
+  });
+};
+
+notificationService.notificacionOportunidadEliminada = (job) => {
+  return new Promise((reject, resolve) => {
+    const detalles = {
+      detalles: job.data.nombreOportunidad,
+    };
+    notificacionTodosSocios(OPORTUNIDAD_ELIMINADA, detalles)
+      .then((resp) => {
+        resolve(resp);
+      })
+      .catch((error) => reject(error));
   });
 };
 
