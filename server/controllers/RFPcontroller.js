@@ -1,7 +1,10 @@
 const RFP = require("../models/RFP");
 const notificationQueue = require("../services/NotificationQueue");
 const notificationService = require("../services/NotificationService");
-const { NUEVA_OPORTUNIDAD } = require("../utils/NotificationTypes");
+const {
+  NUEVA_OPORTUNIDAD,
+  OPORTUNIDAD_ELIMINADA,
+} = require("../utils/NotificationTypes");
 
 let rfpController = {};
 
@@ -47,6 +50,13 @@ rfpController.deleterfp = (id) => {
       .deleteNotificacionesRfp(id)
       .then(() => {
         RFP.findByIdAndDelete(id)
+          .then((rfp) => {
+            const job = {
+              nombreOportunidad: rfp.nombreOportunidad,
+            };
+            notificationQueue.add(OPORTUNIDAD_ELIMINADA, job);
+            return rfp;
+          })
           .then((rfp) => {
             return resolve(rfp);
           })
