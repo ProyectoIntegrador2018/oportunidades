@@ -11,7 +11,7 @@ const notificationService = {};
 
 notificationService.notificacionNuevaOportunidad = (job) => {
   return new Promise((resolve, reject) => {
-    const detalles = { rfp: job.rfpId };
+    const detalles = { rfp: job.data.rfpId };
     detallesNotifController
       .createDetalles(detalles)
       .then((detallesNotif) => {
