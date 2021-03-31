@@ -1,4 +1,5 @@
 const Participacion = require("../models/Participaciones");
+const notificationService = require("../services/NotificationService");
 const Event = require("../models/Event");
 const User = require("../models/User");
 let participacionController = {};
@@ -13,11 +14,21 @@ participacionController.createParticipacion = (rawPart, id) => {
             Event.find({ rfp: rawPart.rfpInvolucrado }).then((events) => {
                User.update({ _id: id }, { $push: { events: events } })
                   .then((update) => {
-                     return resolve(participacion);
+                     return;
                   })
                   .catch((err) => {
                      return reject(err);
                   });
+            });
+         })
+         .then(() => {
+            return notificationService
+            .notificacionNuevaParticipacion(participacion)
+            .then(() => {
+               return resolve(participacion);
+            })
+            .catch((error) => {
+             return reject(error);
             });
          })
          .catch((error) => {
