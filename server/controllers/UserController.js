@@ -138,10 +138,24 @@ userController.getSocioInfo = (id) => {
  */
 userController.getNotifications = (id) => {
   return new Promise((resolve, reject) => {
-    User.findById(id)
-      .populate({ path: "notifications" })
-      .then((notifications) => {
-        return resolve(notifications);
+    User.findById(id, "notificaciones")
+      .populate({
+        path: "notificaciones",
+        populate: {
+          path: "notificacion",
+          model: "Notificacion",
+          populate: {
+            path: "detalles",
+            model: "DetallesNotificacion",
+            populate: {
+              path: "rfp",
+              model: "RFP",
+            },
+          },
+        },
+      })
+      .then((notificaciones) => {
+        return resolve(notificaciones);
       })
       .catch((error) => {
         return reject(error);
