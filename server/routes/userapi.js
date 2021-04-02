@@ -78,6 +78,22 @@ router.get("/get-socio/:id", userMiddleware, (req, res) => {
        });
 });
 
+/**
+ * Route to get user notifications
+ * @implements {userMiddleWare} Function to check if the request is sent by a logged user
+ * @param {Object} req
+ * @param {Object} res response for the request
+ */
+router.get("/get-notifications", userMiddleware, (req, res) => {
+   userController
+   .getNotifications(req.user._id)
+   .then((notifications) => {
+      return res.send({notifications});
+   }).catch((error) => {
+      return res.status(401).send({error});
+   })
+});
+
 router.patch("/change-password", userMiddleware, (req, res) => {
    userController.changePassword(req.user._id, req.body.password)
    .then(user => {
