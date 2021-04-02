@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import clsx from "clsx";
 import {
   Drawer,
@@ -17,6 +17,7 @@ import ListItems from "../SideMenu/ListItems";
 import ListItemsAdmin from "../SideMenu/ListItemsAdmin";
 import NotificationFactory from "../SideMenu/NotificationFactory";
 import NOTIFICATION_TYPES from "../utils/NotificationTypes";
+import axios from "axios";
 
 const SideMenu = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -33,6 +34,28 @@ const SideMenu = () => {
   const toggleNotifications = () => {
     setNotificationsOpen(!notificationsOpen);
   };
+
+  const config = {
+    headers: {
+      Authorization: "Bearer " + sessionStorage.getItem("token"),
+      "Content-Type": "application/json",
+    },
+  };
+
+  useEffect(() => {
+    // Función que regresa la lista de eventos de la oportunidad
+    const obtenerNotificaciones = () => {
+      axios
+        .get("/user/get-notifications/", config)
+        .then((res) => {
+          console.log("this is the res from get-notifications", res);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    };
+    obtenerNotificaciones();
+  }, []);
 
   const classes = useStyles();
 
