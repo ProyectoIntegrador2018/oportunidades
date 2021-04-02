@@ -48,7 +48,7 @@ const SideMenu = () => {
       axios
         .get("/user/get-notifications/", config)
         .then((res) => {
-          console.log("this is the res from get-notifications", res);
+          console.log("resp ", res);
         })
         .catch((error) => {
           console.log(error);
