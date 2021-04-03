@@ -35,6 +35,8 @@ const SideMenu = () => {
     setNotificationsOpen(!notificationsOpen);
   };
 
+  const [notificaciones, setNotificaciones] = useState([]);
+
   const config = {
     headers: {
       Authorization: "Bearer " + sessionStorage.getItem("token"),
@@ -49,6 +51,10 @@ const SideMenu = () => {
         .get("/user/get-notifications/", config)
         .then((res) => {
           console.log("resp ", res);
+          const rawNotifs = res.data.user.notificaciones;
+          const notifications = formatNotifications(rawNotifs);
+          console.log("notifs", notifications);
+          setNotificaciones(notifications);
         })
         .catch((error) => {
           console.log(error);
@@ -56,6 +62,29 @@ const SideMenu = () => {
     };
     obtenerNotificaciones();
   }, []);
+
+  const formatNotifications = (rawNotifications) => {
+    const notifications = rawNotifications
+      .filter((rawNotif) => rawNotif.notificacion)
+      .map((rawNotif) => {
+        const { _id, read } = rawNotif;
+        const { tipo, detalles } = rawNotif.notificacion;
+        const { rfp } = detalles;
+        const author = rfp ? rfp.nombrecliente : "";
+        const opportunityName = rfp ? rfp.nombreOportunidad : "";
+        const notif = {
+          id: _id,
+          type: tipo,
+          details: {
+            author: author,
+            opportunityName: opportunityName,
+          },
+          isRead: read,
+        };
+        return notif;
+      });
+    return notifications;
+  };
 
   const classes = useStyles();
 
@@ -164,12 +193,11 @@ const SideMenu = () => {
         {notificationsOpen && (
           <Grid container className={classes.notificationsPaper}>
             <List anchor="right">
-              {sampleNotif1}
-              {sampleNotif2}
-              {sampleNotif3}
-              {sampleNotif4}
-              {sampleNotif5}
-              {sampleNotif6}
+              {notificaciones.length
+                ? notificaciones.map((notif) => (
+                    <NotificationFactory component={notif} />
+                  ))
+                : null}
             </List>
           </Grid>
         )}
