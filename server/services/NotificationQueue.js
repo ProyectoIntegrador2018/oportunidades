@@ -7,7 +7,6 @@ const {
 const notificationService = require("../services/NotificationService");
 
 const notificationQueue = new Queue("notification-queue", { redisConfig });
-// notificationQueue.LOCK_RENEW_TIME = 60 * 1000;
 
 notificationQueue.process(NUEVA_OPORTUNIDAD, (job) => {
   return notificationService.notificacionNuevaOportunidad(job);
