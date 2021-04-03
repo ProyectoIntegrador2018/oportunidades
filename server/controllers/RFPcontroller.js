@@ -16,7 +16,7 @@ rfpController.createrfp = (rawRFP, id) => {
       .save()
       .then(() => {
         const job = {
-          rfpId: rfp._id,
+          rfp: rfp
         };
         return notificationQueue.add(NUEVA_OPORTUNIDAD, job);
       })

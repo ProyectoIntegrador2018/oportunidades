@@ -11,14 +11,14 @@ const {
 const detallesNotifController = require("../controllers/DetallesNotificacionController");
 const notificacionController = require("../controllers/NotificacionController");
 const usuarioNotificacion = require("../controllers/UsuarioNotificacionController");
-const mailService = require("../services/MailService");
+const mailQueue = require("./MailQueue");
 
 const notificationService = {};
 
 const notificacionTodosSocios = function (tipoNotificacion, detalles) {
   return new Promise((resolve, reject) => {
     detallesNotifController
-      .createDetalles(detalles)
+      .createDetalles(detalles.detalles)
       .then((detallesNotif) => {
         const rawNotificacion = {
           tipo: tipoNotificacion,
@@ -36,8 +36,14 @@ const notificacionTodosSocios = function (tipoNotificacion, detalles) {
       })
       .then((notificacion) => {
         UserModel.findByUserType("socio").then((socios) => {
-          mailService.sendEmail(notificationTypes.NUEVA_OPORTUNIDAD, rfp, socios);
           socios.map((socio) => {
+            const jobMail = {
+              notificationType: tipoNotificacion,
+              rfp: detalles.rfp,
+              destinatario: socio
+            };
+            mailQueue.add(tipoNotificacion, jobMail, { attempts: 2 });
+
             const rawUsuarioNotif = {
               read: false,
               notificacion: notificacion._id,
@@ -69,7 +75,7 @@ const notificacionTodosSocios = function (tipoNotificacion, detalles) {
 
 notificationService.notificacionNuevaOportunidad = (job) => {
   return new Promise((resolve, reject) => {
-    const detalles = { rfp: job.data.rfpId };
+    const detalles = { detalles: { rfp: job.data.rfp._id }, rfp: job.data.rfp };
     notificacionTodosSocios(NUEVA_OPORTUNIDAD, detalles)
       .then((resp) => {
         resolve(resp);
