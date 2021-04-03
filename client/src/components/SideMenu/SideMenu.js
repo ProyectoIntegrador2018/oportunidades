@@ -50,10 +50,8 @@ const SideMenu = () => {
       axios
         .get("/user/get-notifications/", config)
         .then((res) => {
-          console.log("resp ", res);
           const rawNotifs = res.data.user.notificaciones;
           const notifications = formatNotifications(rawNotifs);
-          console.log("notifs", notifications);
           setNotificaciones(notifications);
         })
         .catch((error) => {
@@ -71,7 +69,7 @@ const SideMenu = () => {
         const { tipo, detalles } = rawNotif.notificacion;
         const { rfp } = detalles;
         const author = rfp ? rfp.nombrecliente : "";
-        const opportunityName = rfp ? rfp.nombreOportunidad : "";
+        const opportunityName = rfp ? rfp.nombreOportunidad : detalles.detalles;
         const notif = {
           id: _id,
           type: tipo,
