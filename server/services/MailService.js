@@ -22,7 +22,7 @@ mailService.sendEmail = (jobData) => {
     const { mailContent, destinatario } = jobData;
 
     const mailOptions = {
-      to: "a00820257@itesm.mx", //destinatario.email,
+      to: destinatario.email,
       subject: mailContent.subject,
       text: `Hola ${destinatario.name}, ${mailContent.text}`,
       html: `<p>Hola ${destinatario.name}, ${mailContent.html}`
@@ -92,7 +92,7 @@ Notificaciones de CSOFTMTY`;
         break;
       
       default:
-        reject();
+        reject("Invalid notificationType");
     }
     resolve(mailOptions);
   });
