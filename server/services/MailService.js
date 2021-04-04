@@ -8,27 +8,46 @@ var mailConfig = {
   pool: true,
   auth: {
     user: process.env.MAIL_USER,
-    pass: process.env.MAIL_PASSWORD,
-  },
+    pass: process.env.MAIL_PASSWORD
+  }
 };
 
 var transporter = nodemailer.createTransport(mailConfig, {
-  from: `Oportunidades Comerciales CSOFTMTY <${process.env.MAIL_USER}>`,
+  from: `Oportunidades Comerciales CSOFTMTY <${process.env.MAIL_USER}>`
 });
 
 // email sender function
 mailService.sendEmail = (jobData) => {
   return new Promise((resolve, reject) => {
-    const { notificationType, rfp, destinatario } = jobData;
+    const { mailContent, destinatario } = jobData;
 
-    var mailOptions = {
-      to: destinatario.email,
+    const mailOptions = {
+      to: "a00820257@itesm.mx", //destinatario.email,
+      subject: mailContent.subject,
+      text: `Hola ${destinatario.name}, ${mailContent.text}`,
+      html: `<p>Hola ${destinatario.name}, ${mailContent.html}`
     };
 
-    switch (notificationType) {
+    transporter.sendMail(mailOptions, (err, info) => {
+      if (err) {
+        console.log(err);
+        reject(err);
+      } else {
+        console.log(`Notification email sent to ${destinatario.email}`);
+        resolve(info);
+      }
+    });
+  });
+};
+
+mailService.buildMailContent = (tipoNotificacion, rfp) => {
+  return new Promise((resolve, reject) => {
+    let mailOptions = {};
+
+    switch (tipoNotificacion) {
       case notificationTypes.NUEVA_OPORTUNIDAD:
         mailOptions.subject = "Nueva Oportunidad Comercial";
-        mailOptions.text = `Hola ${destinatario.name}, te comunicamos que se ha abierto una nueva Oportunidad Comercial, te compartimos los detalles:
+        mailOptions.text = `te comunicamos que se ha abierto una nueva Oportunidad Comercial, te compartimos los detalles:
 
 Nombre de la Oportunidad Comercial: ${rfp.nombreOportunidad}
 Objetivo de la oportunidad: ${rfp.objetivoOportunidad}
@@ -51,7 +70,7 @@ Correo electrónico: ${rfp.email}
 Gracias,
 Notificaciones de CSOFTMTY`;
 
-        mailOptions.html = `<p>Hola ${destinatario.name}, te comunicamos que se ha abierto una nueva Oportunidad Comercial, te compartimos los detalles:</p>
+        mailOptions.html = `te comunicamos que se ha abierto una nueva Oportunidad Comercial, te compartimos los detalles:</p>
           <p><b>Nombre de la Oportunidad Comercial:</b> ${rfp.nombreOportunidad}<br>
           <b>Objetivo de la oportunidad:</b> ${rfp.objetivoOportunidad}<br>
           <b>Descripción funcional de la oportunidad:</b> ${rfp.descripcionFuncional}<br>
@@ -62,29 +81,20 @@ Notificaciones de CSOFTMTY`;
           <b>¿Tiene un presupuesto asignado?:</b> ${rfp.presupuestoAsignado}<br>
           <b>Tipo general del proyecto:</b> ${rfp.tipoGeneralProyecto}<br>
           <b>Tipo especifico del proyecto:</b> ${rfp.tipoEspecificoProyecto}<br>
-          <b>Comentarios adicionales:</b> ${rfp.comentariosAdicionales}<br></p>
-          <p><h3>Datos de contacto</h3>
-          <b>Nombre:</b> ${rfp.nombrecliente}<br>
+          <b>Comentarios adicionales:</b> ${rfp.comentariosAdicionales}</p>
+          <h3>Datos de contacto</h3>
+          <p><b>Nombre:</b> ${rfp.nombrecliente}<br>
           <b>Posición:</b> ${rfp.posicioncliente}<br>
           <b>Teléfono:</b> ${rfp.telefono}<br>
           <b>Correo electrónico:</b> ${rfp.email}</p>
           <p>Gracias,<br>
           Notificaciones de CSOFTMTY</p>`;
-
         break;
+      
       default:
-        console.log("Invalid notificationType");
+        reject();
     }
-
-    transporter.sendMail(mailOptions, (err, info) => {
-      if (err) {
-        console.log(err);
-        reject(err);
-      } else {
-        console.log(`Notification email sent to ${destinatario.email}`);
-        resolve(info);
-      }
-    });
+    resolve(mailOptions);
   });
 };
 
