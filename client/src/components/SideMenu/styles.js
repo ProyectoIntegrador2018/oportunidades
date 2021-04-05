@@ -1,7 +1,6 @@
 import { makeStyles } from "@material-ui/core";
 import { orange } from "@material-ui/core/colors";
 const drawerWidth = 240;
-const notificationsTabWidth = 396;
 const useStyles = makeStyles((theme) => ({
    root: {
       display: "flex",
@@ -18,7 +17,6 @@ const useStyles = makeStyles((theme) => ({
    },
    appBar: {
       zIndex: theme.zIndex.drawer + 1,
-      boxShadow: "none",
       transition: theme.transitions.create(["width", "margin"], {
          easing: theme.transitions.easing.sharp,
          duration: theme.transitions.duration.leavingScreen,
@@ -65,19 +63,6 @@ const useStyles = makeStyles((theme) => ({
       },
    },
    appBarSpacer: theme.mixins.toolbar,
-   notificationsPaper: {
-      alignSelf: "flex-end",
-      backgroundColor: "white",
-      position: "static",
-      width: notificationsTabWidth,
-      boxShadow: "0px 2px 4px -1px",
-   },
-   notifReadIcon: {
-      marginRight: 0,
-   },
-   unreadNotif: {
-      backgroundColor: "#f0d2bd",
-   },
    content: {
       flexGrow: 1,
       height: "100vh",
