@@ -58,7 +58,7 @@ Fechas relevantes: ${rfp.fechasRelevantes}
 ¿Ha sido aprobada por el área de TI?: ${rfp.aprobadaAreaTI}
 ¿Tiene un presupuesto asignado?: ${rfp.presupuestoAsignado}
 Tipo general del proyecto: ${rfp.tipoGeneralProyecto}
-Tipo especifico del proyecto: ${rfp.tipoEspecificoProyecto}
+Tipo específico del proyecto: ${rfp.tipoEspecificoProyecto}
 Comentarios adicionales: ${rfp.comentariosAdicionales}
 
 Datos de contacto
@@ -80,7 +80,7 @@ Notificaciones de CSOFTMTY`;
           <b>¿Ha sido aprobada por el área de TI?:</b> ${rfp.aprobadaAreaTI}<br>
           <b>¿Tiene un presupuesto asignado?:</b> ${rfp.presupuestoAsignado}<br>
           <b>Tipo general del proyecto:</b> ${rfp.tipoGeneralProyecto}<br>
-          <b>Tipo especifico del proyecto:</b> ${rfp.tipoEspecificoProyecto}<br>
+          <b>Tipo específico del proyecto:</b> ${rfp.tipoEspecificoProyecto}<br>
           <b>Comentarios adicionales:</b> ${rfp.comentariosAdicionales}</p>
           <h3>Datos de contacto</h3>
           <p><b>Nombre:</b> ${rfp.nombrecliente}<br>
@@ -88,7 +88,8 @@ Notificaciones de CSOFTMTY`;
           <b>Teléfono:</b> ${rfp.telefono}<br>
           <b>Correo electrónico:</b> ${rfp.email}</p>
           <p>Gracias,<br>
-          Notificaciones de CSOFTMTY</p>`;
+          Notificaciones de CSOFTMTY</p>
+          <img src="https://www.csoftmty.org/assets/images/header/logo.png" alt="logo_csoftmty"/>`;
         break;
       
       default:
