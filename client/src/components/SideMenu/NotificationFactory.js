@@ -19,6 +19,8 @@ export default function NotificationFactory(props) {
   switch (props.component.type) {
     case NOTIFICATION_TYPES.NUEVA_OPORTUNIDAD:
       return <NotificacionNuevaOportunidad {...downProps} />;
+    case NOTIFICATION_TYPES.OPORTUNIDAD_ELIMINADA:
+      return <NotificacionOportunidadEliminada {...downProps} />;
     case NOTIFICATION_TYPES.CAMBIO_ESTATUS:
       return <NotificacionCambioEstatus {...downProps} />;
     case NOTIFICATION_TYPES.CAMBIO_HORARIO:
@@ -123,6 +125,17 @@ class NotificacionNuevaOportunidad extends PortalNotification {
   getDescription = () => {
     const details = this.props.details;
     return `El cliente ${details.author} ha creado la oportunidad comercial "${details.opportunityName}"`;
+  };
+}
+
+class NotificacionOportunidadEliminada extends PortalNotification {
+  getTitle = () => {
+    return "Oportunidad Comercial Eliminada";
+  };
+
+  getDescription = () => {
+    const details = this.props.details;
+    return `El cliente ${details.author} ha eliminado la oportunidad comercial "${details.opportunityName}"`;
   };
 }
 
