@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import clsx from "clsx";
 import {
   Drawer,
@@ -17,6 +17,7 @@ import ListItems from "../SideMenu/ListItems";
 import ListItemsAdmin from "../SideMenu/ListItemsAdmin";
 import NotificationFactory from "../SideMenu/NotificationFactory";
 import NOTIFICATION_TYPES from "../utils/NotificationTypes";
+import axios from "axios";
 
 const SideMenu = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -32,6 +33,55 @@ const SideMenu = () => {
 
   const toggleNotifications = () => {
     setNotificationsOpen(!notificationsOpen);
+  };
+
+  const [notificaciones, setNotificaciones] = useState([]);
+
+  const config = {
+    headers: {
+      Authorization: "Bearer " + sessionStorage.getItem("token"),
+      "Content-Type": "application/json",
+    },
+  };
+
+  useEffect(() => {
+    // Función que regresa la lista de eventos de la oportunidad
+    const obtenerNotificaciones = () => {
+      axios
+        .get("/user/get-notifications/", config)
+        .then((res) => {
+          const rawNotifs = res.data.user.notificaciones;
+          const notifications = formatNotifications(rawNotifs);
+          setNotificaciones(notifications);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    };
+    obtenerNotificaciones();
+  }, []);
+
+  const formatNotifications = (rawNotifications) => {
+    const notifications = rawNotifications
+      .filter((rawNotif) => rawNotif.notificacion)
+      .map((rawNotif) => {
+        const { _id, read } = rawNotif;
+        const { tipo, detalles } = rawNotif.notificacion;
+        const { rfp } = detalles;
+        const author = rfp ? rfp.nombrecliente : "";
+        const opportunityName = rfp ? rfp.nombreOportunidad : detalles.detalles;
+        const notif = {
+          id: _id,
+          type: tipo,
+          details: {
+            author: author,
+            opportunityName: opportunityName,
+          },
+          isRead: read,
+        };
+        return notif;
+      });
+    return notifications;
   };
 
   const classes = useStyles();
@@ -141,12 +191,11 @@ const SideMenu = () => {
         {notificationsOpen && (
           <Grid container className={classes.notificationsPaper}>
             <List anchor="right">
-              {sampleNotif1}
-              {sampleNotif2}
-              {sampleNotif3}
-              {sampleNotif4}
-              {sampleNotif5}
-              {sampleNotif6}
+              {notificaciones.length
+                ? notificaciones.map((notif) => (
+                    <NotificationFactory component={notif} />
+                  ))
+                : null}
             </List>
           </Grid>
         )}
