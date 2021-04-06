@@ -67,7 +67,8 @@ const notificacionTodosSocios = function (tipoNotificacion, detalles) {
 
 notificationService.notificacionNuevaOportunidad = (job) => {
   return new Promise((resolve, reject) => {
-    const detalles = { rfp: job.data.rfpId };
+    // const detalles = { rfp: job.data.rfpId };
+    const detalles = { rfp: job.rfpId };
     notificacionTodosSocios(NUEVA_OPORTUNIDAD, detalles)
       .then((resp) => {
         resolve(resp);
@@ -77,9 +78,10 @@ notificationService.notificacionNuevaOportunidad = (job) => {
 };
 
 notificationService.notificacionOportunidadEliminada = (job) => {
-  return new Promise((reject, resolve) => {
+  return new Promise((resolve, reject) => {
     const detalles = {
-      detalles: job.data.nombreOportunidad,
+      // detalles: job.data.nombreOportunidad,
+      detalles: job.nombreOportunidad,
     };
     notificacionTodosSocios(OPORTUNIDAD_ELIMINADA, detalles)
       .then((resp) => {
