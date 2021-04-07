@@ -232,11 +232,14 @@ notificationService.notificacionNuevaParticipacion = (participacion) => {
   return new Promise((resolve, reject) => {
     saveDbNotificacionNuevaParticipacion(participacion)
       .then((resp) => {
+        resolve(resp);
+        /*
         mailNuevaParticipacion(participacion)
           .then((respMail) => {
             resolve(respMail);
           })
           .catch((error) => reject(error));
+        */
       })
       .catch((error) => reject(error));
   });
