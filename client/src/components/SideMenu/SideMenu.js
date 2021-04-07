@@ -70,12 +70,15 @@ const SideMenu = () => {
         const { rfp } = detalles;
         const author = rfp ? rfp.nombrecliente : "";
         const opportunityName = rfp ? rfp.nombreOportunidad : detalles.detalles;
+        const { participante } = detalles;
+        const participanteName = participante ? participante.name : "";
         const notif = {
           id: _id,
           type: tipo,
           details: {
             author: author,
             opportunityName: opportunityName,
+            participanteName: participanteName
           },
           isRead: read,
         };
