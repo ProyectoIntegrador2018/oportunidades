@@ -138,7 +138,7 @@ const SideMenu = () => {
   };
   const sixth = {
     id: 678,
-    type: NOTIFICATION_TYPES.SOCIO_APLICA,
+    type: NOTIFICATION_TYPES.NUEVA_PARTICIPACION,
     details: {
       author: "Apple",
       opportunityName: "Nueva Aplicación de iOS",

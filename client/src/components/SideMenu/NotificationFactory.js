@@ -29,7 +29,7 @@ export default function NotificationFactory(props) {
       return <NotificacionNuevoHorario {...downProps} />;
     case NOTIFICATION_TYPES.RECHAZO:
       return <NotificacionRechazo {...downProps} />;
-    case NOTIFICATION_TYPES.SOCIO_APLICA:
+    case NOTIFICATION_TYPES.NUEVA_PARTICIPACION:
       return <NotificacionSocioAplica {...downProps} />;
   }
 }
