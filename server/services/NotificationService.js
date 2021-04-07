@@ -11,6 +11,8 @@ const {
 const detallesNotifController = require("../controllers/DetallesNotificacionController");
 const notificacionController = require("../controllers/NotificacionController");
 const usuarioNotificacion = require("../controllers/UsuarioNotificacionController");
+const mailService = require("./MailService");
+const mailQueue = require("./MailQueue");
 
 const notificationService = {};
 
@@ -65,6 +67,31 @@ const notificacionTodosSocios = function (tipoNotificacion, detalles) {
   });
 };
 
+const mailTodosSocios = function (tipoNotificacion, rfp) {
+  return new Promise((resolve, reject) => {
+    mailService.buildMailContent(tipoNotificacion, rfp)
+      .then((mailContent) => {
+        UserModel.findByUserType("socio")
+          .then((socios) => {
+            socios.map((socio) => {
+              const jobMail = {
+                mailContent: mailContent,
+                destinatario: {
+                  name: socio.name,
+                  email: socio.email,
+                }
+              };
+              mailQueue.add(NUEVA_OPORTUNIDAD, jobMail, { attempts: 3 });
+
+              resolve({ status: 200 });
+            });
+          })
+          .catch((error) => reject(error));
+      })
+      .catch((error) => reject(error));
+  });
+};
+
 notificationService.notificacionNuevaOportunidad = (job) => {
   return new Promise((resolve, reject) => {
     // const detalles = { rfp: job.data.rfpId };
@@ -72,6 +99,13 @@ notificationService.notificacionNuevaOportunidad = (job) => {
     notificacionTodosSocios(NUEVA_OPORTUNIDAD, detalles)
       .then((resp) => {
         resolve(resp);
+        /*
+        mailTodosSocios(NUEVA_OPORTUNIDAD, job.data.rfp)
+          .then((respMail) => {
+            resolve(respMail);
+          })
+          .catch((error) => reject(error));
+        */
       })
       .catch((error) => reject(error));
   });
