@@ -147,14 +147,17 @@ userController.getNotifications = (id) => {
           populate: {
             path: "detalles",
             model: "DetallesNotificacion",
-            populate: {
-              path: "rfp",
-              model: "RFP",
-            },
-            populate: {
-              path: "participante",
-              model: "User",
-            },
+            populate: [
+              {
+                path: "participante",
+                model: "User",
+                select: "name",
+              },
+              {
+                path: "rfp",
+                model: "RFP",
+              },
+            ],
           },
         },
       })

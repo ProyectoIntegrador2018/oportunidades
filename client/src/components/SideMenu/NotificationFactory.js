@@ -190,6 +190,6 @@ class NotificacionSocioAplica extends PortalNotification {
 
   getDescription = () => {
     const details = this.props.details;
-    return `El socio ${details.author} ha aplicado a su oportunidad comercial "${details.opportunityName}"`;
+    return `El socio ${details.participanteName} ha aplicado a su oportunidad comercial "${details.opportunityName}"`;
   };
 }
