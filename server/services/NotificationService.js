@@ -98,11 +98,14 @@ notificationService.notificacionNuevaOportunidad = (job) => {
     const detalles = { rfp: job.rfpId };
     notificacionTodosSocios(NUEVA_OPORTUNIDAD, detalles)
       .then((resp) => {
+        resolve(resp);
+        /*
         mailTodosSocios(NUEVA_OPORTUNIDAD, job.data.rfp)
           .then((respMail) => {
             resolve(respMail);
           })
           .catch((error) => reject(error));
+        */
       })
       .catch((error) => reject(error));
   });
