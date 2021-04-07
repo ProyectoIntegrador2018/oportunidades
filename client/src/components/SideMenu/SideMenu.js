@@ -9,7 +9,7 @@ import {
   Toolbar,
   Typography,
 } from "@material-ui/core";
-import { ChevronLeft, Menu, Notifications } from "@material-ui/icons";
+import { ChevronLeft, Menu } from "@material-ui/icons";
 import "../../styles/globalStyles.css";
 import useStyles from "../SideMenu/styles";
 import ListItems from "../SideMenu/ListItems";
@@ -20,16 +20,16 @@ import NotificationsTab from "../SideMenu/NotificationsTab";
 import axios from "axios";
 
 const SideMenu = () => {
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const [notificationsOpen, setNotificationsOpen] = useState(false);
-  const userType = sessionStorage.getItem("userType");
+   const [drawerOpen, setDrawerOpen] = useState(false);
+   const userType = sessionStorage.getItem("userType");
 
-  const handleDrawerOpen = () => {
-    setDrawerOpen(true);
-  };
-  const handleDrawerClose = () => {
-    setDrawerOpen(false);
-  };
+   const handleDrawerOpen = () => {
+      setDrawerOpen(true);
+   };
+   const handleDrawerClose = () => {
+      setDrawerOpen(false);
+   };
+   const classes = useStyles();
 
   const toggleNotifications = () => {
     setNotificationsOpen(!notificationsOpen);
