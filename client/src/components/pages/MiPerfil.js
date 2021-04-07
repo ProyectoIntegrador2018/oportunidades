@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
       minWidth: 275,
       width: "80%",
       margin: "auto",
-      marginTop: "40px",
+      marginTop: "80px",
    },
    titlePer: {
       flexGrow: 1,

@@ -160,12 +160,11 @@ const SideMenu = () => {
   const sampleNotif5 = <NotificationFactory component={fifth} />;
   const sampleNotif6 = <NotificationFactory component={sixth} />;
 
-  // TODO: Limit visibility to 5 notifications
   return (
     <div>
       <AppBar
         position="absolute"
-        color="transparent"
+        color="white"
         className={clsx(classes.appBar, drawerOpen && classes.appBarShift)}
       >
         <Toolbar className="toolbar">
