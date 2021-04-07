@@ -94,8 +94,8 @@ const mailTodosSocios = function (tipoNotificacion, rfp) {
 
 notificationService.notificacionNuevaOportunidad = (job) => {
   return new Promise((resolve, reject) => {
-    // const detalles = { rfp: job.data.rfpId };
-    const detalles = { rfp: job.rfpId };
+    // const detalles = { rfp: job.data.rfp._id };
+    const detalles = { rfp: job.rfp._id };
     notificacionTodosSocios(NUEVA_OPORTUNIDAD, detalles)
       .then((resp) => {
         resolve(resp);
@@ -128,8 +128,8 @@ notificationService.notificacionOportunidadEliminada = (job) => {
 notificationService.notificacionNuevaParticipacion = (participacion) => {
   return new Promise((resolve, reject) => {
     const detalles = {
-      rfpInvolucrado: participacion.rfpInvolucrado,
-      socioInvolucrado: participacion.socioInvolucrado,
+      rfp: participacion.rfpInvolucrado,
+      participante: participacion.socioInvolucrado,
     };
     detallesNotifController
       .createDetalles(detalles)
@@ -149,7 +149,7 @@ notificationService.notificacionNuevaParticipacion = (participacion) => {
           });
       })
       .then((notificacion) => {
-        const rfpId = detalles.rfpInvolucrado;
+        const rfpId = detalles.rfp;
         RfpModel.getCreatedBy(rfpId)
           .then((userId) => {
             UserModel.findById(userId)
