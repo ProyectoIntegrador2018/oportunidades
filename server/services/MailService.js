@@ -1,5 +1,5 @@
 const nodemailer = require("nodemailer");
-const notificationTypes = require("../utils/NotificationTypes");
+const { NUEVA_OPORTUNIDAD, NUEVA_PARTICIPACION } = require("../utils/NotificationTypes");
 
 const mailService = {};
 
@@ -45,7 +45,7 @@ mailService.buildMailContent = (tipoNotificacion, rfp) => {
     let mailOptions = {};
 
     switch (tipoNotificacion) {
-      case notificationTypes.NUEVA_OPORTUNIDAD:
+      case NUEVA_OPORTUNIDAD:
         mailOptions.subject = "Nueva Oportunidad Comercial";
         mailOptions.text = `te comunicamos que se ha abierto una nueva Oportunidad Comercial, te compartimos los detalles:
 
@@ -65,10 +65,7 @@ Datos de contacto
 Nombre: ${rfp.nombrecliente}
 Posición: ${rfp.posicioncliente}
 Teléfono: ${rfp.telefono}
-Correo electrónico: ${rfp.email}
-
-Gracias,
-Notificaciones de CSOFTMTY`;
+Correo electrónico: ${rfp.email}`;
 
         mailOptions.html = `te comunicamos que se ha abierto una nueva Oportunidad Comercial, te compartimos los detalles:</p>
           <p><b>Nombre de la Oportunidad Comercial:</b> ${rfp.nombreOportunidad}<br>
@@ -86,15 +83,24 @@ Notificaciones de CSOFTMTY`;
           <p><b>Nombre:</b> ${rfp.nombrecliente}<br>
           <b>Posición:</b> ${rfp.posicioncliente}<br>
           <b>Teléfono:</b> ${rfp.telefono}<br>
-          <b>Correo electrónico:</b> ${rfp.email}</p>
-          <p>Gracias,<br>
-          Notificaciones de CSOFTMTY</p>
-          <img src="https://www.csoftmty.org/assets/images/header/logo.png" alt="logo_csoftmty"/>`;
+          <b>Correo electrónico:</b> ${rfp.email}</p>`;
+        break;
+      
+      case NUEVA_PARTICIPACION:
+        mailOptions.subject = "Un socio de CSOFTMTY ha aplicado a tu Oportunidad Comercial";
+        mailOptions.text = `queremos informarte que el socio ${rfp.participanteName} ha aplicado a tu Oportunidad Comercial "${rfp.nombreOportunidad}".`
+
+        mailOptions.html = `queremos informarte que el socio ${rfp.participanteName} ha aplicado a tu Oportunidad Comercial "${rfp.nombreOportunidad}".</p>`
         break;
       
       default:
         reject("Invalid notificationType");
     }
+    mailOptions.text += "\n\nGracias,\nNotificaciones de CSOFTMTY";
+    mailOptions.html += `<p>Gracias,<br>
+      Notificaciones de CSOFTMTY</p>
+      <img src="https://www.csoftmty.org/assets/images/header/logo.png" alt="logo_csoftmty"/>`
+    
     resolve(mailOptions);
   });
 };
