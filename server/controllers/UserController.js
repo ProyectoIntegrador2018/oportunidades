@@ -151,6 +151,10 @@ userController.getNotifications = (id) => {
               path: "rfp",
               model: "RFP",
             },
+            populate: {
+              path: "participante",
+              model: "User",
+            },
           },
         },
       })

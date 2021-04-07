@@ -51,6 +51,7 @@ const SideMenu = () => {
         .get("/user/get-notifications/", config)
         .then((res) => {
           const rawNotifs = res.data.user.notificaciones;
+          console.log("rawNotifs", rawNotifs);
           const notifications = formatNotifications(rawNotifs);
           setNotificaciones(notifications);
         })
