@@ -1,6 +1,5 @@
 const nodemailer = require("nodemailer");
 const notificationTypes = require("../utils/NotificationTypes");
-var fs = require("fs");
 var pdf = require("html-pdf");
 var options = { format: "Letter" };
 const mailService = {};
