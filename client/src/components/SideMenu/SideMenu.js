@@ -164,7 +164,7 @@ const SideMenu = () => {
     <div>
       <AppBar
         position="absolute"
-        color="white"
+        color="transparent"
         className={clsx(classes.appBar, drawerOpen && classes.appBarShift)}
       >
         <Toolbar className="toolbar">

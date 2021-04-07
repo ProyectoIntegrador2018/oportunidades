@@ -75,6 +75,10 @@ const useStyles = makeStyles((theme) => ({
       overflow: "scroll",
       boxShadow: "0px 2px 4px -1px",
    },
+   noNotifications: {
+      display: "flex",
+      margin: "0px auto"
+   },
    notifReadIcon: {
       marginRight: 0,
    },

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Grid, List, Button } from "@material-ui/core";
 import useStyles from "../SideMenu/styles";
 import NotificationFactory from "../SideMenu/NotificationFactory";
+import NightsStayIcon from "@material-ui/icons/NightsStay";
 
 export default function NotificationsTab(props) {
   const classes = useStyles();
@@ -14,8 +15,16 @@ export default function NotificationsTab(props) {
     setIsExtended(!isExtended);
   };
 
-  if (props.notificaciones.length === 0) return null;
-  else if (props.notificaciones.length <= 5) {
+  if (props.notificaciones.length === 0) {
+    return (
+      <Grid container className={classes.notificationsPaper}>
+        <List anchor="right" className={classes.noNotifications}>
+          <NightsStayIcon />
+          <text>Usted no tiene notificaciones</text>
+        </List>
+      </Grid>
+    );
+  } else if (props.notificaciones.length <= 5) {
     return (
       <Grid container className={classes.notificationsPaper}>
         <List anchor="right">
