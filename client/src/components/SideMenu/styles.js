@@ -2,6 +2,7 @@ import { makeStyles } from "@material-ui/core";
 import { orange } from "@material-ui/core/colors";
 const drawerWidth = 240;
 const notificationsTabWidth = 396;
+const notificationsTabHeight = 480;
 const useStyles = makeStyles((theme) => ({
    root: {
       display: "flex",
@@ -70,13 +71,22 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: "white",
       position: "static",
       width: notificationsTabWidth,
+      maxHeight: notificationsTabHeight,
+      overflow: "scroll",
       boxShadow: "0px 2px 4px -1px",
+   },
+   noNotifications: {
+      display: "flex",
+      margin: "0px auto"
    },
    notifReadIcon: {
       marginRight: 0,
    },
    unreadNotif: {
       backgroundColor: "#f0d2bd",
+   },
+   viewMoreOrLessNotifsButton: {
+      margin: "0px auto"
    },
    content: {
       flexGrow: 1,

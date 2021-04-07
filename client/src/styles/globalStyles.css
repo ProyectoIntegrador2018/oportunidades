@@ -176,6 +176,7 @@
 
 .toolbar {
    padding-right: 24;
+   background-color: white;
 }
 
 .toolbarIcon {
@@ -274,10 +275,10 @@
 .fabIcon {
    z-index: 1000000;
    position: relative;
-   top: 40px;
+   top: 10px;
    display: flex;
    justify-content: flex-end;
-   margin-right: 2em;
+   margin-right: 5em;
 }
 
 .editIconContainer {
