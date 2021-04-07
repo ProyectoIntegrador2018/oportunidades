@@ -19,7 +19,7 @@ const notificationService = {};
 const notificacionTodosSocios = function (tipoNotificacion, detalles) {
   return new Promise((resolve, reject) => {
     detallesNotifController
-      .createDetalles(detalles.detalles)
+      .createDetalles(detalles)
       .then((detallesNotif) => {
         const rawNotificacion = {
           tipo: tipoNotificacion,
@@ -38,15 +38,6 @@ const notificacionTodosSocios = function (tipoNotificacion, detalles) {
       .then((notificacion) => {
         UserModel.findByUserType("socio").then((socios) => {
           socios.map((socio) => {
-            const jobMail = {
-              mailContent: detalles.mailContent,
-              destinatario: {
-                name: socio.name,
-                email: socio.email
-              }
-            };
-            mailQueue.add(tipoNotificacion, jobMail, { attempts: 3 });
-
             const rawUsuarioNotif = {
               read: false,
               notificacion: notificacion._id,
@@ -76,18 +67,39 @@ const notificacionTodosSocios = function (tipoNotificacion, detalles) {
   });
 };
 
+const mailTodosSocios = function (tipoNotificacion, rfp) {
+  return new Promise((resolve, reject) => {
+    mailService.buildMailContent(tipoNotificacion, rfp)
+      .then((mailContent) => {
+        UserModel.findByUserType("socio")
+          .then((socios) => {
+            socios.map((socio) => {
+              const jobMail = {
+                mailContent: mailContent,
+                destinatario: {
+                  name: socio.name,
+                  email: socio.email,
+                }
+              };
+              mailQueue.add(NUEVA_OPORTUNIDAD, jobMail, { attempts: 3 });
+
+              resolve({ status: 200 });
+            });
+          })
+          .catch((error) => reject(error));
+      })
+      .catch((error) => reject(error));
+  });
+};
+
 notificationService.notificacionNuevaOportunidad = (job) => {
   return new Promise((resolve, reject) => {
-    mailService
-      .buildMailContent(NUEVA_OPORTUNIDAD, job.data.rfp)
-      .then((mailContent) => {
-        const detalles = {
-          detalles: { rfp: job.data.rfp._id },
-          mailContent: mailContent
-        };
-        notificacionTodosSocios(NUEVA_OPORTUNIDAD, detalles)
-          .then((resp) => {
-            resolve(resp);
+    const detalles = { rfp: job.data.rfp._id };
+    notificacionTodosSocios(NUEVA_OPORTUNIDAD, detalles)
+      .then((resp) => {
+        mailTodosSocios(NUEVA_OPORTUNIDAD, job.data.rfp)
+          .then((respMail) => {
+            resolve(respMail);
           })
           .catch((error) => reject(error));
       })
