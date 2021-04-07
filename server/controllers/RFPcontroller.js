@@ -18,9 +18,13 @@ rfpController.createrfp = (rawRFP, id) => {
         const job = {
           rfp: rfp
         };
-        return notificationQueue.add(NUEVA_OPORTUNIDAD, job);
+        // return notificationQueue.add(NUEVA_OPORTUNIDAD, job);
+        return notificationService
+          .notificacionNuevaOportunidad(job)
+          .then((resp) => {})
+          .catch((error) => reject(error));
       })
-      .then((rfp) => {
+      .then(() => {
         resolve(rfp);
       })
       .catch((error) => {
@@ -54,7 +58,11 @@ rfpController.deleterfp = (id) => {
             const job = {
               nombreOportunidad: rfp.nombreOportunidad,
             };
-            notificationQueue.add(OPORTUNIDAD_ELIMINADA, job);
+            // notificationQueue.add(OPORTUNIDAD_ELIMINADA, job);
+            notificationService
+              .notificacionOportunidadEliminada(job)
+              .then((resp) => {})
+              .catch((error) => reject(error));
             return rfp;
           })
           .then((rfp) => {
