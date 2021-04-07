@@ -1,6 +1,7 @@
 const nodemailer = require("nodemailer");
 const notificationTypes = require("../utils/NotificationTypes");
-
+var pdf = require("html-pdf");
+var options = { format: "Letter" };
 const mailService = {};
 
 var mailConfig = {
@@ -8,12 +9,12 @@ var mailConfig = {
   pool: true,
   auth: {
     user: process.env.MAIL_USER,
-    pass: process.env.MAIL_PASSWORD
-  }
+    pass: process.env.MAIL_PASSWORD,
+  },
 };
 
 var transporter = nodemailer.createTransport(mailConfig, {
-  from: `Oportunidades Comerciales CSOFTMTY <${process.env.MAIL_USER}>`
+  from: `Oportunidades Comerciales CSOFTMTY <${process.env.MAIL_USER}>`,
 });
 
 // email sender function
@@ -25,8 +26,14 @@ mailService.sendEmail = (jobData) => {
       to: destinatario.email,
       subject: mailContent.subject,
       text: `Hola ${destinatario.name}, ${mailContent.text}`,
-      html: `<p>Hola ${destinatario.name}, ${mailContent.html}`
+      html: `<p>Hola ${destinatario.name}, ${mailContent.html}`,
+      attachments: {
+        filename: mailContent.attachments.filename,
+        content: mailContent.attachments.content,
+        encoding: 'base64',
+      },
     };
+
 
     transporter.sendMail(mailOptions, (err, info) => {
       if (err) {
@@ -90,13 +97,29 @@ Notificaciones de CSOFTMTY`;
           <p>Gracias,<br>
           Notificaciones de CSOFTMTY</p>
           <img src="https://www.csoftmty.org/assets/images/header/logo.png" alt="logo_csoftmty"/>`;
+
+
         break;
-      
+
       default:
         reject("Invalid notificationType");
     }
-    resolve(mailOptions);
+    generatePdf(mailOptions.html).then((base64String) => {
+      mailOptions.attachments = {
+        filename: `${rfp.nombreOportunidad}.pdf`,
+        content: base64String,
+      };
+      resolve(mailOptions);
+    });
   });
 };
 
+const generatePdf = (htmlToPdf) => {
+  return new Promise((resolve, reject) => {
+    pdf.create(htmlToPdf, options).toBuffer(function (err, res) {
+      if (err) reject(err);
+      resolve(res.toString("base64"));
+    });
+  });
+};
 module.exports = mailService;
