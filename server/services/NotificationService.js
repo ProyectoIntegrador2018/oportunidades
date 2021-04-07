@@ -81,7 +81,7 @@ const mailTodosSocios = function (tipoNotificacion, rfp) {
                   email: socio.email,
                 }
               };
-              mailQueue.add(NUEVA_OPORTUNIDAD, jobMail, { attempts: 3 });
+              mailQueue.add(tipoNotificacion, jobMail, { attempts: 3 });
 
               resolve({ status: 200 });
             });
@@ -125,7 +125,7 @@ notificationService.notificacionOportunidadEliminada = (job) => {
   });
 };
 
-notificationService.notificacionNuevaParticipacion = (participacion) => {
+const saveDbNotificacionNuevaParticipacion = function (participacion) {
   return new Promise((resolve, reject) => {
     const detalles = {
       rfp: participacion.rfpInvolucrado,
@@ -186,6 +186,62 @@ notificationService.notificacionNuevaParticipacion = (participacion) => {
             reject(error);
           });
       });
+  });
+};
+
+const mailNuevaParticipacion = function (participacion) {
+  return new Promise((resolve, reject) => {
+    const detalles = {
+      rfp: participacion.rfpInvolucrado,
+      participante: participacion.socioInvolucrado,
+    };
+    RfpModel.findById(detalles.rfp)
+      .then((rfp) => {
+        UserModel.findById(detalles.participante)
+          .then((participante) => {
+            const rfpMail = {
+              nombreOportunidad: rfp.nombreOportunidad,
+              participanteName: participante.name
+            };
+            mailService.buildMailContent(NUEVA_PARTICIPACION, rfpMail)
+              .then((mailContent) => {
+                UserModel.findById(rfp.createdBy)
+                  .then((cliente) => {
+                    const jobMail = {
+                      mailContent: mailContent,
+                      destinatario: {
+                        name: cliente.name,
+                        email: cliente.email
+                      }
+                    };
+                    mailQueue.add(NUEVA_PARTICIPACION, jobMail, { attempts: 3 });
+
+                    resolve({ status: 200 });
+                  })
+                  .catch((error) => reject(error));
+              })
+              .catch((error) => reject(error));
+          })
+          .catch((error) => reject(error));
+      })
+      .catch((error) => reject(error));
+  });
+};
+
+notificationService.notificacionNuevaParticipacion = (participacion) => {
+  return new Promise((resolve, reject) => {
+    saveDbNotificacionNuevaParticipacion(participacion)
+      .then((resp) => {
+        resolve(resp);
+        /*
+        mailNuevaParticipacion(participacion)
+          .then((respMail) => {
+            resolve(respMail);
+          })
+          .catch((error) => reject(error));
+        */
+      })
+      .catch((error) => reject(error));
   });
 };
 
