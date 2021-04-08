@@ -1,5 +1,6 @@
 import { makeStyles } from "@material-ui/core";
 import { orange } from "@material-ui/core/colors";
+import { MicNone } from "@material-ui/icons";
 const drawerWidth = 240;
 const notificationsTabWidth = 396;
 const notificationsTabHeight = 480;
@@ -19,6 +20,7 @@ const useStyles = makeStyles((theme) => ({
    },
    appBar: {
       zIndex: theme.zIndex.drawer + 1,
+      boxShadow: "none",
       transition: theme.transitions.create(["width", "margin"], {
          easing: theme.transitions.easing.sharp,
          duration: theme.transitions.duration.leavingScreen,

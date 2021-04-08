@@ -275,7 +275,7 @@
 .fabIcon {
    z-index: 1000000;
    position: relative;
-   top: 10px;
+   top: 40px;
    display: flex;
    justify-content: flex-end;
    margin-right: 5em;
