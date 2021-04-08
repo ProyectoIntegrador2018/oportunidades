@@ -3,6 +3,7 @@ const validator = require("validator");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const Event = require("./Event");
+const RFP = require("./RFP");
 
 const schema = new mongoose.Schema(
    {
@@ -58,6 +59,10 @@ const schema = new mongoose.Schema(
       events: [{
          type: mongoose.Schema.Types.ObjectId,
          ref: "Event"
+      }],
+      notificaciones: [{
+         type: mongoose.Schema.Types.ObjectId,
+         ref: "UsuarioNotificacion"
       }]
    },
    {
@@ -100,6 +105,12 @@ schema.methods.addEvent = function(eventId) {
    this.events.push(eventId);
    user.save();
 }
+
+schema.methods.addNotificacion = function (notificacionId) {
+  const user = this;
+  this.notificaciones.push(notificacionId);
+  user.save();
+};
 
 //TODO: add return to promise
 schema.methods.retrieveEvents = function() {
@@ -150,6 +161,30 @@ schema.statics.findByEmail = function(email) {
    return this.findOne({ email }).exec();
 }
 
+/**
+ * Gets users by type
+ * @param {String} userType 
+ */
+schema.statics.findByUserType = function (userType) {
+  return new Promise((resolve, reject) => {
+    this.find({ userType: { $eq: userType } })
+      .then((socios) => resolve(socios))
+      .catch((error) => reject(error));
+  });
+};
+
+/**
+ *  Get client who posted RFP
+ * @param {ObjectId} rfpInvolucrado
+ */
+schema.statics.findClientByRFP = function (rfpInvolucrado){
+   return new Promise((resolve,reject)=>{
+      //sacar createdBy, y ese id sera el cliente a quien mandarle
+      RFP.find({createdBy:rfpInvolucrado.createdBy})
+      .then((cliente) => resolve (cliente))
+      .catch((error)=> reject (error));
+   });
+};
 /**
  * Hash password before saving user
  */
