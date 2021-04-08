@@ -15,6 +15,8 @@ export default function NotificationsTab(props) {
     setIsExtended(!isExtended);
   };
 
+  const limit = Math.min(10, props.notificaciones.length);
+
   if (props.notificaciones.length === 0) {
     return (
       <Grid container className={classes.notificationsPaper}>
@@ -41,7 +43,9 @@ export default function NotificationsTab(props) {
         shownNotifications.push(props.notificaciones[i]);
       }
     } else {
-      shownNotifications = props.notificaciones;
+      for (let i = 0; i < limit; i++) {
+        shownNotifications.push(props.notificaciones[i]);
+      }
     }
 
     return (
@@ -58,7 +62,7 @@ export default function NotificationsTab(props) {
         >
           {isExtended
             ? "Ver menos"
-            : `Ver más (${props.notificaciones.length - 5})`}
+            : `Ver más (${limit - 5})`}
         </Button>
       </Grid>
     );
