@@ -275,10 +275,12 @@
 .fabIcon {
    z-index: 1000000;
    position: relative;
-   top: 40px;
+   top: 10px;
    display: flex;
    justify-content: flex-end;
    margin-right: 5em;
+   margin-left: auto;
+   width: fit-content;
 }
 
 .editIconContainer {
