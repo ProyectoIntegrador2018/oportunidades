@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const path = require("path");
 const mongoose = require("mongoose");
+const eventScheduler = require('./server/services/EventScheduler');
 
 const port = process.env.PORT || 3001;
 
@@ -12,6 +13,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 mongoose.connect(database, { useNewUrlParser: true });
+
+eventScheduler.checkForEventStatusUpdate();
 
 let adminConfig = require("./server/config/adminConfig");
 
