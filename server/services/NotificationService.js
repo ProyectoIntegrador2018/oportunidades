@@ -100,7 +100,7 @@ notificationService.notificacionNuevaOportunidad = (job) => {
       .then((resp) => {
         resolve(resp);
         /*
-        mailTodosSocios(NUEVA_OPORTUNIDAD, job.data.rfp)
+        mailTodosSocios(NUEVA_OPORTUNIDAD, job.rfp)
           .then((respMail) => {
             resolve(respMail);
           })
