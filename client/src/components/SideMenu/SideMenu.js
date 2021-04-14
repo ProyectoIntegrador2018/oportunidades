@@ -8,7 +8,6 @@ import {
   AppBar,
   Toolbar,
   Typography,
-  Grid,
 } from "@material-ui/core";
 import { ChevronLeft, Menu, Notifications } from "@material-ui/icons";
 import "../../styles/globalStyles.css";
@@ -17,6 +16,7 @@ import ListItems from "../SideMenu/ListItems";
 import ListItemsAdmin from "../SideMenu/ListItemsAdmin";
 import NotificationFactory from "../SideMenu/NotificationFactory";
 import NOTIFICATION_TYPES from "../utils/NotificationTypes";
+import NotificationsTab from "../SideMenu/NotificationsTab";
 import axios from "axios";
 
 const SideMenu = () => {
@@ -59,7 +59,7 @@ const SideMenu = () => {
         });
     };
     obtenerNotificaciones();
-  }, []);
+  }, [notificationsOpen]);
 
   const formatNotifications = (rawNotifications) => {
     const notifications = rawNotifications
@@ -149,6 +149,13 @@ const SideMenu = () => {
     isRead: false,
   };
 
+  // useEffect(() => {
+  //   const obtenerNotificaciones = () => {
+  //     setNotificaciones([first, second, third, fourth, fifth, sixth]);
+  //   };
+  //   obtenerNotificaciones();
+  // }, [notificationsOpen]);
+
   const sampleNotif1 = <NotificationFactory component={first} />;
   const sampleNotif2 = <NotificationFactory component={second} />;
   const sampleNotif3 = <NotificationFactory component={third} />;
@@ -156,7 +163,6 @@ const SideMenu = () => {
   const sampleNotif5 = <NotificationFactory component={fifth} />;
   const sampleNotif6 = <NotificationFactory component={sixth} />;
 
-  // TODO: Limit visibility to 5 notifications
   return (
     <div>
       <AppBar
@@ -192,15 +198,7 @@ const SideMenu = () => {
           </IconButton>
         </Toolbar>
         {notificationsOpen && (
-          <Grid container className={classes.notificationsPaper}>
-            <List anchor="right">
-              {notificaciones.length
-                ? notificaciones.map((notif) => (
-                    <NotificationFactory component={notif} />
-                  ))
-                : null}
-            </List>
-          </Grid>
+          <NotificationsTab notificaciones={notificaciones} />
         )}
       </AppBar>
       <Drawer anchor="left" open={drawerOpen}>

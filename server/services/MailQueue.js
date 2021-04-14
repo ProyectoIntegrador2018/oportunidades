@@ -1,11 +1,15 @@
 const Queue = require("bull");
 const redisConfig = require("../config/redisConfig");
-const { NUEVA_OPORTUNIDAD } = require("../utils/NotificationTypes");
+const { NUEVA_OPORTUNIDAD, NUEVA_PARTICIPACION } = require("../utils/NotificationTypes");
 const mailService = require("./MailService");
 
 const mailQueue = new Queue("mail-queue", { redisConfig });
 
 mailQueue.process(NUEVA_OPORTUNIDAD, (job) => {
+  return mailService.sendEmail(job.data);
+});
+
+mailQueue.process(NUEVA_PARTICIPACION, (job) => {
   return mailService.sendEmail(job.data);
 });
 
