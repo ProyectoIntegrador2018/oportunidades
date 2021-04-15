@@ -14,7 +14,7 @@ const schema = new mongoose.Schema({
     required: true,
     ref: "User",
   },
-  estatus: {
+  socioEstatus: {
     type: String, // TODO: agregar require: True cuando se integre con el front
   },
   feedback: {
