@@ -11,6 +11,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import useStyles from "../SideMenu/styles";
 import clsx from "clsx";
 import NOTIFICATION_TYPES from "../utils/NotificationTypes";
+import axios from "axios";
 
 export default function NotificationFactory(props) {
   const downProps = {
@@ -72,9 +73,25 @@ class PortalNotification extends Component {
     }
   };
 
-  deleteNotification =(id) => {
-    console.log("deleting notif", id)
-  }
+  deleteNotification = (id) => {
+    axios
+      .delete("/notificaciones/delete-usuario-notificacion", {
+        headers: {
+          Authorization: "Bearer " + sessionStorage.getItem("token"),
+          "Content-Type": "application/json",
+        },
+        params: {
+          id: id,
+        },
+      })
+      .then((res) => {
+        // redireccionar
+        window.location.reload();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   render() {
     // TODO: Lift the state up if we want to avoid making a request every time we re-open the

@@ -1,3 +1,4 @@
+const User = require("../models/User");
 const UsuarioNotificacion = require("../models/UsuarioNotificacion");
 const usuarioNotificacion = {};
 
@@ -8,6 +9,25 @@ usuarioNotificacion.createUsuarioNotificacion = (rawUsuarioNotif) => {
       .save()
       .then(() => {
         resolve(usuarioNotif);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+};
+
+usuarioNotificacion.deleteUsuarioNotificacion = (id) => {
+  return new Promise((resolve, reject) => {
+    UsuarioNotificacion.findByIdAndDelete(id)
+      .then((usuarioNotif) => {
+        User.update(
+          { _id: usuarioNotif.user },
+          { $pull: { notificaciones: usuarioNotif._id } }
+        )
+          .then(() => {
+            resolve(usuarioNotif);
+          })
+          .catch((error) => reject(error));
       })
       .catch((error) => {
         reject(error);
