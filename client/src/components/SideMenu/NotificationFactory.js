@@ -7,6 +7,7 @@ import {
 } from "@material-ui/core";
 import { FiberManualRecord } from "@material-ui/icons";
 import FiberManualRecordTwoToneIcon from "@material-ui/icons/FiberManualRecordTwoTone";
+import DeleteIcon from "@material-ui/icons/Delete";
 import useStyles from "../SideMenu/styles";
 import clsx from "clsx";
 import NOTIFICATION_TYPES from "../utils/NotificationTypes";
@@ -71,6 +72,10 @@ class PortalNotification extends Component {
     }
   };
 
+  deleteNotification =(id) => {
+    console.log("deleting notif", id)
+  }
+
   render() {
     // TODO: Lift the state up if we want to avoid making a request every time we re-open the
     // notification tab
@@ -112,6 +117,15 @@ class PortalNotification extends Component {
             </React.Fragment>
           }
         />
+        <IconButton
+          edge="end"
+          size="small"
+          color="default"
+          className={this.props.styleClasses.notifDeleteIcon}
+          onClick={() => this.deleteNotification(this.props.id)}
+        >
+          {<DeleteIcon />}
+        </IconButton>
       </ListItem>
     );
   }
