@@ -26,7 +26,7 @@ mailService.sendEmail = (jobData) => {
       to: destinatario.email,
       subject: mailContent.subject,
       text: `Hola ${destinatario.name}, ${mailContent.text}`,
-      html: `<p>Hola ${destinatario.name}, te comunicamos que se ha abierto una nueva Oportunidad Comercial, te compartimos los detalles: ${mailContent.html}`,
+      html: `<p>Hola ${destinatario.name},${mailContent.html}`,
       attachments: {
         filename: mailContent.attachments.filename,
         content: mailContent.attachments.content,
@@ -54,28 +54,28 @@ mailService.buildMailContent = (tipoNotificacion, rfp) => {
     switch (tipoNotificacion) {
       case NUEVA_OPORTUNIDAD:
         mailOptions.subject = "Nueva Oportunidad Comercial";
-        mailOptions.text = `Te comunicamos que se ha abierto una nueva Oportunidad Comercial, te compartimos los detalles:
+        mailOptions.text = `te comunicamos que se ha abierto una nueva Oportunidad Comercial, te compartimos los detalles:
 
-Nombre de la Oportunidad Comercial: ${rfp.nombreOportunidad}
-Objetivo de la oportunidad: ${rfp.objetivoOportunidad}
-Descripción funcional de la oportunidad: ${rfp.descripcionFuncional}
-Requerimientos obligatorios: ${rfp.requerimientosObligatorios}
-Fechas relevantes: ${rfp.fechasRelevantes}
-¿Ha sido aprobada por el área usuaria?: ${rfp.aprobadaAreaUsuario}
-¿Ha sido aprobada por el área de TI?: ${rfp.aprobadaAreaTI}
-¿Tiene un presupuesto asignado?: ${rfp.presupuestoAsignado}
-Tipo general del proyecto: ${rfp.tipoGeneralProyecto}
-Tipo específico del proyecto: ${rfp.tipoEspecificoProyecto}
-Comentarios adicionales: ${rfp.comentariosAdicionales}
+        Nombre de la Oportunidad Comercial: ${rfp.nombreOportunidad}
+        Objetivo de la oportunidad: ${rfp.objetivoOportunidad}
+        Descripción funcional de la oportunidad: ${rfp.descripcionFuncional}
+        Requerimientos obligatorios: ${rfp.requerimientosObligatorios}
+        Fechas relevantes: ${rfp.fechasRelevantes}
+        ¿Ha sido aprobada por el área usuaria?: ${rfp.aprobadaAreaUsuario}
+        ¿Ha sido aprobada por el área de TI?: ${rfp.aprobadaAreaTI}
+        ¿Tiene un presupuesto asignado?: ${rfp.presupuestoAsignado}
+        Tipo general del proyecto: ${rfp.tipoGeneralProyecto}
+        Tipo específico del proyecto: ${rfp.tipoEspecificoProyecto}
+        Comentarios adicionales: ${rfp.comentariosAdicionales}
 
-Datos de contacto
-Nombre: ${rfp.nombrecliente}
-Posición: ${rfp.posicioncliente}
+        Datos de contacto
+        Nombre: ${rfp.nombrecliente}
+        Posición: ${rfp.posicioncliente}
 
 
 
-Gracias,
-Notificaciones de CSOFTMTY`;
+        Gracias,
+        Notificaciones de CSOFTMTY`;
 
         mailOptions.html = `
         <!doctype html>
@@ -108,7 +108,7 @@ Notificaciones de CSOFTMTY`;
               }
               </style>
             </head>
-              <h1>Oportunidad Comercial</h1>
+              <h1>Nueva Oportunidad Comercial</h1>
                 <body>
                   <div>
                     <h3>Datos generales</h3>
@@ -136,9 +136,6 @@ Notificaciones de CSOFTMTY`;
                           <b>Posición:</b> ${rfp.posicioncliente}<br>
                         </div>
                           <br>
-                          <p>Gracias,<br>
-                          Notificaciones de CSOFTMTY</p>
-                            <img src="server/resources/csoft.png" alt="logo_csoftmty"/>
                  </body>
           </html>`;
         break;
