@@ -1,6 +1,7 @@
 const express = require("express");
 const userMiddleware = require("../middleware/User");
 const rfpController = require("../controllers/RFPcontroller");
+const notificationService = require("../services/NotificationService");
 
 const router = express.Router();
 
@@ -12,21 +13,20 @@ const router = express.Router();
  */
 
 router.post("/create-rfp", userMiddleware, (req, res) => {
-   let id = req.user._id;
-   rfpController
-      .createrfp(req.body, id)
-      .then((rfp) => {
-         return res.send({
-           success: 1,
-           rfp: rfp,
-         });
-      })
-      .catch((error) => {
-         console.log("error", error)
-         return res.status(400).send({ error });
+  let id = req.user._id;
+  rfpController
+    .createrfp(req.body, id)
+    .then((rfp) => {
+      return res.send({
+        success: 1,
+        rfp: rfp,
       });
+    })
+    .catch((error) => {
+      console.log("error", error);
+      return res.status(400).send({ error });
+    });
 });
-
 
 /**
  * Route to get all of the existing RFPs
@@ -36,15 +36,15 @@ router.post("/create-rfp", userMiddleware, (req, res) => {
  */
 
 router.get("/get-rfp", userMiddleware, (req, res) => {
-   rfpController
-      .getrfp(req.body)
-      .then(
-         (rfps) => {return res.send(rfps)}
-      )
-      .catch((error) => {
-         console.log("error", error)
-         return res.status(400).send({ error });
-      });
+  rfpController
+    .getrfp(req.body)
+    .then((rfps) => {
+      return res.send(rfps);
+    })
+    .catch((error) => {
+      console.log("error", error);
+      return res.status(400).send({ error });
+    });
 });
 
 /**
@@ -55,15 +55,15 @@ router.get("/get-rfp", userMiddleware, (req, res) => {
  */
 
 router.get("/get-rfp-socio", userMiddleware, (req, res) => {
-   rfpController
-      .getrfpSocio(req.body)
-      .then(
-         (rfps) => {return res.send(rfps)}
-      )
-      .catch((error) => {
-         console.log("error", error)
-         return res.status(400).send({ error });
-      });
+  rfpController
+    .getrfpSocio(req.body)
+    .then((rfps) => {
+      return res.send(rfps);
+    })
+    .catch((error) => {
+      console.log("error", error);
+      return res.status(400).send({ error });
+    });
 });
 
 /**
@@ -74,15 +74,15 @@ router.get("/get-rfp-socio", userMiddleware, (req, res) => {
  */
 
 router.get("/get-rfp-cliente", userMiddleware, (req, res) => {
-   rfpController
-      .getrfpCliente(req.user.id)
-      .then(
-         (rfps) => {return res.send(rfps)}
-      )
-      .catch((error) => {
-         console.log("error", error)
-         return res.status(400).send({ error });
-      });
+  rfpController
+    .getrfpCliente(req.user.id)
+    .then((rfps) => {
+      return res.send(rfps);
+    })
+    .catch((error) => {
+      console.log("error", error);
+      return res.status(400).send({ error });
+    });
 });
 
 /**
@@ -91,15 +91,15 @@ router.get("/get-rfp-cliente", userMiddleware, (req, res) => {
  * @param {Object} req contains the RFP's data in its body.
  * @param {Object} res response for the request
  */
-router.delete('/deleterfp', userMiddleware, (req, res) => {
+router.delete("/deleterfp", userMiddleware, (req, res) => {
   rfpController
-     .deleterfp(req.query.id)
-     .then(() => {
-        return res.send({success: 1});
-     })
-     .catch((error) => {
-        return res.status(400).send({success: 0, error});
-     });
+    .deleterfp(req.query.id)
+    .then(() => {
+      return res.send({ success: 1 });
+    })
+    .catch((error) => {
+      return res.status(400).send({ success: 0, error });
+    });
 });
 
 /**
@@ -108,28 +108,32 @@ router.delete('/deleterfp', userMiddleware, (req, res) => {
  * @param {Object} req contains the RFP's data in its body.
  * @param {Object} res response for the request
  */
-router.patch('/updaterfp', userMiddleware, (req, res) => {
+router.patch("/updaterfp", userMiddleware, (req, res) => {
+  notificationService
+    .notificacionCambioEstatusOportunidad(req.body)
+    .then(() => {
       rfpController
-         .updaterfp(req.user._id, req.body)
-         .then((rfp) => {
-            return res.send({
-               success: 1,
-               rfp,
-            });
-         })
-         .catch((error) => { 
-            return res.status(401).send({
-               success: 0,
-               error,
-            });
-         });
-   });
-
-
-
+        .updaterfp(req.user._id, req.body)
+        .then((rfp) => {
+          return res.send({
+            success: 1,
+            rfp,
+          });
+        })
+        .catch((error) => {
+          return res.status(401).send({
+            success: 0,
+            error,
+          });
+        });
+    })
+    .catch((error) => {
+      return res.status(401).send({ success: 0, error });
+    });
+});
 
 router.get("/ping", userMiddleware, (req, res) => {
-   return res.send({info: "ping is working for authorized user"})
+  return res.send({ info: "ping is working for authorized user" });
 });
 
 module.exports = router;

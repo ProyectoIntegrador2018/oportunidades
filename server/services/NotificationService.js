@@ -7,7 +7,9 @@ const {
   NUEVA_OPORTUNIDAD,
   OPORTUNIDAD_ELIMINADA,
   NUEVA_PARTICIPACION,
+  CAMBIO_ESTATUS,
 } = require("../utils/NotificationTypes");
+const participacionController = require("../controllers/ParticipacionController");
 const detallesNotifController = require("../controllers/DetallesNotificacionController");
 const notificacionController = require("../controllers/NotificacionController");
 const usuarioNotificacion = require("../controllers/UsuarioNotificacionController");
@@ -69,7 +71,8 @@ const notificacionTodosSocios = function (tipoNotificacion, detalles) {
 
 const mailTodosSocios = function (tipoNotificacion, rfp) {
   return new Promise((resolve, reject) => {
-    mailService.buildMailContent(tipoNotificacion, rfp)
+    mailService
+      .buildMailContent(tipoNotificacion, rfp)
       .then((mailContent) => {
         UserModel.findByUserType("socio")
           .then((socios) => {
@@ -79,7 +82,7 @@ const mailTodosSocios = function (tipoNotificacion, rfp) {
                 destinatario: {
                   name: socio.name,
                   email: socio.email,
-                }
+                },
               };
               mailQueue.add(tipoNotificacion, jobMail, { attempts: 3 });
 
@@ -122,6 +125,83 @@ notificationService.notificacionOportunidadEliminada = (job) => {
         resolve(resp);
       })
       .catch((error) => reject(error));
+  });
+};
+
+notificationService.notificacionCambioEstatusOportunidad = (job) => {
+  return new Promise((resolve, reject) => {
+    const rfpId = job.id;
+    RfpModel.findById(rfpId)
+      .then((rfp) => {
+        if (rfp.estatus == job.estatus) resolve({ success: 1 });
+
+        participacionController
+          .getParticipacionesRFP(rfpId)
+          .then((participaciones) => {
+            return participaciones.map((participacion) => {
+              return participacion.socioInvolucrado;
+            });
+          })
+          .then((sociosParticipantes) => {
+            const detalles = {
+              rfp: rfpId,
+            };
+            notificacionSocios(CAMBIO_ESTATUS, detalles, sociosParticipantes)
+              .then((resp) => resolve(resp))
+              .catch((error) => reject(error));
+          })
+          .catch((error) => reject(error));
+      })
+      .catch((error) => reject(error));
+  });
+};
+
+const notificacionSocios = function (tipoNotificacion, detalles, socios) {
+  return new Promise((resolve, reject) => {
+    detallesNotifController
+      .createDetalles(detalles)
+      .then((detallesNotif) => {
+        const rawNotificacion = {
+          tipo: tipoNotificacion,
+          date: new Date(),
+          detalles: detallesNotif._id,
+        };
+        return notificacionController
+          .createNotificacion(rawNotificacion)
+          .then((notificacion) => {
+            return notificacion;
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      })
+      .then((notificacion) => {
+        socios.map((socio) => {
+          const rawUsuarioNotif = {
+            read: false,
+            notificacion: notificacion._id,
+            user: socio._id,
+          };
+          usuarioNotificacion
+            .createUsuarioNotificacion(rawUsuarioNotif)
+            .then((usuarioNotif) => {
+              UserModel.findById(socio._id)
+                .then((user) => {
+                  user.addNotificacion(usuarioNotif._id);
+                })
+                .catch((error) => {
+                  reject(error);
+                });
+            })
+            .catch((error) => {
+              reject(error);
+            });
+        });
+        resolve({ success: 1 });
+      })
+      .catch((error) => {
+        reject(error);
+      });
   });
 };
 
@@ -201,9 +281,10 @@ const mailNuevaParticipacion = function (participacion) {
           .then((participante) => {
             const rfpMail = {
               nombreOportunidad: rfp.nombreOportunidad,
-              participanteName: participante.name
+              participanteName: participante.name,
             };
-            mailService.buildMailContent(NUEVA_PARTICIPACION, rfpMail)
+            mailService
+              .buildMailContent(NUEVA_PARTICIPACION, rfpMail)
               .then((mailContent) => {
                 UserModel.findById(rfp.createdBy)
                   .then((cliente) => {
@@ -211,10 +292,12 @@ const mailNuevaParticipacion = function (participacion) {
                       mailContent: mailContent,
                       destinatario: {
                         name: cliente.name,
-                        email: cliente.email
-                      }
+                        email: cliente.email,
+                      },
                     };
-                    mailQueue.add(NUEVA_PARTICIPACION, jobMail, { attempts: 3 });
+                    mailQueue.add(NUEVA_PARTICIPACION, jobMail, {
+                      attempts: 3,
+                    });
 
                     resolve({ status: 200 });
                   })
