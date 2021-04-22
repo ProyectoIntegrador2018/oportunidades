@@ -174,6 +174,18 @@ schema.statics.findByUserType = function (userType) {
 };
 
 /**
+ * Gets users in array of types
+ * @param {Array} userTypes
+ */
+ schema.statics.findByUserTypes = function (userTypes) {
+   return new Promise((resolve, reject) => {
+     this.find({ userType: { $in: userTypes } })
+       .then((users) => resolve(users))
+       .catch((error) => reject(error));
+   });
+ };
+
+/**
  *  Get client who posted RFP
  * @param {ObjectId} rfpInvolucrado
  */

@@ -19,57 +19,6 @@ const mailQueue = require("./MailQueue");
 
 const notificationService = {};
 
-const notificacionTodosSocios = function (tipoNotificacion, detalles) {
-  return new Promise((resolve, reject) => {
-    detallesNotifController
-      .createDetalles(detalles)
-      .then((detallesNotif) => {
-        const rawNotificacion = {
-          tipo: tipoNotificacion,
-          date: new Date(),
-          detalles: detallesNotif._id,
-        };
-        return notificacionController
-          .createNotificacion(rawNotificacion)
-          .then((notificacion) => {
-            return notificacion;
-          })
-          .catch((error) => {
-            reject(error);
-          });
-      })
-      .then((notificacion) => {
-        UserModel.findByUserType("socio").then((socios) => {
-          socios.map((socio) => {
-            const rawUsuarioNotif = {
-              read: false,
-              notificacion: notificacion._id,
-              user: socio._id,
-            };
-            usuarioNotificacion
-              .createUsuarioNotificacion(rawUsuarioNotif)
-              .then((usuarioNotif) => {
-                UserModel.findById(socio._id)
-                  .then((user) => {
-                    user.addNotificacion(usuarioNotif._id);
-                  })
-                  .catch((error) => {
-                    reject(error);
-                  });
-              })
-              .catch((error) => {
-                reject(error);
-              });
-          });
-          resolve({ status: 200 });
-        });
-      })
-      .catch((error) => {
-        reject(error);
-      });
-  });
-};
-
 const mailTodosSocios = function (tipoNotificacion, rfp) {
   return new Promise((resolve, reject) => {
     mailService
@@ -98,32 +47,42 @@ const mailTodosSocios = function (tipoNotificacion, rfp) {
 
 notificationService.notificacionNuevaOportunidad = (job) => {
   return new Promise((resolve, reject) => {
-    // const detalles = { rfp: job.data.rfp._id };
-    const detalles = { rfp: job.rfp._id };
-    notificacionTodosSocios(NUEVA_OPORTUNIDAD, detalles)
-      .then((resp) => {
-        resolve(resp);
-        /*
+    UserModel.findByUserTypes(["socio", "admin"]).then((users) => {
+      if (!users || users.length == 0) resolve({ success: 1 });
+
+      // const detalles = { rfp: job.data.rfp._id };
+      const detalles = { rfp: job.rfp._id };
+      notificacionUsuarios(NUEVA_OPORTUNIDAD, detalles, users)
+        .then((resp) => {
+          resolve(resp);
+          /*
         mailTodosSocios(NUEVA_OPORTUNIDAD, job.rfp)
           .then((respMail) => {
             resolve(respMail);
           })
           .catch((error) => reject(error));
         */
-      })
-      .catch((error) => reject(error));
-  });
+        })
+        .catch((error) => reject(error));
+    });
+  }).catch((error) => reject(error));
 };
 
 notificationService.notificacionOportunidadEliminada = (job) => {
   return new Promise((resolve, reject) => {
-    const detalles = {
-      // detalles: job.data.nombreOportunidad,
-      detalles: job.nombreOportunidad,
-    };
-    notificacionTodosSocios(OPORTUNIDAD_ELIMINADA, detalles)
-      .then((resp) => {
-        resolve(resp);
+    UserModel.findByUserType("socio")
+      .then((socios) => {
+        if (!socios || socios.length == 0) resolve({ success: 1 });
+
+        const detalles = {
+          // detalles: job.data.nombreOportunidad,
+          detalles: job.nombreOportunidad,
+        };
+        notificacionUsuarios(OPORTUNIDAD_ELIMINADA, detalles, socios)
+          .then((resp) => {
+            resolve(resp);
+          })
+          .catch((error) => reject(error));
       })
       .catch((error) => reject(error));
   });
@@ -147,7 +106,7 @@ notificationService.notificacionCambioEstatusOportunidad = (job) => {
             const detalles = {
               rfp: rfpId,
             };
-            notificacionSocios(CAMBIO_ESTATUS, detalles, sociosParticipantes)
+            notificacionUsuarios(CAMBIO_ESTATUS, detalles, sociosParticipantes)
               .then((resp) => resolve(resp))
               .catch((error) => reject(error));
           })
@@ -157,7 +116,7 @@ notificationService.notificacionCambioEstatusOportunidad = (job) => {
   });
 };
 
-const notificacionSocios = function (tipoNotificacion, detalles, socios) {
+const notificacionUsuarios = function (tipoNotificacion, detalles, socios) {
   return new Promise((resolve, reject) => {
     detallesNotifController
       .createDetalles(detalles)
