@@ -21,7 +21,7 @@ rfpController.createrfp = (rawRFP, id) => {
         // return notificationQueue.add(NUEVA_OPORTUNIDAD, job);
         return notificationService
           .notificacionNuevaOportunidad(job)
-          .then((resp) => {})
+          .then((resp) => resp)
           .catch((error) => reject(error));
       })
       .then(() => {
@@ -61,7 +61,7 @@ rfpController.deleterfp = (id) => {
             // notificationQueue.add(OPORTUNIDAD_ELIMINADA, job);
             notificationService
               .notificacionOportunidadEliminada(job)
-              .then((resp) => {})
+              .then((resp) => resp)
               .catch((error) => reject(error));
             return rfp;
           })
