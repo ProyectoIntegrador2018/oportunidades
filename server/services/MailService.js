@@ -107,19 +107,19 @@ mailService.buildMailContent = (tipoNotificacion, rfp) => {
         break;
 
       case NUEVO_EVENTO:
-        const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-        const eventDate = `${moment.utc(rfp.date).toDate().toLocaleDateString('es-ES', dateOptions)} ${moment.utc(rfp.date).toDate().toLocaleTimeString('en-US')}`
+        moment.locale("es-us")
+        const eventDate = upperCaseFirstLetter(moment(rfp.date).format("LLLL"));
 
         mailOptions.subject = "Nueva junta para Oportunidad Comercial";
         mailOptions.text = `se ha agendado una nueva junta para la Oportunidad Comercial "${rfp.nombreOportunidad}" en la cual estás participando:
         Nombre: ${rfp.name}
         Fecha: ${eventDate}
-        Liga de la reunion: ${rfp.link}`;
+        Liga de la reunión: ${rfp.link}`;
 
         mailOptions.html = `se ha agendado una nueva junta para la Oportunidad Comercial "${rfp.nombreOportunidad}" en la cual estás participando:</p>
         <p><b>Nombre:</b> ${rfp.name}<br>
         <b>Fecha:</b> ${eventDate}<br>
-        <b>Liga de la reunion:</b> <a href="${rfp.link}">${rfp.link}</a></p>`;
+        <b>Liga de la reunión:</b> <a href="${rfp.link}">${rfp.link}</a></p>`;
         break;
 
       default:
@@ -184,5 +184,9 @@ const generatePdf = (bodyTitle, htmlBody) => {
     });
   });
 };
+
+const upperCaseFirstLetter = (string) => {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
 
 module.exports = mailService;
