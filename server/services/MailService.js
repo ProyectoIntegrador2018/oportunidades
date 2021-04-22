@@ -1,8 +1,6 @@
 const nodemailer = require("nodemailer");
-const moment = require("moment");
-const { NUEVA_OPORTUNIDAD, NUEVA_PARTICIPACION, NUEVO_EVENTO } = require("../utils/NotificationTypes");
+const { NUEVA_OPORTUNIDAD, NUEVA_PARTICIPACION } = require("../utils/NotificationTypes");
 var pdf = require("html-pdf");
-
 var options = { format: "Letter" };
 const mailService = {};
 
@@ -28,12 +26,12 @@ mailService.sendEmail = (jobData) => {
       to: destinatario.email,
       subject: mailContent.subject,
       text: `Hola ${destinatario.name}, ${mailContent.text}`,
-      html: `<p>Hola ${destinatario.name}, ${mailContent.html}`,
+      html: `<p>Hola ${destinatario.name},${mailContent.html}`,
       attachments: {
         filename: mailContent.attachments.filename,
         content: mailContent.attachments.content,
         encoding: 'base64',
-      }
+      },
     };
 
 
@@ -149,22 +147,6 @@ mailService.buildMailContent = (tipoNotificacion, rfp) => {
 
         mailOptions.html = `queremos informarte que el socio ${rfp.participanteName} ha aplicado a tu Oportunidad Comercial "${rfp.nombreOportunidad}".</p>`
         break;
-
-      case NUEVO_EVENTO:
-        const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-        const eventDate = `${moment.utc(rfp.date).toDate().toLocaleDateString('es-ES', dateOptions)} ${moment.utc(rfp.date).toDate().toLocaleTimeString('en-US')}`
-        mailOptions.subject = "Nueva junta para Oportunidad Comercial";
-        mailOptions.text = `se ha agendado una nueva junta para la Oportunidad Comercial "${rfp.nombreOportunidad}" en la cual estás participando:
-        Nombre: ${rfp.name}
-        Fecha: ${eventDate}
-        Liga de la reunion: ${rfp.link}`
-
-        mailOptions.html = `se ha agendado una nueva junta para la Oportunidad Comercial "${rfp.nombreOportunidad}" en la cual estás participando:</p>
-        <p><b>Nombre:</b> ${rfp.name}<br>
-        <b>Fecha:</b> ${eventDate}<br>
-        <b>Liga de la reunion:</b> <a href="${rfp.link}">${rfp.link}</a></p>`
-        break;
-
       default:
         reject("Invalid notificationType");
     }

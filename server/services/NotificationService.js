@@ -8,7 +8,6 @@ const {
   OPORTUNIDAD_ELIMINADA,
   NUEVA_PARTICIPACION,
   CAMBIO_ESTATUS,
-  NUEVO_EVENTO
 } = require("../utils/NotificationTypes");
 const participacionController = require("../controllers/ParticipacionController");
 const detallesNotifController = require("../controllers/DetallesNotificacionController");
@@ -324,50 +323,6 @@ notificationService.notificacionNuevaParticipacion = (participacion) => {
           })
           .catch((error) => reject(error));
         */
-      })
-      .catch((error) => reject(error));
-  });
-};
-
-const mailNuevoEvento = function (evento) {
-  return new Promise((resolve, reject) => {
-    RfpModel.findById(evento.rfp)
-      .then((rfp) => {
-        const eventData = {
-          name: evento.name,
-          date: evento.date,
-          link: evento.link,
-          nombreOportunidad: rfp.nombreOportunidad
-        }
-        mailService.buildMailContent(NUEVO_EVENTO, eventData)
-        .then((mailContent) => {
-          UserModel.findByUserType("socio")
-          .then((socios) => {
-            socios.map((socio) => {
-              const jobMail = {
-                mailContent: mailContent,
-                destinatario: {
-                  name: socio.name,
-                  email: socio.email,
-                },
-              };
-              mailQueue.add(NUEVO_EVENTO, jobMail, { attempts: 3 });
-              
-              resolve({ status: 200 });
-            });
-          })
-          .catch((error) => reject(error));
-        })
-      })
-      .catch((error) => reject(error));
-  });
-};
-
-notificationService.notificacionNuevoEvento = (evento) => {
-  return new Promise((resolve, reject) => {
-    mailNuevoEvento(evento)
-      .then((respMail) => {
-        resolve(respMail);
       })
       .catch((error) => reject(error));
   });
