@@ -55,7 +55,7 @@ mailService.sendEmail = (jobData) => {
   });
 };
 
-mailService.buildMailContent = (tipoNotificacion, data) => {
+mailService.buildMailContent = (tipoNotificacion, mailData) => {
   return new Promise((resolve, reject) => {
     let mailOptions = {};
 
@@ -64,62 +64,62 @@ mailService.buildMailContent = (tipoNotificacion, data) => {
         mailOptions.subject = "Nueva Oportunidad Comercial";
         mailOptions.text = `te comunicamos que se ha abierto una nueva Oportunidad Comercial, te compartimos los detalles:
 
-        Nombre de la Oportunidad Comercial: ${data.nombreOportunidad}
-        Objetivo de la oportunidad: ${data.objetivoOportunidad}
-        Descripción funcional de la oportunidad: ${data.descripcionFuncional}
-        Requerimientos obligatorios: ${data.requerimientosObligatorios}
-        Fechas relevantes: ${data.fechasRelevantes}
-        ¿Ha sido aprobada por el área usuaria?: ${data.aprobadaAreaUsuario}
-        ¿Ha sido aprobada por el área de TI?: ${data.aprobadaAreaTI}
-        ¿Tiene un presupuesto asignado?: ${data.presupuestoAsignado}
-        Tipo general del proyecto: ${data.tipoGeneralProyecto}
-        Tipo específico del proyecto: ${data.tipoEspecificoProyecto}
-        Comentarios adicionales: ${data.comentariosAdicionales}
+        Nombre de la Oportunidad Comercial: ${mailData.nombreOportunidad}
+        Objetivo de la oportunidad: ${mailData.objetivoOportunidad}
+        Descripción funcional de la oportunidad: ${mailData.descripcionFuncional}
+        Requerimientos obligatorios: ${mailData.requerimientosObligatorios}
+        Fechas relevantes: ${mailData.fechasRelevantes}
+        ¿Ha sido aprobada por el área usuaria?: ${mailData.aprobadaAreaUsuario}
+        ¿Ha sido aprobada por el área de TI?: ${mailData.aprobadaAreaTI}
+        ¿Tiene un presupuesto asignado?: ${mailData.presupuestoAsignado}
+        Tipo general del proyecto: ${mailData.tipoGeneralProyecto}
+        Tipo específico del proyecto: ${mailData.tipoEspecificoProyecto}
+        Comentarios adicionales: ${mailData.comentariosAdicionales}
 
         Datos de contacto
-        Nombre: ${data.nombrecliente}
-        Posición: ${data.posicioncliente}`;
+        Nombre: ${mailData.nombrecliente}
+        Posición: ${mailData.posicioncliente}`;
 
         mailOptions.html = `<h3>Datos generales</h3>
-        <p><b>Nombre de la Oportunidad Comercial:</b> ${data.nombreOportunidad}<br>
-        <b>Objetivo de la oportunidad:</b> ${data.objetivoOportunidad}<br>
-        <b>Descripción funcional de la oportunidad:</b> ${data.descripcionFuncional}</p>
+        <p><b>Nombre de la Oportunidad Comercial:</b> ${mailData.nombreOportunidad}<br>
+        <b>Objetivo de la oportunidad:</b> ${mailData.objetivoOportunidad}<br>
+        <b>Descripción funcional de la oportunidad:</b> ${mailData.descripcionFuncional}</p>
         <h3>Detalle de la oportunidad</h3>
-        <p><b>Requerimientos obligatorios:</b> ${data.requerimientosObligatorios}<br>
-        <b>Fechas relevantes:</b> ${data.fechasRelevantes}</p>
+        <p><b>Requerimientos obligatorios:</b> ${mailData.requerimientosObligatorios}<br>
+        <b>Fechas relevantes:</b> ${mailData.fechasRelevantes}</p>
         <h3>Estatus de la necesidad</h3>
-        <p><b>¿Ha sido aprobada por el área usuaria?:</b> ${data.aprobadaAreaUsuario}<br>
-        <b>¿Ha sido aprobada por el área de TI?:</b> ${data.aprobadaAreaTI}<br>
-        <b>¿Tiene un presupuesto asignado?:</b> ${data.presupuestoAsignado}<br>
-        <b>Tipo general del proyecto:</b> ${data.tipoGeneralProyecto}<br>
-        <b>Tipo específico del proyecto:</b> ${data.tipoEspecificoProyecto}<br>
-        <b>Comentarios adicionales:</b> ${data.comentariosAdicionales}</p>
+        <p><b>¿Ha sido aprobada por el área usuaria?:</b> ${mailData.aprobadaAreaUsuario}<br>
+        <b>¿Ha sido aprobada por el área de TI?:</b> ${mailData.aprobadaAreaTI}<br>
+        <b>¿Tiene un presupuesto asignado?:</b> ${mailData.presupuestoAsignado}<br>
+        <b>Tipo general del proyecto:</b> ${mailData.tipoGeneralProyecto}<br>
+        <b>Tipo específico del proyecto:</b> ${mailData.tipoEspecificoProyecto}<br>
+        <b>Comentarios adicionales:</b> ${mailData.comentariosAdicionales}</p>
         <h3>Datos de contacto</h3>
-        <p><b>Nombre:</b> ${data.nombrecliente}<br>
-        <b>Posición:</b> ${data.posicioncliente}</p>
+        <p><b>Nombre:</b> ${mailData.nombrecliente}<br>
+        <b>Posición:</b> ${mailData.posicioncliente}</p>
         <br>`;
         break;
 
       case NUEVA_PARTICIPACION:
         mailOptions.subject = "Un socio de CSOFTMTY ha aplicado a tu Oportunidad Comercial";
-        mailOptions.text = `queremos informarte que el socio ${data.participanteName} ha aplicado a tu Oportunidad Comercial "${data.nombreOportunidad}".`;
-        mailOptions.html = `queremos informarte que el socio ${data.participanteName} ha aplicado a tu Oportunidad Comercial "${data.nombreOportunidad}".</p>`;
+        mailOptions.text = `queremos informarte que el socio ${mailData.participanteName} ha aplicado a tu Oportunidad Comercial "${mailData.nombreOportunidad}".`;
+        mailOptions.html = `queremos informarte que el socio ${mailData.participanteName} ha aplicado a tu Oportunidad Comercial "${mailData.nombreOportunidad}".</p>`;
         break;
 
       case NUEVO_EVENTO:
         moment.locale("es-us");
-        const eventDate = upperCaseFirstLetter(moment(data.date).format("LLLL"));
+        const eventDate = upperCaseFirstLetter(moment(mailData.date).format("LLLL"));
 
         mailOptions.subject = "Nueva junta para Oportunidad Comercial";
-        mailOptions.text = `se ha agendado una nueva junta para la Oportunidad Comercial "${data.nombreOportunidad}" en la cual estás participando:
-        Nombre: ${data.name}
+        mailOptions.text = `se ha agendado una nueva junta para la Oportunidad Comercial "${mailData.nombreOportunidad}" en la cual estás participando:
+        Nombre: ${mailData.name}
         Fecha: ${eventDate}
-        Liga de la reunión: ${data.link}`;
+        Liga de la reunión: ${mailData.link}`;
 
-        mailOptions.html = `se ha agendado una nueva junta para la Oportunidad Comercial "${data.nombreOportunidad}" en la cual estás participando:</p>
-        <p><b>Nombre:</b> ${data.name}<br>
+        mailOptions.html = `se ha agendado una nueva junta para la Oportunidad Comercial "${mailData.nombreOportunidad}" en la cual estás participando:</p>
+        <p><b>Nombre:</b> ${mailData.name}<br>
         <b>Fecha:</b> ${eventDate}<br>
-        <b>Liga de la reunión:</b> <a href="${data.link}">${data.link}</a></p>`;
+        <b>Liga de la reunión:</b> <a href="${mailData.link}">${mailData.link}</a></p>`;
         break;
 
       default:
@@ -134,7 +134,7 @@ mailService.buildMailContent = (tipoNotificacion, data) => {
     if (tipoNotificacion === NUEVA_OPORTUNIDAD) {
       generatePdf("Nueva Oportunidad Comercial", mailOptions.html).then((base64String) => {
         mailOptions.attachments = {
-          filename: `${data.nombreOportunidad}.pdf`,
+          filename: `${mailData.nombreOportunidad}.pdf`,
           content: base64String,
         };
         mailOptions.html = "te comunicamos que se ha abierto una nueva Oportunidad Comercial, te compartimos los detalles:" + mailOptions.html;
