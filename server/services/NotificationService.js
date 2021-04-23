@@ -140,14 +140,15 @@ const notificacionUsuarios = function (tipoNotificacion, detalles, socios) {
 
 const mailTodosSocios = function (tipoNotificacion, rfp) {
   return new Promise((resolve, reject) => {
-    UserModel.findByUserTypes(["socio", "admin"]).then((users) => {
-      if (!users || users.length == 0) resolve({ success: 1 });
+    UserModel.findByUserTypes(["socio", "admin"])
+      .then((users) => {
+        if (!users || users.length == 0) resolve({ success: 1 });
 
-      mailUsuarios(tipoNotificacion, rfp, users)
-        .then((resp) => {
-          resolve(resp);
-        })
-        .catch((error) => reject(error));
+        mailUsuarios(tipoNotificacion, rfp, users)
+          .then((resp) => {
+            resolve(resp);
+          })
+          .catch((error) => reject(error));
       })
       .catch((error) => reject(error));
   });
@@ -162,9 +163,10 @@ const mailParticipantesRfp = function (tipoNotificacion, mailData, rfpId) {
         });
       })
       .then((idSociosParticipantes) => {
-        if (!idSociosParticipantes || idSociosParticipantes.length == 0) resolve({ success: 1 });
-        
-        UserModel.find({_id: idSociosParticipantes}, 'name email')
+        if (!idSociosParticipantes || idSociosParticipantes.length == 0)
+          resolve({ success: 1 });
+
+        UserModel.find({ _id: idSociosParticipantes }, "name email")
           .then((sociosParticipantes) => {
             mailUsuarios(tipoNotificacion, mailData, sociosParticipantes)
               .then((resp) => {
@@ -180,7 +182,8 @@ const mailParticipantesRfp = function (tipoNotificacion, mailData, rfpId) {
 
 const mailUsuarios = function (tipoNotificacion, mailData, usuarios) {
   return new Promise((resolve, reject) => {
-    mailService.buildMailContent(tipoNotificacion, mailData)
+    mailService
+      .buildMailContent(tipoNotificacion, mailData)
       .then((mailContent) => {
         usuarios.map((usuario) => {
           const jobMail = {
@@ -322,6 +325,16 @@ notificationService.notificacionNuevaParticipacion = (participacion) => {
   });
 };
 
+notificationService.notificacionNuevoEvento = (evento) => {
+  return new Promise((resolve, reject) => {
+    mailNuevoEvento(evento)
+      .then((respMail) => {
+        resolve(respMail);
+      })
+      .catch((error) => reject(error));
+  });
+};
+
 const mailNuevoEvento = function (evento) {
   return new Promise((resolve, reject) => {
     RfpModel.getNombreOportunidad(evento.rfp)
@@ -337,16 +350,6 @@ const mailNuevoEvento = function (evento) {
             resolve(resp);
           })
           .catch((error) => reject(error));
-      })
-      .catch((error) => reject(error));
-  });
-};
-
-notificationService.notificacionNuevoEvento = (evento) => {
-  return new Promise((resolve, reject) => {
-    mailNuevoEvento(evento)
-      .then((respMail) => {
-        resolve(respMail);
       })
       .catch((error) => reject(error));
   });
