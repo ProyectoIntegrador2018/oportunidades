@@ -1,6 +1,7 @@
 const UserModel = require("../models/User");
 const RfpModel = require("../models/RFP");
 const NotificacionModel = require("../models/Notificacion");
+const ParticipacionModel = require("../models/Participaciones");
 const UsuarioNotificacionModel = require("../models/UsuarioNotificacion");
 const DetallesNotificacionModel = require("../models/DetallesNotificacion");
 const {
@@ -10,7 +11,6 @@ const {
   CAMBIO_ESTATUS,
   NUEVO_EVENTO
 } = require("../utils/NotificationTypes");
-const participacionController = require("../controllers/ParticipacionController");
 const detallesNotifController = require("../controllers/DetallesNotificacionController");
 const notificacionController = require("../controllers/NotificacionController");
 const usuarioNotificacion = require("../controllers/UsuarioNotificacionController");
@@ -95,8 +95,7 @@ notificationService.notificacionCambioEstatusOportunidad = (job) => {
       .then((rfp) => {
         if (rfp.estatus == job.estatus) resolve({ success: 1 });
 
-        participacionController
-          .getParticipacionesRFP(rfpId)
+        ParticipacionModel.find({ rfpInvolucrado: rfpId })
           .then((participaciones) => {
             return participaciones.map((participacion) => {
               return participacion.socioInvolucrado;
