@@ -297,26 +297,36 @@ const mailNuevoEvento = function (evento) {
           date: evento.date,
           link: evento.link,
           nombreOportunidad: rfp.nombreOportunidad
-        }
+        };
         mailService.buildMailContent(NUEVO_EVENTO, eventData)
-        .then((mailContent) => {
-          UserModel.findByUserType("socio")
-          .then((socios) => {
-            socios.map((socio) => {
-              const jobMail = {
-                mailContent: mailContent,
-                destinatario: {
-                  name: socio.name,
-                  email: socio.email,
-                },
-              };
-              mailQueue.add(NUEVO_EVENTO, jobMail, { attempts: 3 });
-              
-              resolve({ status: 200 });
-            });
+          .then((mailContent) => {
+            participacionController.getParticipacionesRFP(evento.rfp)
+              .then((participaciones) => {
+                return participaciones.map((participacion) => {
+                  return participacion.socioInvolucrado;
+                });
+              })
+              .then((sociosParticipantes) => {
+                sociosParticipantes.map((socioId) => {
+                  UserModel.findById(socioId)
+                    .then((socio) => {
+                      const jobMail = {
+                        mailContent: mailContent,
+                        destinatario: {
+                          name: socio.name,
+                          email: socio.email
+                        }
+                      };
+                      mailQueue.add(NUEVO_EVENTO, jobMail, { attempts: 3 });
+
+                      resolve({ status: 200 });
+                    })
+                    .catch((error) => reject(error));
+                });
+              })
+              .catch((error) => reject(error));
           })
           .catch((error) => reject(error));
-        })
       })
       .catch((error) => reject(error));
   });
