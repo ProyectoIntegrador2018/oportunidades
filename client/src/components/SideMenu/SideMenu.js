@@ -66,19 +66,22 @@ const SideMenu = () => {
       .filter((rawNotif) => rawNotif.notificacion)
       .map((rawNotif) => {
         const { _id, read } = rawNotif;
-        const { tipo, detalles } = rawNotif.notificacion;
+        const { date, tipo, detalles } = rawNotif.notificacion;
         const { rfp } = detalles;
         const author = rfp ? rfp.nombrecliente : "";
         const opportunityName = rfp ? rfp.nombreOportunidad : detalles.detalles;
         const { participante } = detalles;
         const participanteName = participante ? participante.name : "";
+        const rfp_id = rfp ? rfp._id : "";
         const notif = {
           id: _id,
           type: tipo,
           details: {
+            rfp_id: rfp_id,
             author: author,
             opportunityName: opportunityName,
-            participanteName: participanteName
+            participanteName: participanteName,
+            date: date
           },
           isRead: read,
         };

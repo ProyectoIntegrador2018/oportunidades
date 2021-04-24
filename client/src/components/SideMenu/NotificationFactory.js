@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { Navigate } from 'react-router-dom';
 import {
   Typography,
   ListItem,
@@ -42,11 +43,30 @@ class PortalNotification extends Component {
     this.state = {
       toggledRead: false,
       isRead: undefined,
+      hasClicked: false,
     };
   }
 
   getAuthor = () => {
     return this.props.details.author;
+  };
+
+  getNotifAge = () => {
+    const date = Math.round(new Date(this.props.details.date).getTime() / 1000);
+    // TODO: Change now to the time zone of the mongoDB
+    const now = Math.round(Date.now() / 1000);
+    const timeDiff = now - date;
+    if (timeDiff < 60) {
+      return `${Math.floor(timeDiff)} segundo(s)`;
+    } else if (timeDiff < 60 * 60) {
+      return `${Math.floor(timeDiff / 60)} minuto(s)`;
+    } else if (timeDiff < 60 * 60 * 24) {
+      return `${Math.floor(timeDiff / (60 * 60))} hora(s)`;
+    } else if (timeDiff < 60 * 60 * 24 * 7) {
+      return `${Math.floor(timeDiff / (60 * 60 * 24))} día(s)`;
+    } else {
+      return `${Math.floor(timeDiff / (60 * 60 * 24 * 7))} semana(s)`;
+    }
   };
 
   // This method should be overriden by the concrete class
@@ -58,6 +78,16 @@ class PortalNotification extends Component {
   getDescription = () => {
     return "";
   };
+
+  // This method should be overriden by the concrete class
+  getNavPath = () => {
+    return "/inicio";
+  }
+
+  // This method should be overriden by the concrete class
+  handleClick = (e) => {
+    e.preventDefault();
+  }
 
   toggleRead = () => {
     // TODO: One-way call to the backend to update the bd
@@ -109,6 +139,7 @@ class PortalNotification extends Component {
         alignItems="flex-start"
         className={clsx(!hasBeenRead && this.props.styleClasses.unreadNotif)}
       >
+        {this.state.hasClicked && <Navigate to={this.getNavPath()} replace={true} />}
         <IconButton
           edge="end"
           color="primary"
@@ -130,9 +161,10 @@ class PortalNotification extends Component {
               >
                 {this.getTitle()}
               </Typography>
-              {` — ${this.getDescription()}`}
+              {` — ${this.getDescription()}. Hace ${this.getNotifAge()}`}
             </React.Fragment>
           }
+          onClick={this.handleClick}
         />
         <IconButton
           edge="end"
@@ -157,6 +189,18 @@ class NotificacionNuevaOportunidad extends PortalNotification {
     const details = this.props.details;
     return `El cliente ${details.author} ha creado la oportunidad comercial "${details.opportunityName}"`;
   };
+
+  handleClick = (e) => {
+    e.preventDefault();
+    // change state so that Navigate gets rendered
+    this.setState({
+      hasClicked: true
+    })
+  }
+
+  getNavPath = () => {
+    return "/detalle/" + this.props.details.rfp_id;
+  }
 }
 
 class NotificacionOportunidadEliminada extends PortalNotification {
@@ -223,4 +267,16 @@ class NotificacionSocioAplica extends PortalNotification {
     const details = this.props.details;
     return `El socio ${details.participanteName} ha aplicado a su oportunidad comercial "${details.opportunityName}"`;
   };
+
+  handleClick = (e) => {
+    e.preventDefault();
+    // change state so that Navigate gets rendered
+    this.setState({
+      hasClicked: true
+    })
+  }
+
+  getNavPath = () => {
+    return "/detalle/" + this.props.details.rfp_id;
+  }
 }

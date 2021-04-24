@@ -29,6 +29,24 @@ router.post("/create-rfp", userMiddleware, (req, res) => {
 });
 
 /**
+ * Route to get a single RFP by its id
+ * @implements {userMiddleWare} Function to check if the request is sent by a logged user
+ * @param {Object} req contains the RFP's id in its parameters
+ * @param {Object} res response for the request
+ */
+router.get("/get-one-rfp/:rfp_id", userMiddleware, (req, res) => {
+  rfpController
+    .getOneRfp(req.params.rfp_id)
+    .then((rfp) => {
+      return res.send(rfp);
+    })
+    .catch((error) => {
+      console.log("error", error);
+      return res.status(400).send({ error });
+    });
+});
+
+/**
  * Route to get all of the existing RFPs
  * @implements {userMiddleWare} Function to check if the request is sent by a logged user
  * @param {Object} req contains the RFP's data in its body.

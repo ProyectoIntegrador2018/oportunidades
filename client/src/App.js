@@ -33,8 +33,8 @@ function App() {
             <Route path="/registro" element={<Signup />} />
             <ProtectedRoute path="/inicio" component={Inicio} redirectTo="/" />
             <ProtectedRoute path="/calendario" component={Calendario} redirectTo="/" />
-            <ProtectedRoute path="/detalle" component={Detalle} redirectTo="/" />
-            <ProtectedRoute path="/detalle-mi-oportunidad" component={DetalleMiOportunidad} redirectTo="/" />
+            <ProtectedRoute path="/detalle/:rfp_id" component={Detalle} redirectTo="/" />
+            <ProtectedRoute path="/detalle-mi-oportunidad/:rfp_id" component={DetalleMiOportunidad} redirectTo="/" />
             <ProtectedRoute path="/editar-oportunidad" component={EditarOportunidad} redirectTo="/" />
             <ProtectedRoute path="/registro-oportunidad" component={RegistroOportunidad} redirectTo="/" />
             <ProtectedRoute path="/socios" component={Socios} redirectTo="/" />
