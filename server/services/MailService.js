@@ -1,6 +1,12 @@
 const nodemailer = require("nodemailer");
-const { NUEVA_OPORTUNIDAD, NUEVA_PARTICIPACION } = require("../utils/NotificationTypes");
+const moment = require("moment");
 var pdf = require("html-pdf");
+const {
+  NUEVA_OPORTUNIDAD,
+  NUEVA_PARTICIPACION,
+  NUEVO_EVENTO
+} = require("../utils/NotificationTypes");
+
 var options = { format: "Letter" };
 const mailService = {};
 
@@ -9,12 +15,12 @@ var mailConfig = {
   pool: true,
   auth: {
     user: process.env.MAIL_USER,
-    pass: process.env.MAIL_PASSWORD,
+    pass: process.env.MAIL_PASSWORD
   },
 };
 
 var transporter = nodemailer.createTransport(mailConfig, {
-  from: `Oportunidades Comerciales CSOFTMTY <${process.env.MAIL_USER}>`,
+  from: `Oportunidades Comerciales CSOFTMTY <${process.env.MAIL_USER}>`
 });
 
 // email sender function
@@ -26,14 +32,16 @@ mailService.sendEmail = (jobData) => {
       to: destinatario.email,
       subject: mailContent.subject,
       text: `Hola ${destinatario.name}, ${mailContent.text}`,
-      html: `<p>Hola ${destinatario.name},${mailContent.html}`,
-      attachments: {
-        filename: mailContent.attachments.filename,
-        content: mailContent.attachments.content,
-        encoding: 'base64',
-      },
+      html: `<p>Hola ${destinatario.name}, ${mailContent.html}`
     };
 
+    if (mailContent.attachments) {
+      mailOptions.attachments = {
+        filename: mailContent.attachments.filename,
+        content: mailContent.attachments.content,
+        encoding: "base64"
+      };
+    }
 
     transporter.sendMail(mailOptions, (err, info) => {
       if (err) {
@@ -47,7 +55,7 @@ mailService.sendEmail = (jobData) => {
   });
 };
 
-mailService.buildMailContent = (tipoNotificacion, rfp) => {
+mailService.buildMailContent = (tipoNotificacion, mailData) => {
   return new Promise((resolve, reject) => {
     let mailOptions = {};
 
@@ -56,122 +64,129 @@ mailService.buildMailContent = (tipoNotificacion, rfp) => {
         mailOptions.subject = "Nueva Oportunidad Comercial";
         mailOptions.text = `te comunicamos que se ha abierto una nueva Oportunidad Comercial, te compartimos los detalles:
 
-        Nombre de la Oportunidad Comercial: ${rfp.nombreOportunidad}
-        Objetivo de la oportunidad: ${rfp.objetivoOportunidad}
-        Descripción funcional de la oportunidad: ${rfp.descripcionFuncional}
-        Requerimientos obligatorios: ${rfp.requerimientosObligatorios}
-        Fechas relevantes: ${rfp.fechasRelevantes}
-        ¿Ha sido aprobada por el área usuaria?: ${rfp.aprobadaAreaUsuario}
-        ¿Ha sido aprobada por el área de TI?: ${rfp.aprobadaAreaTI}
-        ¿Tiene un presupuesto asignado?: ${rfp.presupuestoAsignado}
-        Tipo general del proyecto: ${rfp.tipoGeneralProyecto}
-        Tipo específico del proyecto: ${rfp.tipoEspecificoProyecto}
-        Comentarios adicionales: ${rfp.comentariosAdicionales}
+        Nombre de la Oportunidad Comercial: ${mailData.nombreOportunidad}
+        Objetivo de la oportunidad: ${mailData.objetivoOportunidad}
+        Descripción funcional de la oportunidad: ${mailData.descripcionFuncional}
+        Requerimientos obligatorios: ${mailData.requerimientosObligatorios}
+        Fechas relevantes: ${mailData.fechasRelevantes}
+        ¿Ha sido aprobada por el área usuaria?: ${mailData.aprobadaAreaUsuario}
+        ¿Ha sido aprobada por el área de TI?: ${mailData.aprobadaAreaTI}
+        ¿Tiene un presupuesto asignado?: ${mailData.presupuestoAsignado}
+        Tipo general del proyecto: ${mailData.tipoGeneralProyecto}
+        Tipo específico del proyecto: ${mailData.tipoEspecificoProyecto}
+        Comentarios adicionales: ${mailData.comentariosAdicionales}
 
         Datos de contacto
-        Nombre: ${rfp.nombrecliente}
-        Posición: ${rfp.posicioncliente}
+        Nombre: ${mailData.nombrecliente}
+        Posición: ${mailData.posicioncliente}`;
 
-
-
-        Gracias,
-        Notificaciones de CSOFTMTY`;
-
-        mailOptions.html = `
-        <!doctype html>
-          <html>
-            <head>
-              <style>
-              h1{
-                margin-top:40px;
-                text-align:center;
-                font-family:Helvetica;
-              }
-              h3{
-                font-weight:bold;
-                font-family:Helvetica;
-              }
-              p{
-                font-family:Helvetica;
-              }
-              b{
-                font-family:Helvetica;
-              }
-              img{
-                display:block;
-                margin-left:auto;
-                margin-right:auto;
-                width:50%;
-              }
-              body{
-                margin:50px;
-              }
-              </style>
-            </head>
-              <h1>Nueva Oportunidad Comercial</h1>
-                <body>
-                  <div>
-                    <h3>Datos generales</h3>
-                    <p><b>Nombre de la Oportunidad Comercial:</b> ${rfp.nombreOportunidad}<br>
-                    <b>Objetivo de la oportunidad:</b> ${rfp.objetivoOportunidad}<br>
-                    <b>Descripción funcional de la oportunidad:</b> ${rfp.descripcionFuncional}<br>
-                  </div>
-                    <div>
-                      <h3>Detalle de la oportunidad</h3>
-                      <b>Requerimientos obligatorios:</b> ${rfp.requerimientosObligatorios}<br>
-                      <b>Fechas relevantes:</b> ${rfp.fechasRelevantes}<br><br>
-                    </div>
-                      <div>
-                        <h3>Estatus de la necesidad</h3>
-                        <b>¿Ha sido aprobada por el área usuaria?:</b> ${rfp.aprobadaAreaUsuario}<br>
-                        <b>¿Ha sido aprobada por el área de TI?:</b> ${rfp.aprobadaAreaTI}<br>
-                        <b>¿Tiene un presupuesto asignado?:</b> ${rfp.presupuestoAsignado}<br>
-                        <b>Tipo general del proyecto:</b> ${rfp.tipoGeneralProyecto}<br>
-                        <b>Tipo específico del proyecto:</b> ${rfp.tipoEspecificoProyecto}<br>
-                        <b>Comentarios adicionales:</b> ${rfp.comentariosAdicionales}</p>
-                      </div>
-                        <div>
-                          <h3>Datos de contacto</h3>
-                          <p><b>Nombre:</b> ${rfp.nombrecliente}<br>
-                          <b>Posición:</b> ${rfp.posicioncliente}<br>
-                        </div>
-                          <br>
-                 </body>
-          </html>`;
+        mailOptions.html = `<h3>Datos generales</h3>
+        <p><b>Nombre de la Oportunidad Comercial:</b> ${mailData.nombreOportunidad}<br>
+        <b>Objetivo de la oportunidad:</b> ${mailData.objetivoOportunidad}<br>
+        <b>Descripción funcional de la oportunidad:</b> ${mailData.descripcionFuncional}</p>
+        <h3>Detalle de la oportunidad</h3>
+        <p><b>Requerimientos obligatorios:</b> ${mailData.requerimientosObligatorios}<br>
+        <b>Fechas relevantes:</b> ${mailData.fechasRelevantes}</p>
+        <h3>Estatus de la necesidad</h3>
+        <p><b>¿Ha sido aprobada por el área usuaria?:</b> ${mailData.aprobadaAreaUsuario}<br>
+        <b>¿Ha sido aprobada por el área de TI?:</b> ${mailData.aprobadaAreaTI}<br>
+        <b>¿Tiene un presupuesto asignado?:</b> ${mailData.presupuestoAsignado}<br>
+        <b>Tipo general del proyecto:</b> ${mailData.tipoGeneralProyecto}<br>
+        <b>Tipo específico del proyecto:</b> ${mailData.tipoEspecificoProyecto}<br>
+        <b>Comentarios adicionales:</b> ${mailData.comentariosAdicionales}</p>
+        <h3>Datos de contacto</h3>
+        <p><b>Nombre:</b> ${mailData.nombrecliente}<br>
+        <b>Posición:</b> ${mailData.posicioncliente}</p>
+        <br>`;
         break;
 
-      
       case NUEVA_PARTICIPACION:
         mailOptions.subject = "Un socio de CSOFTMTY ha aplicado a tu Oportunidad Comercial";
-        mailOptions.text = `queremos informarte que el socio ${rfp.participanteName} ha aplicado a tu Oportunidad Comercial "${rfp.nombreOportunidad}".`
-
-        mailOptions.html = `queremos informarte que el socio ${rfp.participanteName} ha aplicado a tu Oportunidad Comercial "${rfp.nombreOportunidad}".</p>`
+        mailOptions.text = `queremos informarte que el socio ${mailData.participanteName} ha aplicado a tu Oportunidad Comercial "${mailData.nombreOportunidad}".`;
+        mailOptions.html = `queremos informarte que el socio ${mailData.participanteName} ha aplicado a tu Oportunidad Comercial "${mailData.nombreOportunidad}".</p>`;
         break;
+
+      case NUEVO_EVENTO:
+        moment.locale("es-us");
+        const eventDate = upperCaseFirstLetter(moment(mailData.date).format("LLLL"));
+
+        mailOptions.subject = "Nueva junta para Oportunidad Comercial";
+        mailOptions.text = `se ha agendado una nueva junta para la Oportunidad Comercial "${mailData.nombreOportunidad}" en la cual estás participando:
+        Nombre: ${mailData.name}
+        Fecha: ${eventDate}
+        Liga de la reunión: ${mailData.link}`;
+
+        mailOptions.html = `se ha agendado una nueva junta para la Oportunidad Comercial "${mailData.nombreOportunidad}" en la cual estás participando:</p>
+        <p><b>Nombre:</b> ${mailData.name}<br>
+        <b>Fecha:</b> ${eventDate}<br>
+        <b>Liga de la reunión:</b> <a href="${mailData.link}">${mailData.link}</a></p>`;
+        break;
+
       default:
         reject("Invalid notificationType");
     }
 
     mailOptions.text += "\n\nGracias,\nNotificaciones de CSOFTMTY";
     mailOptions.html += `<p>Gracias,<br>
-      Notificaciones de CSOFTMTY</p>
-      <img src="https://www.csoftmty.org/assets/images/header/logo.png" alt="logo_csoftmty"/>`
-    
-    generatePdf(mailOptions.html).then((base64String) => {
-      mailOptions.attachments = {
-        filename: `${rfp.nombreOportunidad}.pdf`,
-        content: base64String,
-      };
+    Notificaciones de CSOFTMTY</p>
+    <img src="https://www.csoftmty.org/assets/images/header/logo.png" alt="logo_csoftmty"/>`;
+
+    if (tipoNotificacion === NUEVA_OPORTUNIDAD) {
+      generatePdf("Nueva Oportunidad Comercial", mailOptions.html).then((base64String) => {
+        mailOptions.attachments = {
+          filename: `${mailData.nombreOportunidad}.pdf`,
+          content: base64String,
+        };
+        mailOptions.html = "te comunicamos que se ha abierto una nueva Oportunidad Comercial, te compartimos los detalles:" + mailOptions.html;
+        resolve(mailOptions);
+      });
+    } else {
       resolve(mailOptions);
-    });
+    }
   });
 };
 
-const generatePdf = (htmlToPdf) => {
+const generatePdf = (bodyTitle, htmlBody) => {
   return new Promise((resolve, reject) => {
+    htmlToPdf = `
+    <!doctype html>
+    <html>
+      <head>
+        <style>
+        h1 {
+          margin-top:40px;
+          text-align:center;
+        }
+        h3 {
+          font-weight:bold;
+        }
+        img {
+          display:block;
+          margin-left:auto;
+          margin-right:auto;
+          width:50%;
+        }
+        body {
+          font-family:Helvetica;
+          margin:50px;
+        }
+        </style>
+      </head>
+        <body>
+          <h1>${bodyTitle}</h1>
+          ${htmlBody}
+        </body>
+    </html>`;
+
     pdf.create(htmlToPdf, options).toBuffer(function (err, res) {
       if (err) reject(err);
       resolve(res.toString("base64"));
     });
   });
 };
+
+const upperCaseFirstLetter = (string) => {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+};
+
 module.exports = mailService;

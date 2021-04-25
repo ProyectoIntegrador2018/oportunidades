@@ -9,6 +9,7 @@ const {
   OPORTUNIDAD_ELIMINADA,
   NUEVA_PARTICIPACION,
   CAMBIO_ESTATUS,
+  NUEVO_EVENTO
 } = require("../utils/NotificationTypes");
 const detallesNotifController = require("../controllers/DetallesNotificacionController");
 const notificacionController = require("../controllers/NotificacionController");
@@ -17,32 +18,6 @@ const mailService = require("./MailService");
 const mailQueue = require("./MailQueue");
 
 const notificationService = {};
-
-const mailTodosSocios = function (tipoNotificacion, rfp) {
-  return new Promise((resolve, reject) => {
-    mailService
-      .buildMailContent(tipoNotificacion, rfp)
-      .then((mailContent) => {
-        UserModel.findByUserType("socio")
-          .then((socios) => {
-            socios.map((socio) => {
-              const jobMail = {
-                mailContent: mailContent,
-                destinatario: {
-                  name: socio.name,
-                  email: socio.email,
-                },
-              };
-              mailQueue.add(tipoNotificacion, jobMail, { attempts: 3 });
-
-              resolve({ status: 200 });
-            });
-          })
-          .catch((error) => reject(error));
-      })
-      .catch((error) => reject(error));
-  });
-};
 
 notificationService.notificacionNuevaOportunidad = (job) => {
   return new Promise((resolve, reject) => {
@@ -55,12 +30,12 @@ notificationService.notificacionNuevaOportunidad = (job) => {
         .then((resp) => {
           resolve(resp);
           /*
-        mailTodosSocios(NUEVA_OPORTUNIDAD, job.rfp)
-          .then((respMail) => {
-            resolve(respMail);
-          })
-          .catch((error) => reject(error));
-        */
+          mailTodosSocios(NUEVA_OPORTUNIDAD, job.rfp)
+            .then((respMail) => {
+              resolve(respMail);
+            })
+            .catch((error) => reject(error));
+          */
         })
         .catch((error) => reject(error));
     });
@@ -160,6 +135,70 @@ const notificacionUsuarios = function (tipoNotificacion, detalles, socios) {
       .catch((error) => {
         reject(error);
       });
+  });
+};
+
+const mailTodosSocios = function (tipoNotificacion, rfp) {
+  return new Promise((resolve, reject) => {
+    UserModel.findByUserTypes(["socio", "admin"])
+      .then((users) => {
+        if (!users || users.length == 0) resolve({ success: 1 });
+
+        mailUsuarios(tipoNotificacion, rfp, users)
+          .then((resp) => {
+            resolve(resp);
+          })
+          .catch((error) => reject(error));
+      })
+      .catch((error) => reject(error));
+  });
+};
+
+const mailParticipantesRfp = function (tipoNotificacion, mailData, rfpId) {
+  return new Promise((resolve, reject) => {
+    ParticipacionModel.find({ rfpInvolucrado: rfpId })
+      .then((participaciones) => {
+        return participaciones.map((participacion) => {
+          return participacion.socioInvolucrado;
+        });
+      })
+      .then((idSociosParticipantes) => {
+        if (!idSociosParticipantes || idSociosParticipantes.length == 0)
+          resolve({ success: 1 });
+
+        UserModel.find({ _id: idSociosParticipantes }, "name email")
+          .then((sociosParticipantes) => {
+            mailUsuarios(tipoNotificacion, mailData, sociosParticipantes)
+              .then((resp) => {
+                resolve(resp);
+              })
+              .catch((error) => reject(error));
+          })
+          .catch((error) => reject(error));
+      })
+      .catch((error) => reject(error));
+  });
+};
+
+const mailUsuarios = function (tipoNotificacion, mailData, usuarios) {
+  return new Promise((resolve, reject) => {
+    mailService
+      .buildMailContent(tipoNotificacion, mailData)
+      .then((mailContent) => {
+        usuarios.map((usuario) => {
+          const jobMail = {
+            mailContent: mailContent,
+            destinatario: {
+              name: usuario.name,
+              email: usuario.email,
+            },
+          };
+          mailQueue.add(tipoNotificacion, jobMail, { attempts: 3 });
+
+          resolve({ success: 1 });
+        });
+      })
+      .catch((error) => reject(error));
   });
 };
 
@@ -281,6 +320,36 @@ notificationService.notificacionNuevaParticipacion = (participacion) => {
           })
           .catch((error) => reject(error));
         */
+      })
+      .catch((error) => reject(error));
+  });
+};
+
+notificationService.notificacionNuevoEvento = (evento) => {
+  return new Promise((resolve, reject) => {
+    mailNuevoEvento(evento)
+      .then((respMail) => {
+        resolve(respMail);
+      })
+      .catch((error) => reject(error));
+  });
+};
+
+const mailNuevoEvento = function (evento) {
+  return new Promise((resolve, reject) => {
+    RfpModel.getNombreOportunidad(evento.rfp)
+      .then((nombreOportunidad) => {
+        const eventData = {
+          name: evento.name,
+          date: evento.date,
+          link: evento.link,
+          nombreOportunidad: nombreOportunidad
+        };
+        mailParticipantesRfp(NUEVO_EVENTO, eventData, evento.rfp)
+          .then((resp) => {
+            resolve(resp);
+          })
+          .catch((error) => reject(error));
       })
       .catch((error) => reject(error));
   });
