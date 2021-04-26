@@ -16,7 +16,7 @@ notificationQueue.process(OPORTUNIDAD_ELIMINADA, (job) => {
   return notificationService.notificacionOportunidadEliminada(job);
 });
 
-notificationQueue.process(CAMBIO_ESTATUS, (job)=>{
+notificationQueue.process(CAMBIO_ESTATUS, (job) => {
   return notificationService.notificacionCambioEstatusOportunidad(job);
 });
 

@@ -84,6 +84,17 @@ notificationService.notificacionCambioEstatusOportunidad = (job) => {
               .catch((error) => reject(error));
           })
           .catch((error) => reject(error));
+          const rfpData = {
+            nombreCliente:rfp.createdBy,
+            nombreOportunidad:rfp.nombreOportunidad,
+            estatus:rfp.estatus
+          };
+          mailParticipantesRfp(CAMBIO_ESTATUS,rfpData,rfpId)
+          .then((resp)=>{
+            console.log("entro a mailParticipantes",resp);
+            resolve(resp);
+          })
+          .catch((error)=>reject(error))
       })
       .catch((error) => reject(error));
   });
@@ -155,6 +166,7 @@ const mailTodosSocios = function (tipoNotificacion, rfp) {
 };
 
 const mailParticipantesRfp = function (tipoNotificacion, mailData, rfpId) {
+  console.log("entra a funcion mailparticipantes con datos",tipoNotificacion,mailData,rfpId)
   return new Promise((resolve, reject) => {
     ParticipacionModel.find({ rfpInvolucrado: rfpId })
       .then((participaciones) => {
@@ -181,6 +193,7 @@ const mailParticipantesRfp = function (tipoNotificacion, mailData, rfpId) {
 };
 
 const mailUsuarios = function (tipoNotificacion, mailData, usuarios) {
+  console.log("entra a mailUsuarios con datos:", tipoNotificacion,mailData,usuarios)
   return new Promise((resolve, reject) => {
     mailService
       .buildMailContent(tipoNotificacion, mailData)

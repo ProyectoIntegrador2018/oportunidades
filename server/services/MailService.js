@@ -4,7 +4,8 @@ var pdf = require("html-pdf");
 const {
   NUEVA_OPORTUNIDAD,
   NUEVA_PARTICIPACION,
-  NUEVO_EVENTO
+  NUEVO_EVENTO,
+  CAMBIO_ESTATUS,
 } = require("../utils/NotificationTypes");
 
 var options = { format: "Letter" };
@@ -25,11 +26,12 @@ var transporter = nodemailer.createTransport(mailConfig, {
 
 // email sender function
 mailService.sendEmail = (jobData) => {
+  console.log("entro a sendEmail", jobData)
   return new Promise((resolve, reject) => {
     const { mailContent, destinatario } = jobData;
 
     const mailOptions = {
-      to: destinatario.email,
+      to: 'A01410560@itesm.mx',
       subject: mailContent.subject,
       text: `Hola ${destinatario.name}, ${mailContent.text}`,
       html: `<p>Hola ${destinatario.name}, ${mailContent.html}`
@@ -56,6 +58,7 @@ mailService.sendEmail = (jobData) => {
 };
 
 mailService.buildMailContent = (tipoNotificacion, mailData) => {
+  console.log("entro a buildMailContent", tipoNotificacion,mailData)
   return new Promise((resolve, reject) => {
     let mailOptions = {};
 
@@ -120,6 +123,12 @@ mailService.buildMailContent = (tipoNotificacion, mailData) => {
         <p><b>Nombre:</b> ${mailData.name}<br>
         <b>Fecha:</b> ${eventDate}<br>
         <b>Liga de la reunión:</b> <a href="${mailData.link}">${mailData.link}</a></p>`;
+        break;
+
+      case CAMBIO_ESTATUS:
+        mailOptions.subject = 'Cambio de estatus en la Oportunidad Comercial';
+        mailOptions.text = `queremos informarte que el cliente ${mailData.nombreCliente} ha cambiado el estatus de la oportunidad ${mailData.nombreOportunidad} a ${mailData.estatus}.`;
+        mailOptions.html = `queremos informarte que el cliente ${mailData.nombreCliente} ha cambiado el estatus de la oportunidad ${mailData.nombreOportunidad} a ${mailData.estatus}.</p>`;
         break;
 
       default:
