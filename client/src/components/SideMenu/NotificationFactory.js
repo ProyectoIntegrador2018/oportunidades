@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Navigate } from 'react-router-dom';
+import { Navigate } from "react-router-dom";
 import {
   Typography,
   ListItem,
@@ -14,12 +14,75 @@ import clsx from "clsx";
 import NOTIFICATION_TYPES from "../utils/NotificationTypes";
 import axios from "axios";
 
+// for reference
+// const first = {
+//   id: 123,
+//   type: NOTIFICATION_TYPES.NUEVA_OPORTUNIDAD,
+//   details: {
+//     author: "ITESM",
+//     opportunityName: "Nuevo Portal de Inscripciones",
+//   },
+//   isRead: true,
+// };
+// const second = {
+//   id: 234,
+//   type: NOTIFICATION_TYPES.CAMBIO_ESTATUS,
+//   details: {
+//     author: "Microsoft",
+//     opportunityName: "Integración de Halo con OneDrive",
+//     prevStatus: "Activo",
+//     newStatus: "Cerrado",
+//   },
+//   isRead: false,
+// };
+// const third = {
+//   id: 345,
+//   type: NOTIFICATION_TYPES.NUEVO_HORARIO,
+//   details: {
+//     author: "Facebook",
+//     opportunityName: "Nueva Aplicación para Oculus",
+//     sched: "3 de Enero del 2022, 15:45",
+//   },
+//   isRead: false,
+// };
+// const fourth = {
+//   id: 456,
+//   type: NOTIFICATION_TYPES.CAMBIO_HORARIO,
+//   details: {
+//     author: "Google",
+//     opportunityName: "Nuevo Servicio Regional de Noticias",
+//     prevSched: "2 de Enero del 2022, 14:05",
+//     newSched: "2 de Enero del 2022, 14:30",
+//   },
+//   isRead: true,
+// };
+// const fifth = {
+//   id: 567,
+//   type: NOTIFICATION_TYPES.RECHAZO,
+//   details: {
+//     author: "Amazon",
+//     opportunityName: "Nuevo Servicio de Party Streaming",
+//   },
+//   isRead: true,
+// };
+// const sixth = {
+//   id: 678,
+//   type: NOTIFICATION_TYPES.NUEVA_PARTICIPACION,
+//   details: {
+//     author: "Apple",
+//     opportunityName: "Nueva Aplicación de iOS",
+//   },
+//   isRead: false,
+// };
+
 export default function NotificationFactory(props) {
+
   const downProps = {
-    ...props.component,
+    rawNotif: { ...props.component },
     styleClasses: useStyles(),
   };
-  switch (props.component.type) {
+
+  switch (props.component.notificacion.tipo) {
     case NOTIFICATION_TYPES.NUEVA_OPORTUNIDAD:
       return <NotificacionNuevaOportunidad {...downProps} />;
     case NOTIFICATION_TYPES.OPORTUNIDAD_ELIMINADA:
@@ -44,15 +107,41 @@ class PortalNotification extends Component {
       toggledRead: false,
       isRead: undefined,
       hasClicked: false,
+      data: this.formatNotifications(props.rawNotif)
     };
   }
 
+  /* 
+    Gets raw notification data
+    returns obj with common fields for all notification types 
+  */
+  formatNotifications = (rawNotif) => {
+    const { _id, read } = rawNotif;
+    const { date, tipo, detalles } = rawNotif.notificacion;
+    const { rfp } = detalles;
+    const author = rfp ? rfp.nombrecliente : "";
+    const opportunityName = rfp ? rfp.nombreOportunidad : "";
+
+    const notif = {
+      id: _id,
+      type: tipo,
+      details: {
+        author: author,
+        opportunityName: opportunityName,
+        date: date,
+      },
+      isRead: read,
+    };
+
+    return notif;
+  };
+
   getAuthor = () => {
-    return this.props.details.author;
+    return this.state.data.details.author;
   };
 
   getNotifAge = () => {
-    const date = Math.round(new Date(this.props.details.date).getTime() / 1000);
+    const date = Math.round(new Date(this.state.data.details.date).getTime() / 1000);
     // TODO: Change now to the time zone of the mongoDB
     const now = Math.round(Date.now() / 1000);
     const timeDiff = now - date;
@@ -82,19 +171,19 @@ class PortalNotification extends Component {
   // This method should be overriden by the concrete class
   getNavPath = () => {
     return "/inicio";
-  }
+  };
 
   // This method should be overriden by the concrete class
   handleClick = (e) => {
     e.preventDefault();
-  }
+  };
 
   toggleRead = () => {
     // TODO: One-way call to the backend to update the bd
     if (!this.state.toggledRead) {
       this.setState({
         toggledRead: true,
-        isRead: !this.props.isRead,
+        isRead: !this.state.data.isRead,
       });
     } else {
       this.setState({
@@ -128,7 +217,7 @@ class PortalNotification extends Component {
     // notification tab
     const hasBeenRead = this.state.toggledRead
       ? this.state.isRead
-      : this.props.isRead;
+      : this.state.data.isRead;
     const currentReadIcon = () => {
       if (hasBeenRead) return <FiberManualRecordTwoToneIcon />;
       else return <FiberManualRecord />;
@@ -139,7 +228,9 @@ class PortalNotification extends Component {
         alignItems="flex-start"
         className={clsx(!hasBeenRead && this.props.styleClasses.unreadNotif)}
       >
-        {this.state.hasClicked && <Navigate to={this.getNavPath()} replace={true} />}
+        {this.state.hasClicked && (
+          <Navigate to={this.getNavPath()} replace={true} />
+        )}
         <IconButton
           edge="end"
           color="primary"
@@ -171,7 +262,7 @@ class PortalNotification extends Component {
           size="small"
           color="default"
           className={this.props.styleClasses.notifDeleteIcon}
-          onClick={() => this.deleteNotification(this.props.id)}
+          onClick={() => this.deleteNotification(this.state.data.id)}
         >
           {<DeleteIcon />}
         </IconButton>
@@ -186,7 +277,7 @@ class NotificacionNuevaOportunidad extends PortalNotification {
   };
 
   getDescription = () => {
-    const details = this.props.details;
+    const details = this.state.data.details;
     return `El cliente ${details.author} ha creado la oportunidad comercial "${details.opportunityName}"`;
   };
 
@@ -194,13 +285,13 @@ class NotificacionNuevaOportunidad extends PortalNotification {
     e.preventDefault();
     // change state so that Navigate gets rendered
     this.setState({
-      hasClicked: true
-    })
-  }
+      hasClicked: true,
+    });
+  };
 
   getNavPath = () => {
-    return "/detalle/" + this.props.details.rfp_id;
-  }
+    return "/detalle/" + this.props.rawNotif.notificacion.detalles.rfp._id;
+  };
 }
 
 class NotificacionOportunidadEliminada extends PortalNotification {
@@ -209,8 +300,9 @@ class NotificacionOportunidadEliminada extends PortalNotification {
   };
 
   getDescription = () => {
-    const details = this.props.details;
-    return `El cliente ${details.author} ha eliminado la oportunidad comercial "${details.opportunityName}"`;
+    const details = this.state.data.details;
+    const opportunityName = this.props.rawNotif.notificacion.detalles.detalles;
+    return `El cliente ${details.author} ha eliminado la oportunidad comercial "${opportunityName}"`;
   };
 }
 
@@ -220,7 +312,7 @@ class NotificacionCambioEstatus extends PortalNotification {
   };
 
   getDescription = () => {
-    const details = this.props.details;
+    const details = this.state.data.details;
     return `El cliente ${details.author} ha cambiado el estatus de la oportunidad "${details.opportunityName}" de "${details.prevStatus}" a "${details.newStatus}"`;
   };
 }
@@ -231,7 +323,7 @@ class NotificacionCambioHorario extends PortalNotification {
   };
 
   getDescription = () => {
-    const details = this.props.details;
+    const details = this.state.data.details;
     return `El cliente ${details.author} ha cambiado el horario de junta para la oportunidad "${details.opportunityName}" de ${details.prevSched} a ${details.newSched}`;
   };
 }
@@ -242,7 +334,7 @@ class NotificacionNuevoHorario extends PortalNotification {
   };
 
   getDescription = () => {
-    const details = this.props.details;
+    const details = this.state.data.details;
     return `El cliente ${details.author} ha establecido el siguiente horario de junta para la oportunidad "${details.opportunityName}": ${details.sched}`;
   };
 }
@@ -253,7 +345,7 @@ class NotificacionRechazo extends PortalNotification {
   };
 
   getDescription = () => {
-    const details = this.props.details;
+    const details = this.state.data.details;
     return `Lamentamos informarle que el cliente ${details.author} ha rechazado su propuesta para la oportunidad ${details.opportunityName}`;
   };
 }
@@ -264,19 +356,20 @@ class NotificacionSocioAplica extends PortalNotification {
   };
 
   getDescription = () => {
-    const details = this.props.details;
-    return `El socio ${details.participanteName} ha aplicado a su oportunidad comercial "${details.opportunityName}"`;
+    const details = this.state.data.details;
+    const participanteName = this.props.rawNotif.notificacion.detalles.participante.name;
+    return `El socio ${participanteName} ha aplicado a su oportunidad comercial "${details.opportunityName}"`;
   };
 
   handleClick = (e) => {
     e.preventDefault();
     // change state so that Navigate gets rendered
     this.setState({
-      hasClicked: true
-    })
-  }
+      hasClicked: true,
+    });
+  };
 
   getNavPath = () => {
-    return "/detalle/" + this.props.details.rfp_id;
-  }
+    return "/detalle/" + this.props.rawNotif.notificacion.detalles.rfp._id;
+  };
 }
