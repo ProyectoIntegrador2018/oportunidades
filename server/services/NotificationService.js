@@ -84,10 +84,8 @@ notificationService.notificacionCambioEstatusOportunidad = (job) => {
               .catch((error) => reject(error));
           })
           .catch((error) => reject(error));
-          UserModel.getName(rfp.createdBy)
-          .then((clientName)=>{
             const rfpData = {
-              nombreCliente:clientName,
+              nombreCliente:rfp.nombrecliente,
               nombreOportunidad:rfp.nombreOportunidad,
               estatus:rfp.estatus
             };
@@ -96,8 +94,7 @@ notificationService.notificacionCambioEstatusOportunidad = (job) => {
               resolve(resp);
             })
             .catch((error)=>reject(error))
-          })
-          .catch((error)=> reject(error));
+          
         })
       .catch((error) => reject(error));
   });
