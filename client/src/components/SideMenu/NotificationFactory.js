@@ -76,7 +76,46 @@ import axios from "axios";
 // };
 
 export default function NotificationFactory(props) {
-  const formatNotifications = (rawNotif) => {
+
+  const downProps = {
+    rawNotif: { ...props.component },
+    styleClasses: useStyles(),
+  };
+
+  switch (props.component.notificacion.tipo) {
+    case NOTIFICATION_TYPES.NUEVA_OPORTUNIDAD:
+      return <NotificacionNuevaOportunidad {...downProps} />;
+    case NOTIFICATION_TYPES.OPORTUNIDAD_ELIMINADA:
+      return <NotificacionOportunidadEliminada {...downProps} />;
+    case NOTIFICATION_TYPES.CAMBIO_ESTATUS:
+      return <NotificacionCambioEstatus {...downProps} />;
+    case NOTIFICATION_TYPES.CAMBIO_HORARIO:
+      return <NotificacionCambioHorario {...downProps} />;
+    case NOTIFICATION_TYPES.NUEVO_HORARIO:
+      return <NotificacionNuevoHorario {...downProps} />;
+    case NOTIFICATION_TYPES.RECHAZO:
+      return <NotificacionRechazo {...downProps} />;
+    case NOTIFICATION_TYPES.NUEVA_PARTICIPACION:
+      return <NotificacionSocioAplica {...downProps} />;
+  }
+}
+
+class PortalNotification extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      toggledRead: false,
+      isRead: undefined,
+      hasClicked: false,
+      data: this.formatNotifications(props.rawNotif)
+    };
+  }
+
+  /* 
+    Gets raw notification data
+    returns obj with common fields for all notification types 
+  */
+  formatNotifications = (rawNotif) => {
     const { _id, read } = rawNotif;
     const { date, tipo, detalles } = rawNotif.notificacion;
     const { rfp } = detalles;
@@ -97,56 +136,12 @@ export default function NotificationFactory(props) {
     return notif;
   };
 
-  const notif = formatNotifications(props.component);
-
-  const downProps = {
-    ...notif,
-    styleClasses: useStyles(),
-  };
-
-  switch (notif.type) {
-    case NOTIFICATION_TYPES.NUEVA_OPORTUNIDAD: {
-      downProps.details.rfp_id = props.component.notificacion.detalles.rfp._id;
-      return <NotificacionNuevaOportunidad {...downProps} />;
-    }
-    case NOTIFICATION_TYPES.OPORTUNIDAD_ELIMINADA: {
-      downProps.details.opportunityName =
-        props.component.notificacion.detalles.detalles;
-      return <NotificacionOportunidadEliminada {...downProps} />;
-    }
-    case NOTIFICATION_TYPES.CAMBIO_ESTATUS:
-      return <NotificacionCambioEstatus {...downProps} />;
-    case NOTIFICATION_TYPES.CAMBIO_HORARIO:
-      return <NotificacionCambioHorario {...downProps} />;
-    case NOTIFICATION_TYPES.NUEVO_HORARIO:
-      return <NotificacionNuevoHorario {...downProps} />;
-    case NOTIFICATION_TYPES.RECHAZO:
-      return <NotificacionRechazo {...downProps} />;
-    case NOTIFICATION_TYPES.NUEVA_PARTICIPACION: {
-      const detalles = props.component.notificacion.detalles;
-      downProps.details.rfp_id = detalles.rfp._id;
-      downProps.details.participanteName = detalles.participante.name;
-      return <NotificacionSocioAplica {...downProps} />;
-    }
-  }
-}
-
-class PortalNotification extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      toggledRead: false,
-      isRead: undefined,
-      hasClicked: false,
-    };
-  }
-
   getAuthor = () => {
-    return this.props.details.author;
+    return this.state.data.details.author;
   };
 
   getNotifAge = () => {
-    const date = Math.round(new Date(this.props.details.date).getTime() / 1000);
+    const date = Math.round(new Date(this.state.data.details.date).getTime() / 1000);
     // TODO: Change now to the time zone of the mongoDB
     const now = Math.round(Date.now() / 1000);
     const timeDiff = now - date;
@@ -188,7 +183,7 @@ class PortalNotification extends Component {
     if (!this.state.toggledRead) {
       this.setState({
         toggledRead: true,
-        isRead: !this.props.isRead,
+        isRead: !this.state.data.isRead,
       });
     } else {
       this.setState({
@@ -222,7 +217,7 @@ class PortalNotification extends Component {
     // notification tab
     const hasBeenRead = this.state.toggledRead
       ? this.state.isRead
-      : this.props.isRead;
+      : this.state.data.isRead;
     const currentReadIcon = () => {
       if (hasBeenRead) return <FiberManualRecordTwoToneIcon />;
       else return <FiberManualRecord />;
@@ -267,7 +262,7 @@ class PortalNotification extends Component {
           size="small"
           color="default"
           className={this.props.styleClasses.notifDeleteIcon}
-          onClick={() => this.deleteNotification(this.props.id)}
+          onClick={() => this.deleteNotification(this.state.data.id)}
         >
           {<DeleteIcon />}
         </IconButton>
@@ -282,7 +277,7 @@ class NotificacionNuevaOportunidad extends PortalNotification {
   };
 
   getDescription = () => {
-    const details = this.props.details;
+    const details = this.state.data.details;
     return `El cliente ${details.author} ha creado la oportunidad comercial "${details.opportunityName}"`;
   };
 
@@ -295,7 +290,7 @@ class NotificacionNuevaOportunidad extends PortalNotification {
   };
 
   getNavPath = () => {
-    return "/detalle/" + this.props.details.rfp_id;
+    return "/detalle/" + this.props.rawNotif.notificacion.detalles.rfp._id;
   };
 }
 
@@ -305,8 +300,9 @@ class NotificacionOportunidadEliminada extends PortalNotification {
   };
 
   getDescription = () => {
-    const details = this.props.details;
-    return `El cliente ${details.author} ha eliminado la oportunidad comercial "${details.opportunityName}"`;
+    const details = this.state.data.details;
+    const opportunityName = this.props.rawNotif.notificacion.detalles.detalles;
+    return `El cliente ${details.author} ha eliminado la oportunidad comercial "${opportunityName}"`;
   };
 }
 
@@ -316,7 +312,7 @@ class NotificacionCambioEstatus extends PortalNotification {
   };
 
   getDescription = () => {
-    const details = this.props.details;
+    const details = this.state.data.details;
     return `El cliente ${details.author} ha cambiado el estatus de la oportunidad "${details.opportunityName}" de "${details.prevStatus}" a "${details.newStatus}"`;
   };
 }
@@ -327,7 +323,7 @@ class NotificacionCambioHorario extends PortalNotification {
   };
 
   getDescription = () => {
-    const details = this.props.details;
+    const details = this.state.data.details;
     return `El cliente ${details.author} ha cambiado el horario de junta para la oportunidad "${details.opportunityName}" de ${details.prevSched} a ${details.newSched}`;
   };
 }
@@ -338,7 +334,7 @@ class NotificacionNuevoHorario extends PortalNotification {
   };
 
   getDescription = () => {
-    const details = this.props.details;
+    const details = this.state.data.details;
     return `El cliente ${details.author} ha establecido el siguiente horario de junta para la oportunidad "${details.opportunityName}": ${details.sched}`;
   };
 }
@@ -349,7 +345,7 @@ class NotificacionRechazo extends PortalNotification {
   };
 
   getDescription = () => {
-    const details = this.props.details;
+    const details = this.state.data.details;
     return `Lamentamos informarle que el cliente ${details.author} ha rechazado su propuesta para la oportunidad ${details.opportunityName}`;
   };
 }
@@ -360,8 +356,9 @@ class NotificacionSocioAplica extends PortalNotification {
   };
 
   getDescription = () => {
-    const details = this.props.details;
-    return `El socio ${details.participanteName} ha aplicado a su oportunidad comercial "${details.opportunityName}"`;
+    const details = this.state.data.details;
+    const participanteName = this.props.rawNotif.notificacion.detalles.participante.name;
+    return `El socio ${participanteName} ha aplicado a su oportunidad comercial "${details.opportunityName}"`;
   };
 
   handleClick = (e) => {
@@ -373,6 +370,6 @@ class NotificacionSocioAplica extends PortalNotification {
   };
 
   getNavPath = () => {
-    return "/detalle/" + this.props.details.rfp_id;
+    return "/detalle/" + this.props.rawNotif.notificacion.detalles.rfp._id;
   };
 }
