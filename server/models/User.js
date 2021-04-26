@@ -198,6 +198,22 @@ schema.statics.findClientByRFP = function (rfpInvolucrado){
    });
 };
 /**
+ *  Get user name
+ * @param {ObjectId} userId
+ */
+schema.statics.getName = function (userId) {
+   return new Promise((resolve, reject) => {
+     this.findById( userId )
+       .then((user) => {
+         const name = user.name;
+         resolve(name);
+       })
+       .catch((error) => {
+         reject(error);
+       });
+   });
+ };
+/**
  * Hash password before saving user
  */
 schema.pre("save", function (next) {

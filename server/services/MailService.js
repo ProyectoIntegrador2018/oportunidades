@@ -26,12 +26,11 @@ var transporter = nodemailer.createTransport(mailConfig, {
 
 // email sender function
 mailService.sendEmail = (jobData) => {
-  console.log("entro a sendEmail", jobData)
   return new Promise((resolve, reject) => {
     const { mailContent, destinatario } = jobData;
 
     const mailOptions = {
-      to: 'A01410560@itesm.mx',
+      to: destinatario.email,
       subject: mailContent.subject,
       text: `Hola ${destinatario.name}, ${mailContent.text}`,
       html: `<p>Hola ${destinatario.name}, ${mailContent.html}`
@@ -58,7 +57,6 @@ mailService.sendEmail = (jobData) => {
 };
 
 mailService.buildMailContent = (tipoNotificacion, mailData) => {
-  console.log("entro a buildMailContent", tipoNotificacion,mailData)
   return new Promise((resolve, reject) => {
     let mailOptions = {};
 
