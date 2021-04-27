@@ -31,7 +31,7 @@ mailService.sendEmail = (jobData) => {
     const { mailContent, destinatario } = jobData;
 
     const mailOptions = {
-      to: destinatario.email,
+      to: "a00820257@itesm.mx", //destinatario.email,
       subject: mailContent.subject,
       text: `Hola ${destinatario.name}, ${mailContent.text}`,
       html: `<p>Hola ${destinatario.name}, ${mailContent.html}`
@@ -153,9 +153,9 @@ mailService.buildMailContent = (tipoNotificacion, mailData) => {
         break;
 
       case CAMBIO_ESTATUS:
-        mailOptions.subject = 'Cambio de estatus en la Oportunidad Comercial';
-        mailOptions.text = `queremos informarte que el cliente ${mailData.nombreCliente} ha cambiado el estatus de la oportunidad ${mailData.nombreOportunidad} a ${mailData.estatus}.`;
-        mailOptions.html = `queremos informarte que el cliente ${mailData.nombreCliente} ha cambiado el estatus de la oportunidad ${mailData.nombreOportunidad} a ${mailData.estatus}.</p>`;
+        mailOptions.subject = "Cambio de estatus en la Oportunidad Comercial";
+        mailOptions.text = `queremos informarte que el cliente ${mailData.nombreCliente} ha cambiado el estatus de la oportunidad "${mailData.nombreOportunidad}" a ${mailData.estatus}.`;
+        mailOptions.html = `queremos informarte que el cliente ${mailData.nombreCliente} ha cambiado el estatus de la oportunidad "${mailData.nombreOportunidad}" a ${mailData.estatus}.</p>`;
         break;
 
       default:
@@ -224,7 +224,7 @@ const generatePdf = (bodyTitle, htmlBody) => {
 const dateToString = (date) => {
   moment.locale("es-us");
   return upperCaseFirstLetter(moment(date).format("LLLL"));
-}
+};
 
 const upperCaseFirstLetter = (string) => {
   return string.charAt(0).toUpperCase() + string.slice(1);

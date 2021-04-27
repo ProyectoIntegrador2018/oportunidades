@@ -9,9 +9,9 @@ const {
   NUEVA_OPORTUNIDAD,
   OPORTUNIDAD_ELIMINADA,
   NUEVA_PARTICIPACION,
-  CAMBIO_ESTATUS,
   NUEVO_EVENTO,
-  CAMBIO_EVENTO
+  CAMBIO_EVENTO,
+  CAMBIO_ESTATUS
 } = require("../utils/NotificationTypes");
 const detallesNotifController = require("../controllers/DetallesNotificacionController");
 const notificacionController = require("../controllers/NotificacionController");
@@ -86,18 +86,18 @@ notificationService.notificacionCambioEstatusOportunidad = (job) => {
               .catch((error) => reject(error));
           })
           .catch((error) => reject(error));
-            const rfpData = {
-              nombreCliente:rfp.nombrecliente,
-              nombreOportunidad:rfp.nombreOportunidad,
-              estatus:rfp.estatus
-            };
-            mailParticipantesRfp(CAMBIO_ESTATUS,rfpData,rfpId)
-            .then((resp)=>{
-              resolve(resp);
-            })
-            .catch((error)=>reject(error))
-          
-        })
+
+        const rfpData = {
+          nombreCliente: rfp.nombrecliente,
+          nombreOportunidad: rfp.nombreOportunidad,
+          estatus: rfp.estatus,
+        };
+        mailParticipantesRfp(CAMBIO_ESTATUS, rfpData, rfpId)
+          .then((resp) => {
+            resolve(resp);
+          })
+          .catch((error) => reject(error));
+      })
       .catch((error) => reject(error));
   });
 };
