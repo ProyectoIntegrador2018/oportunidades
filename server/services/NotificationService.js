@@ -30,7 +30,7 @@ notificationService.notificacionNuevaOportunidad = (job) => {
         .then((resp) => {
           resolve(resp);
           /*
-          mailTodosSocios(NUEVA_OPORTUNIDAD, job.rfp)
+          mailUsuarios(NUEVA_OPORTUNIDAD, job.rfp, users)
             .then((respMail) => {
               resolve(respMail);
             })
@@ -146,22 +146,6 @@ const notificacionUsuarios = function (tipoNotificacion, detalles, socios) {
       .catch((error) => {
         reject(error);
       });
-  });
-};
-
-const mailTodosSocios = function (tipoNotificacion, rfp) {
-  return new Promise((resolve, reject) => {
-    UserModel.findByUserTypes(["socio", "admin"])
-      .then((users) => {
-        if (!users || users.length == 0) resolve({ success: 1 });
-
-        mailUsuarios(tipoNotificacion, rfp, users)
-          .then((resp) => {
-            resolve(resp);
-          })
-          .catch((error) => reject(error));
-      })
-      .catch((error) => reject(error));
   });
 };
 
