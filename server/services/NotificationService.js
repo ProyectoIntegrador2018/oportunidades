@@ -1,5 +1,6 @@
 const UserModel = require("../models/User");
 const RfpModel = require("../models/RFP");
+const EventModel = require("../models/Event");
 const NotificacionModel = require("../models/Notificacion");
 const ParticipacionModel = require("../models/Participaciones");
 const UsuarioNotificacionModel = require("../models/UsuarioNotificacion");
@@ -9,7 +10,8 @@ const {
   OPORTUNIDAD_ELIMINADA,
   NUEVA_PARTICIPACION,
   CAMBIO_ESTATUS,
-  NUEVO_EVENTO
+  NUEVO_EVENTO,
+  CAMBIO_EVENTO
 } = require("../utils/NotificationTypes");
 const detallesNotifController = require("../controllers/DetallesNotificacionController");
 const notificacionController = require("../controllers/NotificacionController");
@@ -346,6 +348,39 @@ const mailNuevoEvento = function (evento) {
           nombreOportunidad: nombreOportunidad
         };
         mailParticipantesRfp(NUEVO_EVENTO, eventData, evento.rfp)
+          .then((resp) => {
+            resolve(resp);
+          })
+          .catch((error) => reject(error));
+      })
+      .catch((error) => reject(error));
+  });
+};
+
+notificationService.notificacionCambioEvento = (eventBeforeUpdate) => {
+  return new Promise((resolve, reject) => {
+    EventModel.findById(eventBeforeUpdate._id)
+      .then((eventUpdated) => {
+        mailCambioEvento(eventBeforeUpdate, eventUpdated)
+          .then((respMail) => {
+            resolve(respMail);
+          })
+          .catch((error) => reject(error));
+      })
+      .catch((error) => reject(error));
+  });
+};
+
+const mailCambioEvento = function (eventBeforeUpdate, eventUpdated) {
+  return new Promise((resolve, reject) => {
+    RfpModel.getNombreOportunidad(eventUpdated.rfp)
+      .then((nombreOportunidad) => {
+        const eventData = {
+          nombreOportunidad: nombreOportunidad,
+          eventBeforeUpdate: eventBeforeUpdate,
+          eventUpdated: eventUpdated
+        };
+        mailParticipantesRfp(CAMBIO_EVENTO, eventData, eventUpdated.rfp)
           .then((resp) => {
             resolve(resp);
           })
