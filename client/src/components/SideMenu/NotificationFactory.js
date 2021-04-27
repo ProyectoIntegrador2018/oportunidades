@@ -313,7 +313,10 @@ class NotificacionCambioEstatus extends PortalNotification {
 
   getDescription = () => {
     const details = this.state.data.details;
-    return `El cliente ${details.author} ha cambiado el estatus de la oportunidad "${details.opportunityName}" de "${details.prevStatus}" a "${details.newStatus}"`;
+    const detalles = this.props.rawNotif.notificacion.detalles;
+    const prevStatus = detalles.detalles;
+    const newStatus = detalles.rfp.estatus;
+    return `El cliente ${details.author} ha cambiado el estatus de la oportunidad "${details.opportunityName}" de "${prevStatus}" a "${newStatus}"`;
   };
 }
 
