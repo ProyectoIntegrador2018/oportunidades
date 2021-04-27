@@ -82,8 +82,9 @@ router.get("/get-participaciones-rfp/:id", userMiddleware, (req, res) => {
 router.post("/update-estatus-socio/:id", userMiddleware, (req, res) => {
   const participacionId = req.params.id;
   const estatus = req.body.estatus;
+  const feedback = req.body.feedback ? req.body.feedback : "";
   participacionController
-    .updateEstatusSocio(participacionId, estatus)
+    .updateEstatusSocio(participacionId, estatus, feedback)
     .then((resp) => {
       return res.send(resp);
     })

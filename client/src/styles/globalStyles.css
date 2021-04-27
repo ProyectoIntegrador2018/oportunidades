@@ -350,7 +350,7 @@
 }
 .card-Socio {
    min-width: 400px;
-   height: 135px;
+   height: 180px;
    display: flex;
    flex-direction: column;
    justify-content: space-between;
