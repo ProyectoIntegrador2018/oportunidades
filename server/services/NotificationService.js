@@ -78,6 +78,7 @@ notificationService.notificacionCambioEstatusOportunidad = (job) => {
           .then((sociosParticipantes) => {
             const detalles = {
               rfp: rfpId,
+              detalles: rfp.estatus
             };
             notificacionUsuarios(CAMBIO_ESTATUS, detalles, sociosParticipantes)
               .then((resp) => resolve(resp))
