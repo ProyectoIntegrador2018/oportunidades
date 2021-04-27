@@ -5,5 +5,6 @@ notificationTypes.OPORTUNIDAD_ELIMINADA = "OPORTUNIDAD_ELIMINADA";
 notificationTypes.NUEVA_PARTICIPACION = "NUEVA_PARTICIPACION";
 notificationTypes.CAMBIO_ESTATUS = "CAMBIO_ESTATUS";
 notificationTypes.NUEVO_EVENTO = "NUEVO_EVENTO";
+notificationTypes.PARTICIPACION_RECHAZADA = "PARTICIPACION_RECHAZADA";
 
 module.exports = notificationTypes;

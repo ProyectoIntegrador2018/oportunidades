@@ -9,7 +9,8 @@ const {
   OPORTUNIDAD_ELIMINADA,
   NUEVA_PARTICIPACION,
   CAMBIO_ESTATUS,
-  NUEVO_EVENTO
+  NUEVO_EVENTO,
+  PARTICIPACION_RECHAZADA,
 } = require("../utils/NotificationTypes");
 const detallesNotifController = require("../controllers/DetallesNotificacionController");
 const notificacionController = require("../controllers/NotificacionController");
@@ -21,25 +22,46 @@ const notificationService = {};
 
 notificationService.notificacionNuevaOportunidad = (job) => {
   return new Promise((resolve, reject) => {
-    UserModel.findByUserTypes(["socio", "admin"]).then((users) => {
-      if (!users || users.length == 0) resolve({ success: 1 });
+    UserModel.findByUserTypes(["socio", "admin"])
+      .then((users) => {
+        if (!users || users.length == 0) resolve({ success: 1 });
 
-      // const detalles = { rfp: job.data.rfp._id };
-      const detalles = { rfp: job.rfp._id };
-      notificacionUsuarios(NUEVA_OPORTUNIDAD, detalles, users)
-        .then((resp) => {
-          resolve(resp);
-          /*
+        // const detalles = { rfp: job.data.rfp._id };
+        const detalles = { rfp: job.rfp._id };
+        notificacionUsuarios(NUEVA_OPORTUNIDAD, detalles, users)
+          .then((resp) => {
+            resolve(resp);
+            /*
           mailTodosSocios(NUEVA_OPORTUNIDAD, job.rfp)
             .then((respMail) => {
               resolve(respMail);
             })
             .catch((error) => reject(error));
           */
-        })
-        .catch((error) => reject(error));
-    });
-  }).catch((error) => reject(error));
+          })
+          .catch((error) => reject(error));
+      })
+      .catch((error) => reject(error));
+  });
+};
+
+notificationService.notificacionParticipacionRechazada = (job) => {
+  return new Promise((resolve, reject) => {
+    const participacionId = job.participacionId;
+    ParticipacionModel.findById(participacionId)
+      .then((participacion) => {
+        const socioId = participacion.socioInvolucrado;
+        UserModel.findById(socioId)
+          .then((socio) => {
+            const detalles = { rfp: participacion.rfpInvolucrado };
+            notificacionUsuarios(PARTICIPACION_RECHAZADA, detalles, [socio])
+              .then((resp) => resolve(resp))
+              .catch((error) => reject(error));
+          })
+          .catch((error) => reject(error));
+      })
+      .catch((error) => reject(error));
+  });
 };
 
 notificationService.notificacionOportunidadEliminada = (job) => {
@@ -84,18 +106,17 @@ notificationService.notificacionCambioEstatusOportunidad = (job) => {
               .catch((error) => reject(error));
           })
           .catch((error) => reject(error));
-            const rfpData = {
-              nombreCliente:rfp.nombrecliente,
-              nombreOportunidad:rfp.nombreOportunidad,
-              estatus:rfp.estatus
-            };
-            mailParticipantesRfp(CAMBIO_ESTATUS,rfpData,rfpId)
-            .then((resp)=>{
-              resolve(resp);
-            })
-            .catch((error)=>reject(error))
-          
-        })
+        const rfpData = {
+          nombreCliente: rfp.nombrecliente,
+          nombreOportunidad: rfp.nombreOportunidad,
+          estatus: rfp.estatus,
+        };
+        mailParticipantesRfp(CAMBIO_ESTATUS, rfpData, rfpId)
+          .then((resp) => {
+            resolve(resp);
+          })
+          .catch((error) => reject(error));
+      })
       .catch((error) => reject(error));
   });
 };
@@ -354,7 +375,7 @@ const mailNuevoEvento = function (evento) {
           name: evento.name,
           date: evento.date,
           link: evento.link,
-          nombreOportunidad: nombreOportunidad
+          nombreOportunidad: nombreOportunidad,
         };
         mailParticipantesRfp(NUEVO_EVENTO, eventData, evento.rfp)
           .then((resp) => {
