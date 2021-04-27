@@ -87,6 +87,11 @@ eventController.editEvent = (eventId, updates) => {
   return new Promise((resolve, reject) => {
     Event.findByIdAndUpdate(eventId, updates)
       .then((eventUpdated) => {
+        // eventUpdated contains the data of the event before the update operation was performed
+        notificationService.notificacionCambioEvento(eventUpdated)
+          .then((resp) => {})
+          .catch((err) => reject(err));
+        
         resolve(eventUpdated);
       })
       .catch((err) => {
