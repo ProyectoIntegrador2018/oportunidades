@@ -5,7 +5,8 @@ const {
   NUEVA_OPORTUNIDAD,
   NUEVA_PARTICIPACION,
   NUEVO_EVENTO,
-  CAMBIO_ESTATUS,
+  CAMBIO_EVENTO,
+  CAMBIO_ESTATUS
 } = require("../utils/NotificationTypes");
 
 var options = { format: "Letter" };
@@ -108,8 +109,7 @@ mailService.buildMailContent = (tipoNotificacion, mailData) => {
         break;
 
       case NUEVO_EVENTO:
-        moment.locale("es-us");
-        const eventDate = upperCaseFirstLetter(moment(mailData.date).format("LLLL"));
+        const eventDate = dateToString(mailData.date);
 
         mailOptions.subject = "Nueva junta para Oportunidad Comercial";
         mailOptions.text = `se ha agendado una nueva junta para la Oportunidad Comercial "${mailData.nombreOportunidad}" en la cual estás participando:
@@ -123,10 +123,39 @@ mailService.buildMailContent = (tipoNotificacion, mailData) => {
         <b>Liga de la reunión:</b> <a href="${mailData.link}">${mailData.link}</a></p>`;
         break;
 
+      case CAMBIO_EVENTO:
+        const dateEventUpdated = dateToString(mailData.eventUpdated.date);
+        const dateEventBeforeUpdate =
+          mailData.eventUpdated.date === mailData.eventBeforeUpdate.date
+            ? dateEventUpdated
+            : dateToString(mailData.eventBeforeUpdate.date);
+
+        mailOptions.subject = "Cambio en junta para Oportunidad Comercial";
+        mailOptions.text = `se han hecho cambios en una junta para la Oportunidad Comercial "${mailData.nombreOportunidad}" en la cual estás participando:
+        Datos actualizados:
+        Nombre: ${mailData.eventUpdated.name}
+        Fecha: ${dateEventUpdated}
+        Liga de la reunión: ${mailData.eventUpdated.link}
+        Datos antiguos:
+        Nombre: ${mailData.eventBeforeUpdate.name}
+        Fecha: ${dateEventBeforeUpdate}
+        Liga de la reunión: ${mailData.eventBeforeUpdate.link}`;
+
+        mailOptions.html = `se han hecho cambios en una junta para la Oportunidad Comercial "${mailData.nombreOportunidad}" en la cual estás participando:</p>
+        <h3>Datos actualizados:</h3>
+        <p><b>Nombre:</b> ${mailData.eventUpdated.name}<br>
+        <b>Fecha:</b> ${dateEventUpdated}<br>
+        <b>Liga de la reunión:</b> <a href="${mailData.eventUpdated.link}">${mailData.eventUpdated.link}</a></p>
+        <h3>Datos antiguos:</h3>
+        <p><b>Nombre:</b> ${mailData.eventBeforeUpdate.name}<br>
+        <b>Fecha:</b> ${dateEventBeforeUpdate}<br>
+        <b>Liga de la reunión:</b> <a href="${mailData.eventBeforeUpdate.link}">${mailData.eventBeforeUpdate.link}</a></p>`;
+        break;
+
       case CAMBIO_ESTATUS:
-        mailOptions.subject = 'Cambio de estatus en la Oportunidad Comercial';
-        mailOptions.text = `queremos informarte que el cliente ${mailData.nombreCliente} ha cambiado el estatus de la oportunidad ${mailData.nombreOportunidad} a ${mailData.estatus}.`;
-        mailOptions.html = `queremos informarte que el cliente ${mailData.nombreCliente} ha cambiado el estatus de la oportunidad ${mailData.nombreOportunidad} a ${mailData.estatus}.</p>`;
+        mailOptions.subject = "Cambio de estatus en la Oportunidad Comercial";
+        mailOptions.text = `queremos informarte que el cliente ${mailData.nombreCliente} ha cambiado el estatus de la oportunidad "${mailData.nombreOportunidad}" a ${mailData.estatus}.`;
+        mailOptions.html = `queremos informarte que el cliente ${mailData.nombreCliente} ha cambiado el estatus de la oportunidad "${mailData.nombreOportunidad}" a ${mailData.estatus}.</p>`;
         break;
 
       default:
@@ -190,6 +219,11 @@ const generatePdf = (bodyTitle, htmlBody) => {
       resolve(res.toString("base64"));
     });
   });
+};
+
+const dateToString = (date) => {
+  moment.locale("es-us");
+  return upperCaseFirstLetter(moment(date).format("LLLL"));
 };
 
 const upperCaseFirstLetter = (string) => {
