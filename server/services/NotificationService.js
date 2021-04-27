@@ -213,39 +213,20 @@ const mailUsuarios = function (tipoNotificacion, mailData, usuarios) {
   });
 };
 
-const mailNuevaParticipacion = function (participacion) {
+const mailNuevaParticipacion = function (detallesParticipacion, cliente) {
   return new Promise((resolve, reject) => {
-    const detalles = {
-      rfp: participacion.rfpInvolucrado,
-      participante: participacion.socioInvolucrado,
-    };
-    RfpModel.findById(detalles.rfp)
-      .then((rfp) => {
-        UserModel.findById(detalles.participante)
-          .then((participante) => {
+    RfpModel.getNombreOportunidad(detallesParticipacion.rfp)
+      .then((nombreOportunidad) => {
+        UserModel.getName(detallesParticipacion.participante)
+          .then((participanteName) => {
             const rfpMail = {
-              nombreOportunidad: rfp.nombreOportunidad,
-              participanteName: participante.name,
+              nombreOportunidad: nombreOportunidad,
+              participanteName: participanteName,
             };
-            mailService
-              .buildMailContent(NUEVA_PARTICIPACION, rfpMail)
-              .then((mailContent) => {
-                UserModel.findById(rfp.createdBy)
-                  .then((cliente) => {
-                    const jobMail = {
-                      mailContent: mailContent,
-                      destinatario: {
-                        name: cliente.name,
-                        email: cliente.email,
-                      },
-                    };
-                    mailQueue.add(NUEVA_PARTICIPACION, jobMail, {
-                      attempts: 3,
-                    });
 
-                    resolve({ status: 200 });
-                  })
-                  .catch((error) => reject(error));
+            mailUsuarios(NUEVA_PARTICIPACION, rfpMail, cliente)
+              .then((resp) => {
+                resolve(resp);
               })
               .catch((error) => reject(error));
           })
@@ -272,7 +253,7 @@ notificationService.notificacionNuevaParticipacion = (participacion) => {
               .then((resp) => {
                 resolve(resp);
                 /*
-                mailNuevaParticipacion(participacion)
+                mailNuevaParticipacion(detalles, cliente)
                   .then((respMail) => {
                     resolve(respMail);
                   })
