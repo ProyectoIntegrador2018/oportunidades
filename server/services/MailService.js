@@ -5,7 +5,8 @@ const {
   NUEVA_OPORTUNIDAD,
   NUEVA_PARTICIPACION,
   NUEVO_EVENTO,
-  CAMBIO_EVENTO
+  CAMBIO_EVENTO,
+  CAMBIO_ESTATUS
 } = require("../utils/NotificationTypes");
 
 var options = { format: "Letter" };
@@ -149,6 +150,12 @@ mailService.buildMailContent = (tipoNotificacion, mailData) => {
         <p><b>Nombre:</b> ${mailData.eventBeforeUpdate.name}<br>
         <b>Fecha:</b> ${dateEventBeforeUpdate}<br>
         <b>Liga de la reunión:</b> <a href="${mailData.eventBeforeUpdate.link}">${mailData.eventBeforeUpdate.link}</a></p>`;
+        break;
+
+      case CAMBIO_ESTATUS:
+        mailOptions.subject = 'Cambio de estatus en la Oportunidad Comercial';
+        mailOptions.text = `queremos informarte que el cliente ${mailData.nombreCliente} ha cambiado el estatus de la oportunidad ${mailData.nombreOportunidad} a ${mailData.estatus}.`;
+        mailOptions.html = `queremos informarte que el cliente ${mailData.nombreCliente} ha cambiado el estatus de la oportunidad ${mailData.nombreOportunidad} a ${mailData.estatus}.</p>`;
         break;
 
       default:

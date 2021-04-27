@@ -197,6 +197,7 @@ schema.statics.findClientByRFP = function (rfpInvolucrado){
       .catch((error)=> reject (error));
    });
 };
+
 /**
  * Hash password before saving user
  */
