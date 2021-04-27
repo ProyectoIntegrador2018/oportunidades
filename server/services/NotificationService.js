@@ -213,70 +213,6 @@ const mailUsuarios = function (tipoNotificacion, mailData, usuarios) {
   });
 };
 
-const saveDbNotificacionNuevaParticipacion = function (participacion) {
-  return new Promise((resolve, reject) => {
-    const detalles = {
-      rfp: participacion.rfpInvolucrado,
-      participante: participacion.socioInvolucrado,
-    };
-    detallesNotifController
-      .createDetalles(detalles)
-      .then((detallesNotif) => {
-        const rawNotificacion = {
-          tipo: NUEVA_PARTICIPACION,
-          date: new Date(),
-          detalles: detallesNotif._id,
-        };
-        return notificacionController
-          .createNotificacion(rawNotificacion)
-          .then((notificacion) => {
-            return notificacion;
-          })
-          .catch((error) => {
-            reject(error);
-          });
-      })
-      .then((notificacion) => {
-        const rfpId = detalles.rfp;
-        RfpModel.getCreatedBy(rfpId)
-          .then((userId) => {
-            UserModel.findById(userId)
-              .then((cliente) => {
-                const rawUsuarioNotif = {
-                  read: false,
-                  notificacion: notificacion._id,
-                  user: cliente._id,
-                };
-                usuarioNotificacion
-                  .createUsuarioNotificacion(rawUsuarioNotif)
-                  .then((usuarioNotif) => {
-                    UserModel.findById(cliente._id)
-                      .then((user) => {
-                        user.addNotificacion(usuarioNotif._id);
-                        resolve({ status: 200 });
-                      })
-                      .catch((error) => {
-                        reject(error);
-                      });
-                  })
-                  .catch((error) => {
-                    reject(error);
-                  });
-              })
-              .catch((error) => {
-                reject(error);
-              })
-              .catch((error) => {
-                reject(error);
-              });
-          })
-          .catch((error) => {
-            reject(error);
-          });
-      });
-  });
-};
-
 const mailNuevaParticipacion = function (participacion) {
   return new Promise((resolve, reject) => {
     const detalles = {
@@ -321,16 +257,31 @@ const mailNuevaParticipacion = function (participacion) {
 
 notificationService.notificacionNuevaParticipacion = (participacion) => {
   return new Promise((resolve, reject) => {
-    saveDbNotificacionNuevaParticipacion(participacion)
-      .then((resp) => {
-        resolve(resp);
-        /*
-        mailNuevaParticipacion(participacion)
-          .then((respMail) => {
-            resolve(respMail);
+    RfpModel.getCreatedBy(participacion.rfpInvolucrado)
+      .then((userId) => {
+        UserModel.find({ _id: userId }, "name email")
+          .then((cliente) => {
+            if (!cliente || cliente.length == 0) resolve({ success: 1 });
+
+            const detalles = {
+              rfp: participacion.rfpInvolucrado,
+              participante: participacion.socioInvolucrado,
+            };
+
+            notificacionUsuarios(NUEVA_PARTICIPACION, detalles, cliente)
+              .then((resp) => {
+                resolve(resp);
+                /*
+                mailNuevaParticipacion(participacion)
+                  .then((respMail) => {
+                    resolve(respMail);
+                  })
+                  .catch((error) => reject(error));
+                */
+              })
+              .catch((error) => reject(error));
           })
           .catch((error) => reject(error));
-        */
       })
       .catch((error) => reject(error));
   });
