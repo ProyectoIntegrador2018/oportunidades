@@ -84,7 +84,18 @@ notificationService.notificacionCambioEstatusOportunidad = (job) => {
               .catch((error) => reject(error));
           })
           .catch((error) => reject(error));
-      })
+            const rfpData = {
+              nombreCliente:rfp.nombrecliente,
+              nombreOportunidad:rfp.nombreOportunidad,
+              estatus:rfp.estatus
+            };
+            mailParticipantesRfp(CAMBIO_ESTATUS,rfpData,rfpId)
+            .then((resp)=>{
+              resolve(resp);
+            })
+            .catch((error)=>reject(error))
+          
+        })
       .catch((error) => reject(error));
   });
 };

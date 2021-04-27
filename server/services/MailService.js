@@ -4,7 +4,8 @@ var pdf = require("html-pdf");
 const {
   NUEVA_OPORTUNIDAD,
   NUEVA_PARTICIPACION,
-  NUEVO_EVENTO
+  NUEVO_EVENTO,
+  CAMBIO_ESTATUS,
 } = require("../utils/NotificationTypes");
 
 var options = { format: "Letter" };
@@ -120,6 +121,12 @@ mailService.buildMailContent = (tipoNotificacion, mailData) => {
         <p><b>Nombre:</b> ${mailData.name}<br>
         <b>Fecha:</b> ${eventDate}<br>
         <b>Liga de la reunión:</b> <a href="${mailData.link}">${mailData.link}</a></p>`;
+        break;
+
+      case CAMBIO_ESTATUS:
+        mailOptions.subject = 'Cambio de estatus en la Oportunidad Comercial';
+        mailOptions.text = `queremos informarte que el cliente ${mailData.nombreCliente} ha cambiado el estatus de la oportunidad ${mailData.nombreOportunidad} a ${mailData.estatus}.`;
+        mailOptions.html = `queremos informarte que el cliente ${mailData.nombreCliente} ha cambiado el estatus de la oportunidad ${mailData.nombreOportunidad} a ${mailData.estatus}.</p>`;
         break;
 
       default:
