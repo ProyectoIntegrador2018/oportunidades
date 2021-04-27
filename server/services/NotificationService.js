@@ -102,7 +102,7 @@ notificationService.notificacionCambioEstatusOportunidad = (job) => {
           .then((sociosParticipantes) => {
             const detalles = {
               rfp: rfpId,
-              detalles: rfp.estatus
+              detalles: rfp.estatus,
             };
             notificacionUsuarios(CAMBIO_ESTATUS, detalles, sociosParticipantes)
               .then((resp) => resolve(resp))
@@ -411,7 +411,7 @@ const mailCambioEvento = function (eventBeforeUpdate, eventUpdated) {
         const eventData = {
           nombreOportunidad: nombreOportunidad,
           eventBeforeUpdate: eventBeforeUpdate,
-          eventUpdated: eventUpdated
+          eventUpdated: eventUpdated,
         };
         mailParticipantesRfp(CAMBIO_EVENTO, eventData, eventUpdated.rfp)
           .then((resp) => {
