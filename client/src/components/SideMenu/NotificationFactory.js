@@ -93,7 +93,7 @@ export default function NotificationFactory(props) {
       return <NotificacionCambioHorario {...downProps} />;
     case NOTIFICATION_TYPES.NUEVO_HORARIO:
       return <NotificacionNuevoHorario {...downProps} />;
-    case NOTIFICATION_TYPES.RECHAZO:
+    case NOTIFICATION_TYPES.PARTICIPACION_RECHAZADA:
       return <NotificacionRechazo {...downProps} />;
     case NOTIFICATION_TYPES.NUEVA_PARTICIPACION:
       return <NotificacionSocioAplica {...downProps} />;
