@@ -127,23 +127,16 @@ router.delete("/deleterfp", userMiddleware, (req, res) => {
  * @param {Object} res response for the request
  */
 router.patch("/updaterfp", userMiddleware, (req, res) => {
+  console.log(req.body)
+  notificationService
+    .notificacionCambioEstatusOportunidad(req.body)
+    .then((resp) => {
       rfpController
         .updaterfp(req.user._id, req.body)
         .then((rfp) => {
-          notificationService
-          .notificacionCambioEstatusOportunidad(req.body)
-          .then(()=>{
-            return res.send({
-              success: 1,
-              rfp,
-            });
-
-          })
-          .catch((error) => {
-            return res.status(401).send({
-              success: 0,
-              error,
-            });
+          return res.send({
+            success: 1,
+            rfp,
           });
         })
         .catch((error) => {
@@ -152,6 +145,13 @@ router.patch("/updaterfp", userMiddleware, (req, res) => {
             error,
           });
         });
+    })
+    .catch((error) => {
+      return res.status(401).send({
+        success: 0,
+        error,
+      });
+    });
 });
 
 router.get("/ping", userMiddleware, (req, res) => {
