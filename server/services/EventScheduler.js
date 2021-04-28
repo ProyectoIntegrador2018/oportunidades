@@ -1,5 +1,6 @@
 const RFPModel = require("../models/RFP");
 const EventModel = require("../models/Event");
+const notificationService = require("../services/NotificationService");
 const cron = require("node-cron");
 const eventScheduler = {};
 
@@ -19,21 +20,33 @@ eventScheduler.checkForEventStatusUpdate = () => {
           const rfpId = event.rfp;
           RFPModel.findById(rfpId)
             .then((rfp) => {
-              if (status != "En proceso") {
+              if (rfp.estatus === "Activo") {
+                const prevStatus = rfp.estatus;
                 const nextStatus = getNextStatus(rfp.estatus);
-                RFPModel.update(
-                  { _id: rfpId },
-                  {
-                    estatus: nextStatus,
-                  },
-                  function (err, result) {
-                    if (err) {
-                      console.log(err);
-                    } else {
-                      console.log(result);
-                    }
-                  }
-                );
+                const job = {
+                  id: rfp._id,
+                  estatus: nextStatus,
+                };
+                notificationService
+                  .notificacionCambioEstatusOportunidad(job)
+                  .then((resp) => {
+                    RFPModel.update(
+                      { _id: rfpId },
+                      {
+                        estatus: nextStatus,
+                      },
+                      function (err, result) {
+                        if (err) {
+                          console.log(err);
+                        } else {
+                          console.log(result);
+                        }
+                      }
+                    );
+                  })
+                  .catch((error) => {
+                    console.log(error);
+                  });
               }
             })
             .catch((error) => console.log(error));
