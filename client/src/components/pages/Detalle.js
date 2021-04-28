@@ -7,6 +7,7 @@ import SideMenu from "../SideMenu/SideMenu";
 import RfpCardDetalle from "../Cards/RfpCardDetalle";
 import SocioInvolucradoCard from "../Cards/SocioInvolucradoCard";
 import RechazarPropuesta from "../Dialogs/RechazarPropuesta";
+import { obtenerRFP } from "../../fetchers/fetcher";
 
 const Inicio = ({ route }) => {
   let match = useMatch("/detalle/:rfp_id");
@@ -24,6 +25,8 @@ const Inicio = ({ route }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   // state con el nombre del socio que esta siendo rechazado
   const [socioRechazado, setSocioRechazado] = useState({});
+  // state con el estado de participación
+  const [isParticipating, setIsParticipating] = useState(false);
 
   // Obtener tipo de usuario
   const userType = sessionStorage.getItem("userType");
@@ -33,17 +36,6 @@ const Inicio = ({ route }) => {
         Authorization: "Bearer " + sessionStorage.getItem("token"),
         "Content-Type": "application/json",
       },
-    };
-    const obtenerRFP = () => {
-      axios
-        .get("/RFP/get-one-rfp/" + match.params.rfp_id, config)
-        .then((res) => {
-          setRFP(res.data);
-          guardarLlamadaRFP(true);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
     };
     const obtenerListaInvolucrados = () => {
       axios
@@ -61,9 +53,31 @@ const Inicio = ({ route }) => {
           console.log(error);
         });
     };
-    obtenerRFP();
+    const obtenerEstatusParticipacion = () => {
+      axios
+        .get("/participacion/get-participaciones-socio", config)
+        .then((res) => {
+          let isParticipating = false;
+          for (const idx in res.data) {
+            if(res.data[idx].rfpInvolucrado === match.params.rfp_id) {
+              isParticipating = true;
+            }
+          }
+          setIsParticipating(isParticipating);
+        });
+    };
+    obtenerRFP(match.params.rfp_id)
+      .then((data) => {
+        setRFP(data);
+        guardarLlamadaRFP(true);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
     if (userType === "admin") obtenerListaInvolucrados();
     if (userType === "cliente") obtenerListaInvolucrados();
+    if (userType === "socio") obtenerEstatusParticipacion();
   }, []);
 
   const handleRechazoSocio = (e, socioName, participacionId, estatus) => {
@@ -84,7 +98,7 @@ const Inicio = ({ route }) => {
         {!llamadaRFP ? (
           <CircularProgress color="secondary" />
         ) : (
-          <RfpCardDetalle key={match.params.rfp_id} rfp={RFP} />
+          <RfpCardDetalle key={match.params.rfp_id} rfp={RFP} isParticipating={isParticipating} />
         )}
         <RechazarPropuesta
           setIsModalOpen={setIsModalOpen}

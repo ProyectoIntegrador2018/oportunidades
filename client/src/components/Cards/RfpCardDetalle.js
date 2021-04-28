@@ -75,7 +75,7 @@ const useStyles = makeStyles({
   },
 });
 
-export default function SimpleCard({rfp}) {
+export default function SimpleCard({rfp, isParticipating}) {
   const config = {
     headers: {
        Authorization: "Bearer " + sessionStorage.getItem("token"),
@@ -293,7 +293,7 @@ export default function SimpleCard({rfp}) {
       <CardActions>
           <div className={classes.contenedorBotones}>
             {userType === 'socio'
-                ? rfp.participandoActual == false
+                ? !isParticipating
                     ? (<Button type="submit" onClick={() => {handleClick()}} variant="contained" className="boton">PARTICIPAR</Button>)
                     : (<Button type="submit" onClick={() => {handleDejarDeParticipar()}}  variant="contained" className="boton">DEJAR DE PARTICIPAR</Button>)
                 : (null)

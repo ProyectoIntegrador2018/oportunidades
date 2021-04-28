@@ -69,6 +69,7 @@ export default function RechazarPropuesta(props) {
   const handleSend = (e) => {
     e.preventDefault();
     actualizarEstatusSocio(props.participacionId, "Rechazado", reason);
+    window.location.reload();
   };
 
   const onReasonChange = (e) => {
