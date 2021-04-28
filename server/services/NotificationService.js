@@ -71,31 +71,27 @@ notificationService.notificacionCambioEstatusOportunidad = (job) => {
       .then((rfp) => {
         if (rfp.estatus == job.estatus) resolve({ success: 1 });
 
-        ParticipacionModel.find({ rfpInvolucrado: rfpId })
-          .then((participaciones) => {
-            return participaciones.map((participacion) => {
-              return participacion.socioInvolucrado;
-            });
-          })
+        getParticipantesRfp(rfpId)
           .then((sociosParticipantes) => {
             const detalles = {
               rfp: rfpId,
               detalles: rfp.estatus
             };
             notificacionUsuarios(CAMBIO_ESTATUS, detalles, sociosParticipantes)
-              .then((resp) => resolve(resp))
-              .catch((error) => reject(error));
-          })
-          .catch((error) => reject(error));
+              .then((resp) => {
+                const rfpData = {
+                  nombreCliente: rfp.nombrecliente,
+                  nombreOportunidad: rfp.nombreOportunidad,
+                  estatus: rfp.estatus,
+                };
 
-        const rfpData = {
-          nombreCliente: rfp.nombrecliente,
-          nombreOportunidad: rfp.nombreOportunidad,
-          estatus: rfp.estatus,
-        };
-        mailParticipantesRfp(CAMBIO_ESTATUS, rfpData, rfpId)
-          .then((resp) => {
-            resolve(resp);
+                mailUsuarios(CAMBIO_ESTATUS, rfpData, sociosParticipantes)
+                  .then((resp) => {
+                    resolve(resp);
+                  })
+                  .catch((error) => reject(error));
+              })
+              .catch((error) => reject(error));
           })
           .catch((error) => reject(error));
       })
@@ -152,32 +148,6 @@ const notificacionUsuarios = function (tipoNotificacion, detalles, socios) {
   });
 };
 
-const mailParticipantesRfp = function (tipoNotificacion, mailData, rfpId) {
-  return new Promise((resolve, reject) => {
-    ParticipacionModel.find({ rfpInvolucrado: rfpId })
-      .then((participaciones) => {
-        return participaciones.map((participacion) => {
-          return participacion.socioInvolucrado;
-        });
-      })
-      .then((idSociosParticipantes) => {
-        if (!idSociosParticipantes || idSociosParticipantes.length == 0)
-          resolve({ success: 1 });
-
-        UserModel.find({ _id: idSociosParticipantes }, "name email")
-          .then((sociosParticipantes) => {
-            mailUsuarios(tipoNotificacion, mailData, sociosParticipantes)
-              .then((resp) => {
-                resolve(resp);
-              })
-              .catch((error) => reject(error));
-          })
-          .catch((error) => reject(error));
-      })
-      .catch((error) => reject(error));
-  });
-};
-
 const mailUsuarios = function (tipoNotificacion, mailData, usuarios) {
   return new Promise((resolve, reject) => {
     mailService
@@ -225,29 +195,25 @@ const mailNuevaParticipacion = function (detallesParticipacion, cliente) {
 
 notificationService.notificacionNuevaParticipacion = (participacion) => {
   return new Promise((resolve, reject) => {
-    RfpModel.getCreatedBy(participacion.rfpInvolucrado)
-      .then((userId) => {
-        UserModel.find({ _id: userId }, "name email")
-          .then((cliente) => {
-            if (!cliente || cliente.length == 0) resolve({ success: 1 });
+    getClienteRfp(participacion.rfpInvolucrado)
+      .then((cliente) => {
+        if (!cliente || cliente.length == 0) resolve({ success: 1 });
 
-            const detalles = {
-              rfp: participacion.rfpInvolucrado,
-              participante: participacion.socioInvolucrado,
-            };
+        const detalles = {
+          rfp: participacion.rfpInvolucrado,
+          participante: participacion.socioInvolucrado,
+        };
 
-            notificacionUsuarios(NUEVA_PARTICIPACION, detalles, cliente)
-              .then((resp) => {
-                resolve(resp);
-                /*
-                mailNuevaParticipacion(detalles, cliente)
-                  .then((respMail) => {
-                    resolve(respMail);
-                  })
-                  .catch((error) => reject(error));
-                */
+        notificacionUsuarios(NUEVA_PARTICIPACION, detalles, cliente)
+          .then((resp) => {
+            resolve(resp);
+            /*
+            mailNuevaParticipacion(detalles, cliente)
+              .then((respMail) => {
+                resolve(respMail);
               })
               .catch((error) => reject(error));
+            */
           })
           .catch((error) => reject(error));
       })
@@ -257,15 +223,20 @@ notificationService.notificacionNuevaParticipacion = (participacion) => {
 
 notificationService.notificacionNuevoEvento = (evento) => {
   return new Promise((resolve, reject) => {
-    mailNuevoEvento(evento)
-      .then((respMail) => {
-        resolve(respMail);
+    getParticipantesRfp(evento.rfp)
+      .then((sociosParticipantes) => {
+        // TODO: notificacionUsuarios()... goes here
+        mailNuevoEvento(evento, sociosParticipantes)
+          .then((respMail) => {
+            resolve(respMail);
+          })
+          .catch((error) => reject(error));
       })
       .catch((error) => reject(error));
   });
 };
 
-const mailNuevoEvento = function (evento) {
+const mailNuevoEvento = function (evento, sociosParticipantes) {
   return new Promise((resolve, reject) => {
     RfpModel.getNombreOportunidad(evento.rfp)
       .then((nombreOportunidad) => {
@@ -275,7 +246,7 @@ const mailNuevoEvento = function (evento) {
           link: evento.link,
           nombreOportunidad: nombreOportunidad
         };
-        mailParticipantesRfp(NUEVO_EVENTO, eventData, evento.rfp)
+        mailUsuarios(NUEVO_EVENTO, eventData, sociosParticipantes)
           .then((resp) => {
             resolve(resp);
           })
@@ -289,9 +260,15 @@ notificationService.notificacionCambioEvento = (eventBeforeUpdate) => {
   return new Promise((resolve, reject) => {
     EventModel.findById(eventBeforeUpdate._id)
       .then((eventUpdated) => {
-        mailCambioEvento(eventBeforeUpdate, eventUpdated)
-          .then((respMail) => {
-            resolve(respMail);
+        // TODO: exit here if eventBeforeUpdate and eventUpdated are the same (no changes were made)
+        getParticipantesRfp(eventBeforeUpdate.rfp)
+          .then((sociosParticipantes) => {
+            // TODO: notificacionUsuarios()... goes here
+            mailCambioEvento(eventBeforeUpdate, eventUpdated, sociosParticipantes)
+              .then((respMail) => {
+                resolve(respMail);
+              })
+              .catch((error) => reject(error));
           })
           .catch((error) => reject(error));
       })
@@ -299,7 +276,7 @@ notificationService.notificacionCambioEvento = (eventBeforeUpdate) => {
   });
 };
 
-const mailCambioEvento = function (eventBeforeUpdate, eventUpdated) {
+const mailCambioEvento = function (eventBeforeUpdate, eventUpdated, sociosParticipantes) {
   return new Promise((resolve, reject) => {
     RfpModel.getNombreOportunidad(eventUpdated.rfp)
       .then((nombreOportunidad) => {
@@ -308,9 +285,46 @@ const mailCambioEvento = function (eventBeforeUpdate, eventUpdated) {
           eventBeforeUpdate: eventBeforeUpdate,
           eventUpdated: eventUpdated
         };
-        mailParticipantesRfp(CAMBIO_EVENTO, eventData, eventUpdated.rfp)
+        mailUsuarios(CAMBIO_EVENTO, eventData, sociosParticipantes)
           .then((resp) => {
             resolve(resp);
+          })
+          .catch((error) => reject(error));
+      })
+      .catch((error) => reject(error));
+  });
+};
+
+const getClienteRfp = function (rfpId) {
+  return new Promise((resolve, reject) => {
+    RfpModel.getCreatedBy(rfpId)
+      .then((userId) => {
+        UserModel.find({ _id: userId }, "name email")
+          .then((cliente) => {
+            resolve(cliente);
+          })
+          .catch((error) => reject(error));
+      })
+      .catch((error) => reject(error));
+  });
+};
+
+const getParticipantesRfp = function (rfpId) {
+  return new Promise((resolve, reject) => {
+    ParticipacionModel.find({ rfpInvolucrado: rfpId })
+      .then((participaciones) => {
+        return participaciones.map((participacion) => {
+          return participacion.socioInvolucrado;
+        });
+      })
+      .then((idSociosParticipantes) => {
+        if (!idSociosParticipantes || idSociosParticipantes.length == 0)
+          resolve([]);
+          // resolve({ success: 1 });
+
+        UserModel.find({ _id: idSociosParticipantes }, "name email")
+          .then((sociosParticipantes) => {
+            resolve(sociosParticipantes);
           })
           .catch((error) => reject(error));
       })
