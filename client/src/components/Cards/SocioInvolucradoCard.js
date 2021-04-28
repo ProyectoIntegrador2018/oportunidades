@@ -73,14 +73,21 @@ export default function SimpleCard({
             <Typography className={classes.estatus}>Estatus:</Typography>
             <Typography className={classes.texto}>{estatus}</Typography>
           </div>
-          <Button
-            size="small"
-            onClick={(e) => {
-              handleRechazoSocio(e, socioData.nombre, participacionId, estatus);
-            }}
-          >
-            RECHAZAR PROPUESTA
-          </Button>
+          {estatus === "Activo" && (
+            <Button
+              size="small"
+              onClick={(e) => {
+                handleRechazoSocio(
+                  e,
+                  socioData.nombre,
+                  participacionId,
+                  estatus
+                );
+              }}
+            >
+              RECHAZAR PROPUESTA
+            </Button>
+          )}
         </CardContent>
       </Card>
     </div>
