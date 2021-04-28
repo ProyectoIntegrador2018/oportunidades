@@ -2,6 +2,7 @@ const UserModel = require("../models/User");
 const RfpModel = require("../models/RFP");
 const EventModel = require("../models/Event");
 const NotificacionModel = require("../models/Notificacion");
+const ParticipacionModel = require("../models/Participaciones");
 const UsuarioNotificacionModel = require("../models/UsuarioNotificacion");
 const DetallesNotificacionModel = require("../models/DetallesNotificacion");
 const {
@@ -11,6 +12,7 @@ const {
   NUEVO_EVENTO,
   CAMBIO_EVENTO,
   CAMBIO_ESTATUS,
+  PARTICIPACION_RECHAZADA,
 } = require("../utils/NotificationTypes");
 const detallesNotifController = require("../controllers/DetallesNotificacionController");
 const notificacionController = require("../controllers/NotificacionController");
@@ -113,6 +115,25 @@ notificationService.notificacionCambioEstatusOportunidad = (job) => {
                   resolve(resp);
                 }
               })
+              .catch((error) => reject(error));
+          })
+          .catch((error) => reject(error));
+      })
+      .catch((error) => reject(error));
+  });
+};
+
+notificationService.notificacionParticipacionRechazada = (job) => {
+  return new Promise((resolve, reject) => {
+    const participacionId = job.participacionId;
+    ParticipacionModel.findById(participacionId)
+      .then((participacion) => {
+        const socioId = participacion.socioInvolucrado;
+        UserModel.findById(socioId)
+          .then((socio) => {
+            const detalles = { rfp: participacion.rfpInvolucrado };
+            notificacionUsuarios(PARTICIPACION_RECHAZADA, detalles, [socio])
+              .then((resp) => resolve(resp))
               .catch((error) => reject(error));
           })
           .catch((error) => reject(error));

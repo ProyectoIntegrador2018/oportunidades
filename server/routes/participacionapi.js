@@ -1,6 +1,7 @@
 const express = require("express");
 const userMiddleware = require("../middleware/User");
 const participacionController = require("../controllers/ParticipacionController");
+const notificationService = require("../services/NotificationService");
 
 const router = express.Router();
 
@@ -85,6 +86,23 @@ router.post("/update-estatus-socio/:id", userMiddleware, (req, res) => {
   const feedback = req.body.feedback ? req.body.feedback : "";
   participacionController
     .updateEstatusSocio(participacionId, estatus, feedback)
+    .then((resp) => {
+      if (estatus === "Rechazado") {
+        const job = {
+          participacionId: participacionId,
+        };
+        notificationService
+          .notificacionParticipacionRechazada(job)
+          .then((resp) => {
+            return resp;
+          })
+          .catch((error) => {
+            console.log("error", error);
+            return res.status(400).send({ error });
+          });
+      }
+      return resp;
+    })
     .then((resp) => {
       return res.send(resp);
     })
