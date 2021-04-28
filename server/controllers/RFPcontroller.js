@@ -56,6 +56,7 @@ rfpController.deleterfp = (id) => {
         RFP.findByIdAndDelete(id)
           .then((rfp) => {
             const job = {
+              nombreCliente: rfp.nombrecliente,
               nombreOportunidad: rfp.nombreOportunidad,
             };
             // notificationQueue.add(OPORTUNIDAD_ELIMINADA, job);
