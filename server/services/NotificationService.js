@@ -67,7 +67,7 @@ notificationService.notificacionOportunidadEliminada = (job) => {
 notificationService.notificacionCambioEstatusOportunidad = (job) => {
   return new Promise((resolve, reject) => {
     const rfpId = job.id;
-    RfpModel.findById(rfpId)
+    RfpModel.findOne({ _id: rfpId }, "estatus nombrecliente nombreOportunidad")
       .then((rfp) => {
         if (rfp.estatus == job.estatus) resolve({ success: 1 });
 
@@ -84,10 +84,9 @@ notificationService.notificacionCambioEstatusOportunidad = (job) => {
                   nombreOportunidad: rfp.nombreOportunidad,
                   estatus: rfp.estatus,
                 };
-
                 mailUsuarios(CAMBIO_ESTATUS, rfpData, sociosParticipantes)
-                  .then((resp) => {
-                    resolve(resp);
+                  .then((respMail) => {
+                    resolve(respMail);
                   })
                   .catch((error) => reject(error));
               })
@@ -182,8 +181,8 @@ const mailNuevaParticipacion = function (detallesParticipacion, cliente) {
             };
 
             mailUsuarios(NUEVA_PARTICIPACION, rfpMail, cliente)
-              .then((resp) => {
-                resolve(resp);
+              .then((respMail) => {
+                resolve(respMail);
               })
               .catch((error) => reject(error));
           })
@@ -260,7 +259,12 @@ notificationService.notificacionCambioEvento = (eventBeforeUpdate) => {
   return new Promise((resolve, reject) => {
     EventModel.findById(eventBeforeUpdate._id)
       .then((eventUpdated) => {
-        // TODO: exit here if eventBeforeUpdate and eventUpdated are the same (no changes were made)
+        if (eventBeforeUpdate.name == eventUpdated.name &&
+          eventBeforeUpdate.link == eventUpdated.link &&
+          eventBeforeUpdate.date.getTime() == eventUpdated.date.getTime()) {
+            return resolve({ success: 1 });
+        }
+
         getParticipantesRfp(eventBeforeUpdate.rfp)
           .then((sociosParticipantes) => {
             // TODO: notificacionUsuarios()... goes here
@@ -319,7 +323,7 @@ const getParticipantesRfp = function (rfpId) {
       })
       .then((idSociosParticipantes) => {
         if (!idSociosParticipantes || idSociosParticipantes.length == 0)
-          resolve([]);
+          return resolve([]);
           // resolve({ success: 1 });
 
         UserModel.find({ _id: idSociosParticipantes }, "name email")
