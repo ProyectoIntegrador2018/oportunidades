@@ -86,9 +86,12 @@ participacionController.getParticipacionesRFP = (id) => {
   });
 };
 
-participacionController.updateEstatusSocio = (id, estatus) => {
+participacionController.updateEstatusSocio = (id, estatus, feedback) => {
   return new Promise((resolve, reject) => {
-    Participacion.update({ _id: id }, { $set: { socioEstatus: estatus } })
+    Participacion.update(
+      { _id: id },
+      { $set: { socioEstatus: estatus, feedback: feedback } }
+    )
       .then((resp) => {
         resolve(resp);
       })

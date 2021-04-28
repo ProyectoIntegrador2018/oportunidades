@@ -1,92 +1,88 @@
-import React, {useState, useEffect} from 'react';
-import {useNavigate} from 'react-router-dom';
-import { makeStyles } from '@material-ui/core/styles';
-import Card from '@material-ui/core/Card';
-import CardActions from '@material-ui/core/CardActions';
-import CardContent from '@material-ui/core/CardContent';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import { makeStyles } from "@material-ui/core/styles";
+import { Button, Card, CardContent, Typography } from "@material-ui/core";
+import { obtenerListaInvolucrados } from "../../fetchers/fetcher";
 
 const useStyles = makeStyles({
   title: {
     fontSize: 20,
     fontWeight: 800,
-    color: '#EE5D36',
+    color: "#EE5D36",
   },
   estatus: {
     fontSize: 18,
     fontWeight: 800,
-    textAlign: 'left',
-    marginRight: '1em',
+    textAlign: "left",
+    marginRight: "1em",
   },
   texto: {
     fontSize: 18,
-    textAlign: 'left',
+    textAlign: "left",
   },
 });
 
-export default function SimpleCard({user}) {
+export default function SimpleCard({
+  user,
+  participacionId,
+  estatus,
+  handleRechazoSocio,
+}) {
   const classes = useStyles();
-   // hook para redireccionar
-   const navigate = useNavigate();
 
-   const [nombre, guardarNombre] = useState("");
-   const [email, guardarEmail] = useState("");
-   const [empresa, guardarEmpresa] = useState("");
-   // state de control de si ya se hizo la llamada a la base de datos
-   const [llamada, guardarLlamada] = useState('false');
-   // Obtener tipo de usuario
-   const userType = sessionStorage.getItem("userType");
+  const [socioData, setSocioData] = useState({
+    nombre: "",
+    email: "",
+    empresa: "",
+  });
 
-   useEffect(() => {
-      const config = {
-         headers: {
-            Authorization: "Bearer " + sessionStorage.getItem("token"),
-            "Content-Type": "application/json",
-         },
-      };
-       const obtenerListaInvolucrados = () => {
-         axios
-             .get("/user/get-socio/" + user, config)
-             .then((res) => {
-                // guardar los datos importante sobre el socio
-                guardarNombre(res.data.user.name);
-                guardarEmail(res.data.user.email);
-                guardarEmpresa(res.data.user.empresa);
-             })
-             .catch((error) => {
-                console.log(error);
-             })
-       };
-      if (userType === 'admin') obtenerListaInvolucrados();
-      if (userType === 'cliente') obtenerListaInvolucrados();
-    }, []);
+  // Obtener tipo de usuario
+  const userType = sessionStorage.getItem("userType");
+
+  useEffect(() => {
+    if (userType === "admin" || userType === "cliente") {
+      obtenerListaInvolucrados(user)
+        .then((data) => {
+          setSocioData({
+            nombre: data.name,
+            email: data.email,
+            empresa: data.empresa,
+          });
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+  }, []);
+
   return (
     <div className="rfp-card">
-    <Card className="card-Socio">
-      <CardContent>
-        <Typography className={classes.title}>
-          {nombre}
-        </Typography>
-        <div className="container-text-socioInvolucrado">
-            <Typography className={classes.estatus}>
-                Email:
-            </Typography>
+      <Card className="card-Socio">
+        <CardContent>
+          <Typography className={classes.title}>{socioData.nombre}</Typography>
+          <div className="container-text-socioInvolucrado">
+            <Typography className={classes.estatus}>Email:</Typography>
+            <Typography className={classes.texto}>{socioData.email}</Typography>
+          </div>
+          <div className="container-text-socioInvolucrado">
+            <Typography className={classes.estatus}>Empresa:</Typography>
             <Typography className={classes.texto}>
-              {email}
+              {socioData.empresa}
             </Typography>
-        </div>
-        <div className="container-text-socioInvolucrado">
-            <Typography className={classes.estatus}>
-                Empresa:
-            </Typography>
-            <Typography className={classes.texto}>
-              {empresa}
-            </Typography>
-        </div>
-      </CardContent>
-    </Card>
+          </div>
+          <div className="container-text-socioInvolucrado">
+            <Typography className={classes.estatus}>Estatus:</Typography>
+            <Typography className={classes.texto}>{estatus}</Typography>
+          </div>
+          <Button
+            size="small"
+            onClick={(e) => {
+              handleRechazoSocio(e, socioData.nombre, participacionId, estatus);
+            }}
+          >
+            RECHAZAR PROPUESTA
+          </Button>
+        </CardContent>
+      </Card>
     </div>
   );
 }

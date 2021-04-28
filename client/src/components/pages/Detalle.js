@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useMatch } from "react-router-dom";
-import { Grid, Typography } from "@material-ui/core";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import Card from "@material-ui/core/Card";
+import { Card, CircularProgress, Grid, Typography } from "@material-ui/core";
 import axios from "axios";
 import "../../styles/globalStyles.css";
 import SideMenu from "../SideMenu/SideMenu";
 import RfpCardDetalle from "../Cards/RfpCardDetalle";
 import SocioInvolucradoCard from "../Cards/SocioInvolucradoCard";
+import RechazarPropuesta from "../Dialogs/RechazarPropuesta";
 
 const Inicio = ({ route }) => {
   let match = useMatch("/detalle/:rfp_id");
@@ -21,6 +20,10 @@ const Inicio = ({ route }) => {
   );
   // state de control de si ya se hizo la llamada de RFP a la base de datos
   const [llamadaRFP, guardarLlamadaRFP] = useState(false);
+  // state de control de si el modal de retroalimentación está abierto
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  // state con el nombre del socio que esta siendo rechazado
+  const [socioRechazado, setSocioRechazado] = useState({});
 
   // Obtener tipo de usuario
   const userType = sessionStorage.getItem("userType");
@@ -62,6 +65,17 @@ const Inicio = ({ route }) => {
     if (userType === "admin") obtenerListaInvolucrados();
     if (userType === "cliente") obtenerListaInvolucrados();
   }, []);
+
+  const handleRechazoSocio = (e, socioName, participacionId, estatus) => {
+    e.preventDefault();
+    setSocioRechazado({
+      name: socioName,
+      participacionId: participacionId,
+      estatus: estatus,
+    });
+    setIsModalOpen(true);
+  };
+
   return (
     <>
       <SideMenu />
@@ -72,6 +86,13 @@ const Inicio = ({ route }) => {
         ) : (
           <RfpCardDetalle key={match.params.rfp_id} rfp={RFP} />
         )}
+        <RechazarPropuesta
+          setIsModalOpen={setIsModalOpen}
+          isOpen={isModalOpen}
+          opportunityName={RFP.nombreOportunidad}
+          socioName={socioRechazado.name}
+          participacionId={socioRechazado.participacionId}
+        />
         {userType === "socio" ? null : (
           <Grid container direction="row" className="container-dashboard ">
             {llamadaParticipaciones ? (
@@ -94,6 +115,9 @@ const Inicio = ({ route }) => {
                     <SocioInvolucradoCard
                       key={user.socioInvolucrado}
                       user={user.socioInvolucrado}
+                      handleRechazoSocio={handleRechazoSocio}
+                      participacionId={user._id}
+                      estatus={user.socioEstatus}
                     />
                   ))}
             </Grid>
