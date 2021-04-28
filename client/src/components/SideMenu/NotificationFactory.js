@@ -300,9 +300,10 @@ class NotificacionOportunidadEliminada extends PortalNotification {
   };
 
   getDescription = () => {
-    const details = this.state.data.details;
-    const opportunityName = this.props.rawNotif.notificacion.detalles.detalles;
-    return `El cliente ${details.author} ha eliminado la oportunidad comercial "${opportunityName}"`;
+    const detalles = this.props.rawNotif.notificacion.detalles;
+    const author = detalles.nombreCliente;
+    const opportunityName = detalles.detalles;
+    return `El cliente ${author} ha eliminado la oportunidad comercial "${opportunityName}"`;
   };
 }
 

@@ -62,6 +62,7 @@ notificationService.notificacionOportunidadEliminada = (job) => {
 
         const detalles = {
           // detalles: job.data.nombreOportunidad,
+          nombreCliente: job.nombreCliente,
           detalles: job.nombreOportunidad,
         };
         notificacionUsuarios(OPORTUNIDAD_ELIMINADA, detalles, socios)
