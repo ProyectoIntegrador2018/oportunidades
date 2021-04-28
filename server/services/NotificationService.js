@@ -100,7 +100,8 @@ notificationService.notificacionCambioEstatusOportunidad = (job) => {
                 const rfpData = {
                   nombreCliente: rfp.nombrecliente,
                   nombreOportunidad: rfp.nombreOportunidad,
-                  estatus: estatusNuevo,
+                  estatusPrevio: estatusPrevio,
+                  estatusNuevo: estatusNuevo,
                 };
                 if (MAIL_ENABLED) {
                   mailUsuarios(CAMBIO_ESTATUS, rfpData, sociosParticipantes)
