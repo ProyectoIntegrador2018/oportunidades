@@ -127,7 +127,6 @@ router.delete("/deleterfp", userMiddleware, (req, res) => {
  * @param {Object} res response for the request
  */
 router.patch("/updaterfp", userMiddleware, (req, res) => {
-  console.log(req.body)
   notificationService
     .notificacionCambioEstatusOportunidad(req.body)
     .then((resp) => {
