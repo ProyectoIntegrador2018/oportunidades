@@ -12,6 +12,12 @@ const schema = new mongoose.Schema({
   detalles: {
     type: String,
   },
+  estatusPrevio: {
+    type: String,
+  },
+  estatusNuevo: {
+    type: String,
+  },
 });
 
 /**
