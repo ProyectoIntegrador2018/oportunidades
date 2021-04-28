@@ -2,7 +2,6 @@ const UserModel = require("../models/User");
 const RfpModel = require("../models/RFP");
 const EventModel = require("../models/Event");
 const NotificacionModel = require("../models/Notificacion");
-const ParticipacionModel = require("../models/Participaciones");
 const UsuarioNotificacionModel = require("../models/UsuarioNotificacion");
 const DetallesNotificacionModel = require("../models/DetallesNotificacion");
 const {
@@ -23,7 +22,7 @@ const notificationService = {};
 
 notificationService.notificacionNuevaOportunidad = (job) => {
   return new Promise((resolve, reject) => {
-    UserModel.findByUserTypes(["socio", "admin"])
+    UserModel.findByUserTypes(["socio", "admin"], "name email")
       .then((users) => {
         if (!users || users.length == 0) resolve({ success: 1 });
 
@@ -48,7 +47,7 @@ notificationService.notificacionNuevaOportunidad = (job) => {
 
 notificationService.notificacionOportunidadEliminada = (job) => {
   return new Promise((resolve, reject) => {
-    UserModel.findByUserType("socio")
+    UserModel.findByUserType("socio", "_id")
       .then((socios) => {
         if (!socios || socios.length == 0) resolve({ success: 1 });
 
@@ -263,7 +262,7 @@ const mailNuevoEvento = function (evento, sociosParticipantes) {
 
 notificationService.notificacionCambioEvento = (eventBeforeUpdate) => {
   return new Promise((resolve, reject) => {
-    EventModel.findById(eventBeforeUpdate._id)
+    EventModel.findById(eventBeforeUpdate._id).select("name date link")
       .then((eventUpdated) => {
         if (eventBeforeUpdate.name == eventUpdated.name &&
           eventBeforeUpdate.link == eventUpdated.link &&
@@ -324,6 +323,8 @@ notificationService.deleteNotificacionesRfp = (rfpId) => {
   return new Promise((resolve, reject) => {
     DetallesNotificacionModel.findDetallesNotificacionByRfpId(rfpId)
       .then((detallesNotificaciones) => {
+        console.log("detallesNotificaciones");
+        console.log(detallesNotificaciones);
         const detallesNotifIds = detallesNotificaciones.map((detalles) => {
           return detalles._id;
         });

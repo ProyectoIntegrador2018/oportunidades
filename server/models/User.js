@@ -164,11 +164,12 @@ schema.statics.findByEmail = function(email) {
 
 /**
  * Gets users by type
- * @param {String} userType 
+ * @param {String} userType
+ * @param {String} fields optional fields to return
  */
-schema.statics.findByUserType = function (userType) {
+schema.statics.findByUserType = function (userType, fields="") {
   return new Promise((resolve, reject) => {
-    this.find({ userType: { $eq: userType } })
+    this.find({ userType: { $eq: userType } }, fields)
       .then((socios) => resolve(socios))
       .catch((error) => reject(error));
   });
@@ -177,10 +178,11 @@ schema.statics.findByUserType = function (userType) {
 /**
  * Gets users in array of types
  * @param {Array} userTypes
+ * @param {String} fields optional fields to return
  */
- schema.statics.findByUserTypes = function (userTypes) {
+ schema.statics.findByUserTypes = function (userTypes, fields="") {
    return new Promise((resolve, reject) => {
-     this.find({ userType: { $in: userTypes } })
+     this.find({ userType: { $in: userTypes } }, fields)
        .then((users) => resolve(users))
        .catch((error) => reject(error));
    });
@@ -202,7 +204,7 @@ schema.statics.findClientByRFP = function (rfpInvolucrado){
 /**
  * Get Array of Users with the socios who are participating in an RFP
  * @param {ObjectId} rfpId
- * @param {String} fields User fields to be selected for query, default value is all
+ * @param {String} fields optional fields to return
  */
 schema.statics.findParticipantesByRfp = function (rfpId, fields="") {
    return new Promise((resolve, reject) => {
