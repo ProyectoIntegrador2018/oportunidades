@@ -154,8 +154,8 @@ mailService.buildMailContent = (tipoNotificacion, mailData) => {
 
       case CAMBIO_ESTATUS:
         mailOptions.subject = "Cambio de estatus en la Oportunidad Comercial";
-        mailOptions.text = `queremos informarte que el cliente ${mailData.nombreCliente} ha cambiado el estatus de la oportunidad "${mailData.nombreOportunidad}" a ${mailData.estatus}.`;
-        mailOptions.html = `queremos informarte que el cliente ${mailData.nombreCliente} ha cambiado el estatus de la oportunidad "${mailData.nombreOportunidad}" a ${mailData.estatus}.</p>`;
+        mailOptions.text = `queremos informarte que el cliente ${mailData.nombreCliente} ha cambiado el estatus de la oportunidad "${mailData.nombreOportunidad}" de "${mailData.estatusPrevio}" a "${mailData.estatusNuevo}".`;
+        mailOptions.html = `queremos informarte que el cliente ${mailData.nombreCliente} ha cambiado el estatus de la oportunidad "${mailData.nombreOportunidad}" de "${mailData.estatusPrevio}" a "${mailData.estatusNuevo}".</p>`;
         break;
 
       default:

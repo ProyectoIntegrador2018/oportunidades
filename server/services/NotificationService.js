@@ -98,7 +98,8 @@ notificationService.notificacionCambioEstatusOportunidad = (job) => {
         const rfpData = {
           nombreCliente: rfp.nombrecliente,
           nombreOportunidad: rfp.nombreOportunidad,
-          estatus: rfp.estatus,
+          estatusPrevio: estatusPrevio,
+          estatusNuevo: estatusNuevo
         };
         mailParticipantesRfp(CAMBIO_ESTATUS, rfpData, rfpId)
           .then((resp) => {
