@@ -23,25 +23,27 @@ const notificationService = {};
 
 notificationService.notificacionNuevaOportunidad = (job) => {
   return new Promise((resolve, reject) => {
-    UserModel.findByUserTypes(["socio", "admin"]).then((users) => {
-      if (!users || users.length == 0) resolve({ success: 1 });
+    UserModel.findByUserTypes(["socio", "admin"])
+      .then((users) => {
+        if (!users || users.length == 0) resolve({ success: 1 });
 
-      // const detalles = { rfp: job.data.rfp._id };
-      const detalles = { rfp: job.rfp._id };
-      notificacionUsuarios(NUEVA_OPORTUNIDAD, detalles, users)
-        .then((resp) => {
-          resolve(resp);
-          /*
-          mailUsuarios(NUEVA_OPORTUNIDAD, job.rfp, users)
-            .then((respMail) => {
-              resolve(respMail);
+        // const detalles = { rfp: job.data.rfp._id };
+        const detalles = { rfp: job.rfp._id };
+        notificacionUsuarios(NUEVA_OPORTUNIDAD, detalles, users)
+          .then((resp) => {
+            resolve(resp);
+            /*
+            mailUsuarios(NUEVA_OPORTUNIDAD, job.rfp, users)
+              .then((respMail) => {
+                resolve(respMail);
+              })
+              .catch((error) => reject(error));
+            */
             })
-            .catch((error) => reject(error));
-          */
-        })
-        .catch((error) => reject(error));
-    });
-  }).catch((error) => reject(error));
+          .catch((error) => reject(error));
+      })
+      .catch((error) => reject(error));
+  });
 };
 
 notificationService.notificacionOportunidadEliminada = (job) => {
@@ -69,20 +71,24 @@ notificationService.notificacionCambioEstatusOportunidad = (job) => {
     const rfpId = job.id;
     RfpModel.findOne({ _id: rfpId }, "estatus nombrecliente nombreOportunidad")
       .then((rfp) => {
-        if (rfp.estatus == job.estatus) resolve({ success: 1 });
-
+        const estatusPrevio = rfp.estatus;
+        const estatusNuevo = job.estatus;
+        if (estatusPrevio == estatusNuevo) {
+          return resolve({ success: 1 });
+        }
         getParticipantesRfp(rfpId)
           .then((sociosParticipantes) => {
             const detalles = {
               rfp: rfpId,
-              detalles: rfp.estatus
+              estatusPrevio: estatusPrevio,
+              estatusNuevo: estatusNuevo,
             };
             notificacionUsuarios(CAMBIO_ESTATUS, detalles, sociosParticipantes)
               .then((resp) => {
                 const rfpData = {
                   nombreCliente: rfp.nombrecliente,
                   nombreOportunidad: rfp.nombreOportunidad,
-                  estatus: rfp.estatus,
+                  estatus: estatusNuevo,
                 };
                 mailUsuarios(CAMBIO_ESTATUS, rfpData, sociosParticipantes)
                   .then((respMail) => {
