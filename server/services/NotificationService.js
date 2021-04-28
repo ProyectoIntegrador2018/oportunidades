@@ -10,7 +10,7 @@ const {
   NUEVA_PARTICIPACION,
   NUEVO_EVENTO,
   CAMBIO_EVENTO,
-  CAMBIO_ESTATUS
+  CAMBIO_ESTATUS,
 } = require("../utils/NotificationTypes");
 const detallesNotifController = require("../controllers/DetallesNotificacionController");
 const notificacionController = require("../controllers/NotificacionController");
@@ -38,7 +38,7 @@ notificationService.notificacionNuevaOportunidad = (job) => {
               })
               .catch((error) => reject(error));
             */
-            })
+          })
           .catch((error) => reject(error));
       })
       .catch((error) => reject(error));
@@ -248,7 +248,7 @@ const mailNuevoEvento = function (evento, sociosParticipantes) {
           name: evento.name,
           date: evento.date,
           link: evento.link,
-          nombreOportunidad: nombreOportunidad
+          nombreOportunidad: nombreOportunidad,
         };
         mailUsuarios(NUEVO_EVENTO, eventData, sociosParticipantes)
           .then((resp) => {
@@ -262,12 +262,13 @@ const mailNuevoEvento = function (evento, sociosParticipantes) {
 
 notificationService.notificacionCambioEvento = (eventBeforeUpdate) => {
   return new Promise((resolve, reject) => {
-    EventModel.findById(eventBeforeUpdate._id).select("name date link")
+    EventModel.findById(eventBeforeUpdate._id)
+      .select("name date link")
       .then((eventUpdated) => {
         if (eventBeforeUpdate.name == eventUpdated.name &&
           eventBeforeUpdate.link == eventUpdated.link &&
           eventBeforeUpdate.date.getTime() == eventUpdated.date.getTime()) {
-            return resolve({ success: 1 });
+          return resolve({ success: 1 });
         }
 
         UserModel.findParticipantesByRfp(eventBeforeUpdate.rfp, "name email")
@@ -292,7 +293,7 @@ const mailCambioEvento = function (eventBeforeUpdate, eventUpdated, sociosPartic
         const eventData = {
           nombreOportunidad: nombreOportunidad,
           eventBeforeUpdate: eventBeforeUpdate,
-          eventUpdated: eventUpdated
+          eventUpdated: eventUpdated,
         };
         mailUsuarios(CAMBIO_EVENTO, eventData, sociosParticipantes)
           .then((resp) => {
