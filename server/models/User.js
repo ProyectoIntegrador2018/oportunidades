@@ -4,6 +4,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const Event = require("./Event");
 const RFP = require("./RFP");
+const Participacion = require("./Participaciones");
 
 const schema = new mongoose.Schema(
    {
@@ -195,6 +196,33 @@ schema.statics.findClientByRFP = function (rfpInvolucrado){
       RFP.find({createdBy:rfpInvolucrado.createdBy})
       .then((cliente) => resolve (cliente))
       .catch((error)=> reject (error));
+   });
+};
+
+/**
+ * Get Array of Users with the socios who are participating in an RFP
+ * @param {ObjectId} rfpId
+ * @param {String} fields User fields to be selected for query, default value is all
+ */
+schema.statics.findParticipantesByRfp = function (rfpId, fields="") {
+   return new Promise((resolve, reject) => {
+     Participacion.find({ rfpInvolucrado: rfpId })
+       .then((participaciones) => {
+         return participaciones.map((participacion) => {
+           return participacion.socioInvolucrado;
+         });
+       })
+       .then((idSociosParticipantes) => {
+         if (!idSociosParticipantes || idSociosParticipantes.length == 0)
+           return resolve([]);
+ 
+         this.find({ _id: idSociosParticipantes }, fields)
+           .then((sociosParticipantes) => {
+             resolve(sociosParticipantes);
+           })
+           .catch((error) => reject(error));
+       })
+       .catch((error) => reject(error));
    });
 };
 

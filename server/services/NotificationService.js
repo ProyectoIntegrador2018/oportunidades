@@ -76,7 +76,7 @@ notificationService.notificacionCambioEstatusOportunidad = (job) => {
         if (estatusPrevio == estatusNuevo) {
           return resolve({ success: 1 });
         }
-        getParticipantesRfp(rfpId)
+        UserModel.findParticipantesByRfp(rfpId, "name email")
           .then((sociosParticipantes) => {
             const detalles = {
               rfp: rfpId,
@@ -228,7 +228,7 @@ notificationService.notificacionNuevaParticipacion = (participacion) => {
 
 notificationService.notificacionNuevoEvento = (evento) => {
   return new Promise((resolve, reject) => {
-    getParticipantesRfp(evento.rfp)
+    UserModel.findParticipantesByRfp(evento.rfp, "name email")
       .then((sociosParticipantes) => {
         // TODO: notificacionUsuarios()... goes here
         mailNuevoEvento(evento, sociosParticipantes)
@@ -271,7 +271,7 @@ notificationService.notificacionCambioEvento = (eventBeforeUpdate) => {
             return resolve({ success: 1 });
         }
 
-        getParticipantesRfp(eventBeforeUpdate.rfp)
+        UserModel.findParticipantesByRfp(eventBeforeUpdate.rfp, "name email")
           .then((sociosParticipantes) => {
             // TODO: notificacionUsuarios()... goes here
             mailCambioEvento(eventBeforeUpdate, eventUpdated, sociosParticipantes)
@@ -305,6 +305,7 @@ const mailCambioEvento = function (eventBeforeUpdate, eventUpdated, sociosPartic
   });
 };
 
+// get Cliente in an array, so it can be processed by map() in notificacionUsuarios() & mailUsuarios()
 const getClienteRfp = function (rfpId) {
   return new Promise((resolve, reject) => {
     RfpModel.getCreatedBy(rfpId)
@@ -312,29 +313,6 @@ const getClienteRfp = function (rfpId) {
         UserModel.find({ _id: userId }, "name email")
           .then((cliente) => {
             resolve(cliente);
-          })
-          .catch((error) => reject(error));
-      })
-      .catch((error) => reject(error));
-  });
-};
-
-const getParticipantesRfp = function (rfpId) {
-  return new Promise((resolve, reject) => {
-    ParticipacionModel.find({ rfpInvolucrado: rfpId })
-      .then((participaciones) => {
-        return participaciones.map((participacion) => {
-          return participacion.socioInvolucrado;
-        });
-      })
-      .then((idSociosParticipantes) => {
-        if (!idSociosParticipantes || idSociosParticipantes.length == 0)
-          return resolve([]);
-          // resolve({ success: 1 });
-
-        UserModel.find({ _id: idSociosParticipantes }, "name email")
-          .then((sociosParticipantes) => {
-            resolve(sociosParticipantes);
           })
           .catch((error) => reject(error));
       })
