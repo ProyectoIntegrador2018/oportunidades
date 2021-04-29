@@ -125,6 +125,7 @@ notificationService.notificacionCambioEstatusOportunidad = (job) => {
 };
 
 notificationService.notificacionParticipacionRechazada = (job) => {
+  console.log("entro a notif participacion rechazada");
   return new Promise((resolve, reject) => {
     const participacionId = job.participacionId;
     ParticipacionModel.findById(participacionId)
@@ -134,8 +135,10 @@ notificationService.notificacionParticipacionRechazada = (job) => {
           .then((socio) => {
             const detalles = { rfp: participacion.rfpInvolucrado };
             notificacionUsuarios(PARTICIPACION_RECHAZADA, detalles, [socio])
-              .then((resp) => resolve(resp))
-              .catch((error) => reject(error));
+              .then((resp) =>{
+                mailRechazoParticipacion(participacion,[socio])
+              })
+            .catch((error)=>reject(error));    
           })
           .catch((error) => reject(error));
       })
@@ -192,7 +195,34 @@ const notificacionUsuarios = function (tipoNotificacion, detalles, socios) {
   });
 };
 
+const mailRechazoParticipacion = function(participacion,[socio]){
+  return new Promise((resolve,reject)=>{
+    RfpModel.getNombreOportunidad(participacion.rfpInvolucrado)
+    .then((nombreOportunidad)=>{
+      RfpModel.getNombreCliente(participacion.rfpInvolucrado)
+    .then((nombreCliente)=>{
+      const rfpData = {
+        nombreCliente: nombreCliente,
+        nombreOportunidad: nombreOportunidad,   
+      };
+      if (MAIL_ENABLED) {
+        mailUsuarios(PARTICIPACION_RECHAZADA, rfpData, [socio])
+          .then((respMail) => {
+            resolve(respMail);
+          })
+          .catch((error) => reject(error));
+      } else {
+        resolve(resp);
+      }
+    })
+    .catch((error)=>reject(error)); 
+  })
+  .catch((error) => reject(error));
+  });
+}
+
 const mailUsuarios = function (tipoNotificacion, mailData, usuarios) {
+  console.log("entro a mailUsuarios");
   return new Promise((resolve, reject) => {
     mailService
       .buildMailContent(tipoNotificacion, mailData)

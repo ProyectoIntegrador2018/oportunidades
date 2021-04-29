@@ -6,7 +6,8 @@ const {
   NUEVA_PARTICIPACION,
   NUEVO_EVENTO,
   CAMBIO_EVENTO,
-  CAMBIO_ESTATUS
+  CAMBIO_ESTATUS,
+  PARTICIPACION_RECHAZADA
 } = require("../utils/NotificationTypes");
 
 var options = { format: "Letter" };
@@ -58,6 +59,7 @@ mailService.sendEmail = (jobData) => {
 };
 
 mailService.buildMailContent = (tipoNotificacion, mailData) => {
+  console.log("entro a build mail content");
   return new Promise((resolve, reject) => {
     let mailOptions = {};
 
@@ -156,6 +158,11 @@ mailService.buildMailContent = (tipoNotificacion, mailData) => {
         mailOptions.subject = "Cambio de estatus en la Oportunidad Comercial";
         mailOptions.text = `queremos informarte que el cliente ${mailData.nombreCliente} ha cambiado el estatus de la oportunidad "${mailData.nombreOportunidad}" de "${mailData.estatusPrevio}" a "${mailData.estatusNuevo}".`;
         mailOptions.html = `queremos informarte que el cliente ${mailData.nombreCliente} ha cambiado el estatus de la oportunidad "${mailData.nombreOportunidad}" de "${mailData.estatusPrevio}" a "${mailData.estatusNuevo}".</p>`;
+        break;
+      case PARTICIPACION_RECHAZADA:
+        mailOptions.subject = "Participación Rechazada en Oportunidad Comercial";
+        mailOptions.text = `Lamentamos informarle que el cliente ${mailData.nombreCliente} ha rechazado su propuesta para la oportunidad "${mailData.nombreOportunidad}".`;
+        mailOptions.html = `Lamentamos informarle que el cliente ${mailData.nombreCliente} ha rechazado su propuesta para la oportunidad "${mailData.nombreOportunidad}".</p>`;
         break;
 
       default:
