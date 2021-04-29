@@ -58,7 +58,6 @@ mailService.sendEmail = (jobData) => {
 };
 
 mailService.buildMailContent = (tipoNotificacion, mailData) => {
-  console.log("entro a build mail content");
   return new Promise((resolve, reject) => {
     let mailOptions = {};
 
