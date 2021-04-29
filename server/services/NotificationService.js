@@ -155,6 +155,30 @@ notificationService.notificacionParticipacionRechazada = (job) => {
   });
 };
 
+const mailRechazoParticipacion = function (participacion, socio) {
+  return new Promise((resolve, reject) => {
+    const rfpId = participacion.rfpInvolucrado;
+    RfpModel.getNombreOportunidad(rfpId)
+      .then((nombreOportunidad) => {
+        RfpModel.getNombreCliente(rfpId)
+          .then((nombreCliente) => {
+            const participacionData = {
+              nombreCliente: nombreCliente,
+              nombreOportunidad: nombreOportunidad,
+              feedback: participacion.feedback,
+            };
+            mailUsuarios(PARTICIPACION_RECHAZADA, participacionData, socio)
+              .then((respMail) => {
+                resolve(respMail);
+              })
+              .catch((error) => reject(error));
+          })
+          .catch((error) => reject(error));
+      })
+      .catch((error) => reject(error));
+  });
+};
+
 const notificacionUsuarios = function (tipoNotificacion, detalles, socios) {
   return new Promise((resolve, reject) => {
     detallesNotifController
@@ -201,30 +225,6 @@ const notificacionUsuarios = function (tipoNotificacion, detalles, socios) {
       .catch((error) => {
         reject(error);
       });
-  });
-};
-
-const mailRechazoParticipacion = function (participacion, socio) {
-  return new Promise((resolve, reject) => {
-    const rfpId = participacion.rfpInvolucrado;
-    RfpModel.getNombreOportunidad(rfpId)
-      .then((nombreOportunidad) => {
-        RfpModel.getNombreCliente(rfpId)
-          .then((nombreCliente) => {
-            const participacionData = {
-              nombreCliente: nombreCliente,
-              nombreOportunidad: nombreOportunidad,
-              feedback: participacion.feedback
-            };
-            mailUsuarios(PARTICIPACION_RECHAZADA, participacionData, socio)
-              .then((respMail) => {
-                resolve(respMail);
-              })
-              .catch((error) => reject(error));
-          })
-          .catch((error) => reject(error));
-      })
-      .catch((error) => reject(error));
   });
 };
 
