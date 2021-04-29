@@ -229,10 +229,10 @@ class PortalNotification extends Component {
         alignItems="flex-start"
         className={clsx(!hasBeenRead && this.props.styleClasses.unreadNotif)}
       >
-        {this.state.hasClicked &&
+        {/* {this.state.hasClicked &&
           !(window.location.pathname === this.getNavPath()) && (
             <Navigate to={this.getNavPath()} replace={true} />
-          )}
+          )} */}
         <IconButton
           edge="end"
           color="primary"
