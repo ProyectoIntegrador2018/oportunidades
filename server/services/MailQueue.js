@@ -5,7 +5,8 @@ const {
   NUEVA_PARTICIPACION,
   NUEVO_EVENTO,
   CAMBIO_EVENTO,
-  CAMBIO_ESTATUS
+  CAMBIO_ESTATUS,
+  PARTICIPACION_RECHAZADA,
 } = require("../utils/NotificationTypes");
 const mailService = require("./MailService");
 
@@ -28,6 +29,10 @@ mailQueue.process(CAMBIO_EVENTO, (job) => {
 });
 
 mailQueue.process(CAMBIO_ESTATUS, (job) => {
+  return mailService.sendEmail(job.data);
+});
+
+mailQueue.process(PARTICIPACION_RECHAZADA, (job) => {
   return mailService.sendEmail(job.data);
 });
 

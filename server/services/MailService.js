@@ -6,10 +6,10 @@ const {
   NUEVA_PARTICIPACION,
   NUEVO_EVENTO,
   CAMBIO_EVENTO,
-  CAMBIO_ESTATUS
+  CAMBIO_ESTATUS,
+  PARTICIPACION_RECHAZADA,
 } = require("../utils/NotificationTypes");
 
-var options = { format: "Letter" };
 const mailService = {};
 
 var mailConfig = {
@@ -17,12 +17,12 @@ var mailConfig = {
   pool: true,
   auth: {
     user: process.env.MAIL_USER,
-    pass: process.env.MAIL_PASSWORD
+    pass: process.env.MAIL_PASSWORD,
   },
 };
 
 var transporter = nodemailer.createTransport(mailConfig, {
-  from: `Oportunidades Comerciales CSOFTMTY <${process.env.MAIL_USER}>`
+  from: `Oportunidades Comerciales CSOFTMTY <${process.env.MAIL_USER}>`,
 });
 
 // email sender function
@@ -34,14 +34,14 @@ mailService.sendEmail = (jobData) => {
       to: destinatario.email,
       subject: mailContent.subject,
       text: `Hola ${destinatario.name}, ${mailContent.text}`,
-      html: `<p>Hola ${destinatario.name}, ${mailContent.html}`
+      html: `<p>Hola ${destinatario.name}, ${mailContent.html}`,
     };
 
     if (mailContent.attachments) {
       mailOptions.attachments = {
         filename: mailContent.attachments.filename,
         content: mailContent.attachments.content,
-        encoding: "base64"
+        encoding: "base64",
       };
     }
 
@@ -66,21 +66,21 @@ mailService.buildMailContent = (tipoNotificacion, mailData) => {
         mailOptions.subject = "Nueva Oportunidad Comercial";
         mailOptions.text = `te comunicamos que se ha abierto una nueva Oportunidad Comercial, te compartimos los detalles:
 
-        Nombre de la Oportunidad Comercial: ${mailData.nombreOportunidad}
-        Objetivo de la oportunidad: ${mailData.objetivoOportunidad}
-        Descripción funcional de la oportunidad: ${mailData.descripcionFuncional}
-        Requerimientos obligatorios: ${mailData.requerimientosObligatorios}
-        Fechas relevantes: ${mailData.fechasRelevantes}
-        ¿Ha sido aprobada por el área usuaria?: ${mailData.aprobadaAreaUsuario}
-        ¿Ha sido aprobada por el área de TI?: ${mailData.aprobadaAreaTI}
-        ¿Tiene un presupuesto asignado?: ${mailData.presupuestoAsignado}
-        Tipo general del proyecto: ${mailData.tipoGeneralProyecto}
-        Tipo específico del proyecto: ${mailData.tipoEspecificoProyecto}
-        Comentarios adicionales: ${mailData.comentariosAdicionales}
+Nombre de la Oportunidad Comercial: ${mailData.nombreOportunidad}
+Objetivo de la oportunidad: ${mailData.objetivoOportunidad}
+Descripción funcional de la oportunidad: ${mailData.descripcionFuncional}
+Requerimientos obligatorios: ${mailData.requerimientosObligatorios}
+Fechas relevantes: ${mailData.fechasRelevantes}
+¿Ha sido aprobada por el área usuaria?: ${mailData.aprobadaAreaUsuario}
+¿Ha sido aprobada por el área de TI?: ${mailData.aprobadaAreaTI}
+¿Tiene un presupuesto asignado?: ${mailData.presupuestoAsignado}
+Tipo general del proyecto: ${mailData.tipoGeneralProyecto}
+Tipo específico del proyecto: ${mailData.tipoEspecificoProyecto}
+Comentarios adicionales: ${mailData.comentariosAdicionales}
 
-        Datos de contacto
-        Nombre: ${mailData.nombrecliente}
-        Posición: ${mailData.posicioncliente}`;
+Datos de contacto
+Nombre: ${mailData.nombrecliente}
+Posición: ${mailData.posicioncliente}`;
 
         mailOptions.html = `<h3>Datos generales</h3>
         <p><b>Nombre de la Oportunidad Comercial:</b> ${mailData.nombreOportunidad}<br>
@@ -113,9 +113,9 @@ mailService.buildMailContent = (tipoNotificacion, mailData) => {
 
         mailOptions.subject = "Nueva junta para Oportunidad Comercial";
         mailOptions.text = `se ha agendado una nueva junta para la Oportunidad Comercial "${mailData.nombreOportunidad}" en la cual estás participando:
-        Nombre: ${mailData.name}
-        Fecha: ${eventDate}
-        Liga de la reunión: ${mailData.link}`;
+Nombre: ${mailData.name}
+Fecha: ${eventDate}
+Liga de la reunión: ${mailData.link}`;
 
         mailOptions.html = `se ha agendado una nueva junta para la Oportunidad Comercial "${mailData.nombreOportunidad}" en la cual estás participando:</p>
         <p><b>Nombre:</b> ${mailData.name}<br>
@@ -132,14 +132,14 @@ mailService.buildMailContent = (tipoNotificacion, mailData) => {
 
         mailOptions.subject = "Cambio en junta para Oportunidad Comercial";
         mailOptions.text = `se han hecho cambios en una junta para la Oportunidad Comercial "${mailData.nombreOportunidad}" en la cual estás participando:
-        Datos actualizados:
-        Nombre: ${mailData.eventUpdated.name}
-        Fecha: ${dateEventUpdated}
-        Liga de la reunión: ${mailData.eventUpdated.link}
-        Datos antiguos:
-        Nombre: ${mailData.eventBeforeUpdate.name}
-        Fecha: ${dateEventBeforeUpdate}
-        Liga de la reunión: ${mailData.eventBeforeUpdate.link}`;
+Datos actualizados:
+Nombre: ${mailData.eventUpdated.name}
+Fecha: ${dateEventUpdated}
+Liga de la reunión: ${mailData.eventUpdated.link}
+Datos antiguos:
+Nombre: ${mailData.eventBeforeUpdate.name}
+Fecha: ${dateEventBeforeUpdate}
+Liga de la reunión: ${mailData.eventBeforeUpdate.link}`;
 
         mailOptions.html = `se han hecho cambios en una junta para la Oportunidad Comercial "${mailData.nombreOportunidad}" en la cual estás participando:</p>
         <h3>Datos actualizados:</h3>
@@ -158,6 +158,16 @@ mailService.buildMailContent = (tipoNotificacion, mailData) => {
         mailOptions.html = `queremos informarte que el cliente ${mailData.nombreCliente} ha cambiado el estatus de la oportunidad "${mailData.nombreOportunidad}" de "${mailData.estatusPrevio}" a "${mailData.estatusNuevo}".</p>`;
         break;
 
+      case PARTICIPACION_RECHAZADA:
+        mailOptions.subject = "Participación Rechazada en Oportunidad Comercial";
+        mailOptions.text = `lamentamos informarte que el cliente ${mailData.nombreCliente} ha rechazado tu propuesta para la oportunidad "${mailData.nombreOportunidad}".
+Te presentamos el feedback que el cliente proporcionó acerca tu participación en su oportunidad:
+"${mailData.feedback}"`;
+        mailOptions.html = `lamentamos informarte que el cliente ${mailData.nombreCliente} ha rechazado tu propuesta para la oportunidad "${mailData.nombreOportunidad}".</p>
+        <p>Te presentamos el feedback que el cliente proporcionó acerca de tu participación en su oportunidad:<br>
+        "${mailData.feedback}"</p>`;
+        break;
+
       default:
         reject("Invalid notificationType");
     }
@@ -168,14 +178,18 @@ mailService.buildMailContent = (tipoNotificacion, mailData) => {
     <img src="https://www.csoftmty.org/assets/images/header/logo.png" alt="logo_csoftmty"/>`;
 
     if (tipoNotificacion === NUEVA_OPORTUNIDAD) {
-      generatePdf("Nueva Oportunidad Comercial", mailOptions.html).then((base64String) => {
-        mailOptions.attachments = {
-          filename: `${mailData.nombreOportunidad}.pdf`,
-          content: base64String,
-        };
-        mailOptions.html = "te comunicamos que se ha abierto una nueva Oportunidad Comercial, te compartimos los detalles:" + mailOptions.html;
-        resolve(mailOptions);
-      });
+      generatePdf("Nueva Oportunidad Comercial", mailOptions.html)
+        .then((base64String) => {
+          mailOptions.attachments = {
+            filename: `${mailData.nombreOportunidad}.pdf`,
+            content: base64String,
+          };
+          mailOptions.html =
+            "te comunicamos que se ha abierto una nueva Oportunidad Comercial, te compartimos los detalles:" +
+            mailOptions.html;
+          resolve(mailOptions);
+        }
+      );
     } else {
       resolve(mailOptions);
     }
@@ -184,6 +198,7 @@ mailService.buildMailContent = (tipoNotificacion, mailData) => {
 
 const generatePdf = (bodyTitle, htmlBody) => {
   return new Promise((resolve, reject) => {
+    const options = { format: "Letter" };
     htmlToPdf = `
     <!doctype html>
     <html>

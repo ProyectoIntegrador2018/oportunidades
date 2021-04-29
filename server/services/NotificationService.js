@@ -128,13 +128,49 @@ notificationService.notificacionParticipacionRechazada = (job) => {
   return new Promise((resolve, reject) => {
     const participacionId = job.participacionId;
     ParticipacionModel.findById(participacionId)
+      .select("socioInvolucrado rfpInvolucrado feedback")
       .then((participacion) => {
         const socioId = participacion.socioInvolucrado;
         UserModel.findById(socioId)
+          .select("name email")
           .then((socio) => {
             const detalles = { rfp: participacion.rfpInvolucrado };
             notificacionUsuarios(PARTICIPACION_RECHAZADA, detalles, [socio])
-              .then((resp) => resolve(resp))
+              .then((resp) => {
+                if (MAIL_ENABLED) {
+                  mailRechazoParticipacion(participacion, [socio])
+                    .then((respMail) => {
+                      resolve(respMail);
+                    })
+                    .catch((error) => reject(error));
+                } else {
+                  resolve(resp);
+                }
+              })
+              .catch((error) => reject(error));
+          })
+          .catch((error) => reject(error));
+      })
+      .catch((error) => reject(error));
+  });
+};
+
+const mailRechazoParticipacion = function (participacion, socio) {
+  return new Promise((resolve, reject) => {
+    const rfpId = participacion.rfpInvolucrado;
+    RfpModel.getNombreOportunidad(rfpId)
+      .then((nombreOportunidad) => {
+        RfpModel.getNombreCliente(rfpId)
+          .then((nombreCliente) => {
+            const participacionData = {
+              nombreCliente: nombreCliente,
+              nombreOportunidad: nombreOportunidad,
+              feedback: participacion.feedback,
+            };
+            mailUsuarios(PARTICIPACION_RECHAZADA, participacionData, socio)
+              .then((respMail) => {
+                resolve(respMail);
+              })
               .catch((error) => reject(error));
           })
           .catch((error) => reject(error));
