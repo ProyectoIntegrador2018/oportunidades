@@ -83,6 +83,9 @@ const useStyles = makeStyles((theme) => ({
    notifReadIcon: {
       marginRight: 0,
    },
+   notifDeleteIcon: {
+      marginRight: 0,
+   },
    unreadNotif: {
       backgroundColor: "#f0d2bd",
    },

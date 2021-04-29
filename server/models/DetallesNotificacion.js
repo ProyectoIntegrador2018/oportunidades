@@ -9,7 +9,16 @@ const schema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "RFP",
   },
+  nombreCliente: {
+    type: String,
+  },
   detalles: {
+    type: String,
+  },
+  estatusPrevio: {
+    type: String,
+  },
+  estatusNuevo: {
     type: String,
   },
 });

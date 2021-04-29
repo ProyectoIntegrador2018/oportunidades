@@ -51,7 +51,7 @@ const SideMenu = () => {
         .get("/user/get-notifications/", config)
         .then((res) => {
           const rawNotifs = res.data.user.notificaciones;
-          const notifications = formatNotifications(rawNotifs);
+          const notifications = rawNotifs.filter((rawNotif) => rawNotif.notificacion);
           setNotificaciones(notifications);
         })
         .catch((error) => {
@@ -61,107 +61,7 @@ const SideMenu = () => {
     obtenerNotificaciones();
   }, [notificationsOpen]);
 
-  const formatNotifications = (rawNotifications) => {
-    const notifications = rawNotifications
-      .filter((rawNotif) => rawNotif.notificacion)
-      .map((rawNotif) => {
-        const { _id, read } = rawNotif;
-        const { tipo, detalles } = rawNotif.notificacion;
-        const { rfp } = detalles;
-        const author = rfp ? rfp.nombrecliente : "";
-        const opportunityName = rfp ? rfp.nombreOportunidad : detalles.detalles;
-        const { participante } = detalles;
-        const participanteName = participante ? participante.name : "";
-        const notif = {
-          id: _id,
-          type: tipo,
-          details: {
-            author: author,
-            opportunityName: opportunityName,
-            participanteName: participanteName
-          },
-          isRead: read,
-        };
-        return notif;
-      });
-    return notifications;
-  };
-
   const classes = useStyles();
-
-  const first = {
-    id: 123,
-    type: NOTIFICATION_TYPES.NUEVA_OPORTUNIDAD,
-    details: {
-      author: "ITESM",
-      opportunityName: "Nuevo Portal de Inscripciones",
-    },
-    isRead: true,
-  };
-  const second = {
-    id: 234,
-    type: NOTIFICATION_TYPES.CAMBIO_ESTATUS,
-    details: {
-      author: "Microsoft",
-      opportunityName: "Integración de Halo con OneDrive",
-      prevStatus: "Activo",
-      newStatus: "Cerrado",
-    },
-    isRead: false,
-  };
-  const third = {
-    id: 345,
-    type: NOTIFICATION_TYPES.NUEVO_HORARIO,
-    details: {
-      author: "Facebook",
-      opportunityName: "Nueva Aplicación para Oculus",
-      sched: "3 de Enero del 2022, 15:45",
-    },
-    isRead: false,
-  };
-  const fourth = {
-    id: 456,
-    type: NOTIFICATION_TYPES.CAMBIO_HORARIO,
-    details: {
-      author: "Google",
-      opportunityName: "Nuevo Servicio Regional de Noticias",
-      prevSched: "2 de Enero del 2022, 14:05",
-      newSched: "2 de Enero del 2022, 14:30",
-    },
-    isRead: true,
-  };
-  const fifth = {
-    id: 567,
-    type: NOTIFICATION_TYPES.RECHAZO,
-    details: {
-      author: "Amazon",
-      opportunityName: "Nuevo Servicio de Party Streaming",
-    },
-    isRead: true,
-  };
-  const sixth = {
-    id: 678,
-    type: NOTIFICATION_TYPES.NUEVA_PARTICIPACION,
-    details: {
-      author: "Apple",
-      opportunityName: "Nueva Aplicación de iOS",
-    },
-    isRead: false,
-  };
-
-  // useEffect(() => {
-  //   const obtenerNotificaciones = () => {
-  //     setNotificaciones([first, second, third, fourth, fifth, sixth]);
-  //   };
-  //   obtenerNotificaciones();
-  // }, [notificationsOpen]);
-
-  const sampleNotif1 = <NotificationFactory component={first} />;
-  const sampleNotif2 = <NotificationFactory component={second} />;
-  const sampleNotif3 = <NotificationFactory component={third} />;
-  const sampleNotif4 = <NotificationFactory component={fourth} />;
-  const sampleNotif5 = <NotificationFactory component={fifth} />;
-  const sampleNotif6 = <NotificationFactory component={sixth} />;
 
   return (
     <div>

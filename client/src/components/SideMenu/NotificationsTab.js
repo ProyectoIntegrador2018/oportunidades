@@ -15,9 +15,13 @@ export default function NotificationsTab(props) {
     setIsExtended(!isExtended);
   };
 
-  const limit = Math.min(10, props.notificaciones.length);
+  const limit = props.notificaciones.length;
+  let sortedNotifications = [...props.notificaciones];
+  sortedNotifications.sort((a, b) =>
+    new Date(a.notificacion.date) < new Date(b.notificacion.date) ? 1 : -1
+  );
 
-  if (props.notificaciones.length === 0) {
+  if (sortedNotifications.length === 0) {
     return (
       <Grid container className={classes.notificationsPaper}>
         <List anchor="right" className={classes.noNotifications}>
@@ -26,12 +30,12 @@ export default function NotificationsTab(props) {
         </List>
       </Grid>
     );
-  } else if (props.notificaciones.length <= 5) {
+  } else if (sortedNotifications.length <= 5) {
     return (
       <Grid container className={classes.notificationsPaper}>
         <List anchor="right">
-          {props.notificaciones.map((notif) => (
-            <NotificationFactory component={notif} />
+          {sortedNotifications.map((notif) => (
+            <NotificationFactory component={notif} key={notif._id} />
           ))}
         </List>
       </Grid>
@@ -40,11 +44,11 @@ export default function NotificationsTab(props) {
     let shownNotifications = [];
     if (!isExtended) {
       for (let i = 0; i < 5; i++) {
-        shownNotifications.push(props.notificaciones[i]);
+        shownNotifications.push(sortedNotifications[i]);
       }
     } else {
       for (let i = 0; i < limit; i++) {
-        shownNotifications.push(props.notificaciones[i]);
+        shownNotifications.push(sortedNotifications[i]);
       }
     }
 
@@ -52,7 +56,7 @@ export default function NotificationsTab(props) {
       <Grid container className={classes.notificationsPaper}>
         <List anchor="right">
           {shownNotifications.map((notif) => (
-            <NotificationFactory component={notif} />
+            <NotificationFactory component={notif} key={notif._id} />
           ))}
         </List>
         <Button
@@ -60,9 +64,7 @@ export default function NotificationsTab(props) {
           color="primary"
           className={classes.viewMoreOrLessNotifsButton}
         >
-          {isExtended
-            ? "Ver menos"
-            : `Ver más (${limit - 5})`}
+          {isExtended ? "Ver menos" : `Ver más (${limit - 5})`}
         </Button>
       </Grid>
     );

@@ -2,7 +2,7 @@ const Queue = require("bull");
 const redisConfig = require("../config/redisConfig");
 const {
   NUEVA_OPORTUNIDAD,
-  OPORTUNIDAD_ELIMINADA,
+  OPORTUNIDAD_ELIMINADA,CAMBIO_ESTATUS,
 } = require("../utils/NotificationTypes");
 const notificationService = require("../services/NotificationService");
 
@@ -14,6 +14,10 @@ notificationQueue.process(NUEVA_OPORTUNIDAD, (job) => {
 
 notificationQueue.process(OPORTUNIDAD_ELIMINADA, (job) => {
   return notificationService.notificacionOportunidadEliminada(job);
+});
+
+notificationQueue.process(CAMBIO_ESTATUS, (job) => {
+  return notificationService.notificacionCambioEstatusOportunidad(job);
 });
 
 notificationQueue.on('stalled', function(job){

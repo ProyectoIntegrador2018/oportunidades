@@ -439,9 +439,7 @@ export default function SimpleCard({rfp}) {
                 onChange={e => handleStatusChange(e)}
               >
                 <MenuItem value={'Activo'}>Activo</MenuItem>
-                <MenuItem value={'Sesión 1 llevada a cabo'}>Sesión 1 llevada a cabo</MenuItem>
-                <MenuItem value={'Sesión 2 llevada a cabo'}>Sesión 2 llevada a cabo</MenuItem>
-                <MenuItem value={'Esperando respuesta'}>Esperando respuesta</MenuItem>
+                <MenuItem value={'En proceso'}>En proceso</MenuItem>
                 <MenuItem value={'Cerrada'}>Cerrada</MenuItem>
               </Select>
             </FormControl>

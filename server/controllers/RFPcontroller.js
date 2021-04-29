@@ -16,12 +16,12 @@ rfpController.createrfp = (rawRFP, id) => {
       .save()
       .then(() => {
         const job = {
-          rfp: rfp
+          rfp: rfp,
         };
         // return notificationQueue.add(NUEVA_OPORTUNIDAD, job);
         return notificationService
           .notificacionNuevaOportunidad(job)
-          .then((resp) => {})
+          .then((resp) => resp)
           .catch((error) => reject(error));
       })
       .then(() => {
@@ -56,12 +56,13 @@ rfpController.deleterfp = (id) => {
         RFP.findByIdAndDelete(id)
           .then((rfp) => {
             const job = {
+              nombreCliente: rfp.nombrecliente,
               nombreOportunidad: rfp.nombreOportunidad,
             };
             // notificationQueue.add(OPORTUNIDAD_ELIMINADA, job);
             notificationService
               .notificacionOportunidadEliminada(job)
-              .then((resp) => {})
+              .then((resp) => resp)
               .catch((error) => reject(error));
             return rfp;
           })
@@ -117,6 +118,18 @@ rfpController.getrfpCliente = (id) => {
     RFP.find({ createdBy: id })
       .then((rfps) => {
         return resolve(rfps);
+      })
+      .catch((error) => {
+        return reject({ error });
+      });
+  });
+};
+
+rfpController.getOneRfp = (rfp_id) => {
+  return new Promise((resolve, reject) => {
+    RFP.findById(rfp_id)
+      .then((rfp) => {
+        return resolve(rfp);
       })
       .catch((error) => {
         return reject({ error });

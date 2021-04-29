@@ -95,6 +95,32 @@ schema.statics.getCreatedBy = function (rfpId) {
   });
 };
 
+schema.statics.getNombreOportunidad = function (rfpId) {
+  return new Promise((resolve, reject) => {
+    this.findById( rfpId )
+      .then((rfp) => {
+        const nombreOportunidad = rfp.nombreOportunidad;
+        resolve(nombreOportunidad);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+};
+
+schema.statics.getNombreCliente = function (rfpId) {
+  return new Promise((resolve, reject) => {
+    this.findById( rfpId )
+      .then((rfp) => {
+        const nombrecliente = rfp.nombrecliente;
+        resolve(nombrecliente);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+};
+
 const miRFP = mongoose.model("RFP", schema);
 
 module.exports = miRFP;
