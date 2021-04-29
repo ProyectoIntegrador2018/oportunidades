@@ -10,7 +10,6 @@ const {
   PARTICIPACION_RECHAZADA
 } = require("../utils/NotificationTypes");
 
-var options = { format: "Letter" };
 const mailService = {};
 
 var mailConfig = {
@@ -159,10 +158,15 @@ mailService.buildMailContent = (tipoNotificacion, mailData) => {
         mailOptions.text = `queremos informarte que el cliente ${mailData.nombreCliente} ha cambiado el estatus de la oportunidad "${mailData.nombreOportunidad}" de "${mailData.estatusPrevio}" a "${mailData.estatusNuevo}".`;
         mailOptions.html = `queremos informarte que el cliente ${mailData.nombreCliente} ha cambiado el estatus de la oportunidad "${mailData.nombreOportunidad}" de "${mailData.estatusPrevio}" a "${mailData.estatusNuevo}".</p>`;
         break;
+
       case PARTICIPACION_RECHAZADA:
         mailOptions.subject = "Participación Rechazada en Oportunidad Comercial";
-        mailOptions.text = `Lamentamos informarle que el cliente ${mailData.nombreCliente} ha rechazado su propuesta para la oportunidad "${mailData.nombreOportunidad}".`;
-        mailOptions.html = `Lamentamos informarle que el cliente ${mailData.nombreCliente} ha rechazado su propuesta para la oportunidad "${mailData.nombreOportunidad}".</p>`;
+        mailOptions.text = `lamentamos informarte que el cliente ${mailData.nombreCliente} ha rechazado tu propuesta para la oportunidad "${mailData.nombreOportunidad}".
+        Te presentamos el feedback que el cliente proporcionó acerca tu participación en su oportunidad:
+        "${mailData.feedback}"`;
+        mailOptions.html = `lamentamos informarte que el cliente ${mailData.nombreCliente} ha rechazado tu propuesta para la oportunidad "${mailData.nombreOportunidad}".</p>
+        <p>Te presentamos el feedback que el cliente proporcionó acerca de tu participación en su oportunidad:<br>
+        "${mailData.feedback}"</p>`;
         break;
 
       default:
@@ -191,6 +195,7 @@ mailService.buildMailContent = (tipoNotificacion, mailData) => {
 
 const generatePdf = (bodyTitle, htmlBody) => {
   return new Promise((resolve, reject) => {
+    const options = { format: "Letter" };
     htmlToPdf = `
     <!doctype html>
     <html>

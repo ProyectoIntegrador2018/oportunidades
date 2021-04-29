@@ -125,20 +125,29 @@ notificationService.notificacionCambioEstatusOportunidad = (job) => {
 };
 
 notificationService.notificacionParticipacionRechazada = (job) => {
-  console.log("entro a notif participacion rechazada");
   return new Promise((resolve, reject) => {
     const participacionId = job.participacionId;
     ParticipacionModel.findById(participacionId)
+      .select("socioInvolucrado rfpInvolucrado feedback")
       .then((participacion) => {
         const socioId = participacion.socioInvolucrado;
         UserModel.findById(socioId)
+          .select("name email")
           .then((socio) => {
             const detalles = { rfp: participacion.rfpInvolucrado };
             notificacionUsuarios(PARTICIPACION_RECHAZADA, detalles, [socio])
-              .then((resp) =>{
-                mailRechazoParticipacion(participacion,[socio])
+              .then((resp) => {
+                if (MAIL_ENABLED) {
+                  mailRechazoParticipacion(participacion, [socio])
+                    .then((respMail) => {
+                      resolve(respMail);
+                    })
+                    .catch((error) => reject(error));
+                } else {
+                  resolve(resp);
+                }
               })
-            .catch((error)=>reject(error));    
+              .catch((error) => reject(error));
           })
           .catch((error) => reject(error));
       })
@@ -195,34 +204,31 @@ const notificacionUsuarios = function (tipoNotificacion, detalles, socios) {
   });
 };
 
-const mailRechazoParticipacion = function(participacion,[socio]){
-  return new Promise((resolve,reject)=>{
-    RfpModel.getNombreOportunidad(participacion.rfpInvolucrado)
-    .then((nombreOportunidad)=>{
-      RfpModel.getNombreCliente(participacion.rfpInvolucrado)
-    .then((nombreCliente)=>{
-      const rfpData = {
-        nombreCliente: nombreCliente,
-        nombreOportunidad: nombreOportunidad,   
-      };
-      if (MAIL_ENABLED) {
-        mailUsuarios(PARTICIPACION_RECHAZADA, rfpData, [socio])
-          .then((respMail) => {
-            resolve(respMail);
+const mailRechazoParticipacion = function (participacion, socio) {
+  return new Promise((resolve, reject) => {
+    const rfpId = participacion.rfpInvolucrado;
+    RfpModel.getNombreOportunidad(rfpId)
+      .then((nombreOportunidad) => {
+        RfpModel.getNombreCliente(rfpId)
+          .then((nombreCliente) => {
+            const participacionData = {
+              nombreCliente: nombreCliente,
+              nombreOportunidad: nombreOportunidad,
+              feedback: participacion.feedback
+            };
+            mailUsuarios(PARTICIPACION_RECHAZADA, participacionData, socio)
+              .then((respMail) => {
+                resolve(respMail);
+              })
+              .catch((error) => reject(error));
           })
           .catch((error) => reject(error));
-      } else {
-        resolve(resp);
-      }
-    })
-    .catch((error)=>reject(error)); 
-  })
-  .catch((error) => reject(error));
+      })
+      .catch((error) => reject(error));
   });
-}
+};
 
 const mailUsuarios = function (tipoNotificacion, mailData, usuarios) {
-  console.log("entro a mailUsuarios");
   return new Promise((resolve, reject) => {
     mailService
       .buildMailContent(tipoNotificacion, mailData)
