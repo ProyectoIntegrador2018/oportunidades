@@ -76,7 +76,6 @@ import axios from "axios";
 // };
 
 export default function NotificationFactory(props) {
-
   const downProps = {
     rawNotif: { ...props.component },
     styleClasses: useStyles(),
@@ -107,7 +106,7 @@ class PortalNotification extends Component {
       toggledRead: false,
       isRead: undefined,
       hasClicked: false,
-      data: this.formatNotifications(props.rawNotif)
+      data: this.formatNotifications(props.rawNotif),
     };
   }
 
@@ -141,7 +140,9 @@ class PortalNotification extends Component {
   };
 
   getNotifAge = () => {
-    const date = Math.round(new Date(this.state.data.details.date).getTime() / 1000);
+    const date = Math.round(
+      new Date(this.state.data.details.date).getTime() / 1000
+    );
     // TODO: Change now to the time zone of the mongoDB
     const now = Math.round(Date.now() / 1000);
     const timeDiff = now - date;
@@ -228,9 +229,10 @@ class PortalNotification extends Component {
         alignItems="flex-start"
         className={clsx(!hasBeenRead && this.props.styleClasses.unreadNotif)}
       >
-        {this.state.hasClicked && (
-          <Navigate to={this.getNavPath()} replace={true} />
-        )}
+        {this.state.hasClicked &&
+          !(window.location.pathname === this.getNavPath()) && (
+            <Navigate to={this.getNavPath()} replace={true} />
+          )}
         <IconButton
           edge="end"
           color="primary"
@@ -361,7 +363,8 @@ class NotificacionSocioAplica extends PortalNotification {
 
   getDescription = () => {
     const details = this.state.data.details;
-    const participanteName = this.props.rawNotif.notificacion.detalles.participante.name;
+    const participanteName = this.props.rawNotif.notificacion.detalles
+      .participante.name;
     return `El socio ${participanteName} ha aplicado a su oportunidad comercial "${details.opportunityName}"`;
   };
 
