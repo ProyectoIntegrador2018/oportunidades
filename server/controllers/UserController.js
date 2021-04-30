@@ -136,7 +136,53 @@ userController.getSocioInfo = (id) => {
  * Get user notifications
  * @param {String} id user's id
  */
-userController.getNotifications = (id) => {
+userController.getNotifications = (id, page, pageSize) => {
+  const skip = (page - 1) * pageSize;
+  const limit = pageSize;
+  new Promise((resolve, reject) => {
+    User.findById(id, "notificaciones")
+      .populate({
+        path: "notificaciones",
+        options: {
+          skip: skip,
+          limit: limit,
+        },
+        populate: {
+          path: "notificacion",
+          model: "Notificacion",
+          populate: {
+            path: "detalles",
+            model: "DetallesNotificacion",
+            populate: [
+              {
+                path: "participante",
+                model: "User",
+                select: "name",
+              },
+              {
+                path: "rfp",
+                model: "RFP",
+              },
+            ],
+          },
+        },
+      })
+      .then((notificaciones) => {
+        return resolve(notificaciones);
+      })
+      .catch((error) => {
+        return reject(error);
+      });
+  });
+};
+
+/**
+ * Get subset of user notifications
+ * @param {String} id user's id
+ */
+userController.getPagedNotifications = (id, fromDate, page, pageSize) => {
+  const skip = (page - 1) * pageSize;
+  const limit = pageSize;
   return new Promise((resolve, reject) => {
     User.findById(id, "notificaciones")
       .populate({

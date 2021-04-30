@@ -19,9 +19,13 @@ import NOTIFICATION_TYPES from "../utils/NotificationTypes";
 import NotificationsTab from "../SideMenu/NotificationsTab";
 import axios from "axios";
 
+const PAGE_SIZE = 5;
+
 const SideMenu = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [notificaciones, setNotificaciones] = useState([]);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [notifsPage, setNotifsPage] = useState(0);
   const userType = sessionStorage.getItem("userType");
 
   const handleDrawerOpen = () => {
@@ -32,10 +36,26 @@ const SideMenu = () => {
   };
 
   const toggleNotifications = () => {
+    const curPage = notificationsOpen ? 0 : 1;
+    if (notificationsOpen) setNotificaciones([]);
+    setNotifsPage(curPage);
     setNotificationsOpen(!notificationsOpen);
   };
 
-  const [notificaciones, setNotificaciones] = useState([]);
+  const loadMoreNotifiactions = () => {
+    setNotifsPage(prevPage => (prevPage + 1));
+  }
+
+  const loadLessNotifications = () => {
+    setNotificaciones(prevNotifications => {
+      let newNotifications = [];
+      for (let idx = 0; idx < Math.min(prevNotifications.length, 5); idx++) {
+        newNotifications.push(prevNotifications[0]);
+      }
+      return newNotifications;
+    })
+    setNotifsPage(1);
+  }
 
   const config = {
     headers: {
@@ -48,18 +68,28 @@ const SideMenu = () => {
     // Función que regresa la lista de eventos de la oportunidad
     const obtenerNotificaciones = () => {
       axios
-        .get("/user/get-notifications/", config)
+        .get("/user/get-notifications", {
+          ...config,
+          params: {
+            page: notifsPage,
+            pageSize: PAGE_SIZE,
+          },
+        })
         .then((res) => {
           const rawNotifs = res.data.user.notificaciones;
-          const notifications = rawNotifs.filter((rawNotif) => rawNotif.notificacion);
-          setNotificaciones(notifications);
+          const notifications = rawNotifs.filter(
+            (rawNotif) => rawNotif.notificacion
+          );
+          setNotificaciones(prevNotifications => {
+            return [...prevNotifications, ...notifications];
+          });
         })
         .catch((error) => {
           console.log(error);
         });
     };
     obtenerNotificaciones();
-  }, [notificationsOpen]);
+  }, [notificationsOpen, notifsPage]);
 
   const classes = useStyles();
 

@@ -86,7 +86,7 @@ router.get("/get-socio/:id", userMiddleware, (req, res) => {
  */
 router.get("/get-notifications", userMiddleware, (req, res) => {
   userController
-    .getNotifications(req.user._id)
+    .getNotifications(req.user._id, req.query.page, req.query.pageSize)
     .then((user) => {
       return res.send({ user });
     })

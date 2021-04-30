@@ -17,9 +17,9 @@ export default function NotificationsTab(props) {
 
   const limit = props.notificaciones.length;
   let sortedNotifications = [...props.notificaciones];
-  sortedNotifications.sort((a, b) =>
-    new Date(a.notificacion.date) < new Date(b.notificacion.date) ? 1 : -1
-  );
+  // sortedNotifications.sort((a, b) =>
+  //   new Date(a.notificacion.date) < new Date(b.notificacion.date) ? 1 : -1
+  // );
 
   if (sortedNotifications.length === 0) {
     return (
