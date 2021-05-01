@@ -96,6 +96,8 @@ export default function NotificationFactory(props) {
       return <NotificacionRechazo {...downProps} />;
     case NOTIFICATION_TYPES.NUEVA_PARTICIPACION:
       return <NotificacionSocioAplica {...downProps} />;
+    case NOTIFICATION_TYPES.EVENTO_ELIMINADO:
+      return <NotificacionEventoEliminado {...downProps} />;
   }
 }
 
@@ -378,5 +380,18 @@ class NotificacionSocioAplica extends PortalNotification {
 
   getNavPath = () => {
     return "/detalle/" + this.props.rawNotif.notificacion.detalles.rfp._id;
+  };
+}
+
+class NotificacionEventoEliminado extends PortalNotification {
+  getTitle = () => {
+    return "Evento Eliminado";
+  };
+
+  getDescription = () => {
+    const details = this.state.data.details;
+    const nombreEvento = this.props.rawNotif.notificacion.detalles.detalles;
+    console.log(this.props.rawNotif)
+    return `El cliente ${details.author} ha eliminado el evento "${nombreEvento}" de oportunidad comercial "${details.opportunityName}"`;
   };
 }

@@ -104,6 +104,12 @@ eventController.deleteEvent = (eventId) => {
   return new Promise((resolve, reject) => {
     Event.findByIdAndDelete(eventId)
       .then((deletedEvent) => {
+        notificationService
+          .notificacionEventoEliminado(deletedEvent)
+          .then((resp) => {})
+          .catch((err) => reject(err));
+      })
+      .then((deletedEvent) => {
         resolve(deletedEvent);
       })
       .catch((err) => {
