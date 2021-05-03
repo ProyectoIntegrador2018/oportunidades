@@ -17,12 +17,28 @@ function updateConfig() {
   config = currentConfig;
 }
 
-async function obtenerListaInvolucrados(user) {
+async function obtenerSocio(user) {
   updateConfig();
   const response = await axios
     .get("/user/get-socio/" + user, config)
     .then((res) => {
       return res.data.user;
+    })
+    .catch((error) => {
+      return error;
+    });
+  return response;
+}
+
+async function obtenerListaParticipaciones(rfp_id) {
+  updateConfig();
+  const response = await axios
+    .get(
+      "/participacion/get-participaciones-rfp/" + rfp_id,
+      config
+    )
+    .then((res) => {
+      return res.data;
     })
     .catch((error) => {
       return error;
@@ -62,4 +78,4 @@ async function actualizarEstatusSocio(participacionId, estatus, feedback) {
     });
 }
 
-export { obtenerListaInvolucrados, obtenerRFP, actualizarEstatusSocio };
+export { obtenerSocio, obtenerRFP, actualizarEstatusSocio, obtenerListaParticipaciones };
