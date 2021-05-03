@@ -67,7 +67,12 @@ notificationService.notificacionOportunidadEliminada = (job) => {
         };
         notificacionUsuarios(OPORTUNIDAD_ELIMINADA, detalles, socios)
           .then((resp) => {
-            resolve(resp);
+              mailUsuarios(OPORTUNIDAD_ELIMINADA, detalles, socios)
+                .then((respMail) => {
+                  resolve(respMail);
+                })
+                .catch((error) => reject(error));
+            
           })
           .catch((error) => reject(error));
       })
