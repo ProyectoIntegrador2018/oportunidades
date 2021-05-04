@@ -316,9 +316,10 @@
    align-items: center;
 }
 .cardHaySocios {
-   width: 200px;
-   height: 50px;
+   width: 250px;
+   height: 75px;
    display: flex;
+   flex-direction: column;
    justify-content: center;
    align-items: center;
 }

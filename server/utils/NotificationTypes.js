@@ -7,5 +7,6 @@ notificationTypes.NUEVO_EVENTO = "NUEVO_EVENTO";
 notificationTypes.CAMBIO_EVENTO = "CAMBIO_EVENTO";
 notificationTypes.CAMBIO_ESTATUS = "CAMBIO_ESTATUS";
 notificationTypes.PARTICIPACION_RECHAZADA = "PARTICIPACION_RECHAZADA";
+notificationTypes.EVENTO_ELIMINADO = "EVENTO_ELIMINADO";
 
 module.exports = notificationTypes;

@@ -8,6 +8,7 @@ const {
   CAMBIO_EVENTO,
   CAMBIO_ESTATUS,
   PARTICIPACION_RECHAZADA,
+  OPORTUNIDAD_ELIMINADA,
 } = require("../utils/NotificationTypes");
 
 const mailService = {};
@@ -161,11 +162,17 @@ Liga de la reunión: ${mailData.eventBeforeUpdate.link}`;
       case PARTICIPACION_RECHAZADA:
         mailOptions.subject = "Participación Rechazada en Oportunidad Comercial";
         mailOptions.text = `lamentamos informarte que el cliente ${mailData.nombreCliente} ha rechazado tu propuesta para la oportunidad "${mailData.nombreOportunidad}".
-Te presentamos el feedback que el cliente proporcionó acerca tu participación en su oportunidad:
-"${mailData.feedback}"`;
+        Te presentamos el feedback que el cliente proporcionó acerca tu participación en su oportunidad:
+        "${mailData.feedback}"`;
         mailOptions.html = `lamentamos informarte que el cliente ${mailData.nombreCliente} ha rechazado tu propuesta para la oportunidad "${mailData.nombreOportunidad}".</p>
         <p>Te presentamos el feedback que el cliente proporcionó acerca de tu participación en su oportunidad:<br>
         "${mailData.feedback}"</p>`;
+        break;
+
+      case OPORTUNIDAD_ELIMINADA:
+        mailOptions.subject = "Oportunidad Comercial eliminada";
+        mailOptions.text = `el cliente ${mailData.nombreCliente} ha eliminado la Oportunidad Comercial "${mailData.detalles}".`;
+        mailOptions.html = `el cliente ${mailData.nombreCliente} ha eliminado la Oportunidad Comercial "${mailData.detalles}". </p>`;
         break;
 
       default:

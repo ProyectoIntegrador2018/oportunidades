@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Button, Card, CardContent, Typography } from "@material-ui/core";
-import { obtenerListaInvolucrados } from "../../fetchers/fetcher";
+import { obtenerSocio } from "../../fetchers/fetcher";
 
 const useStyles = makeStyles({
   title: {
@@ -40,7 +40,7 @@ export default function SimpleCard({
 
   useEffect(() => {
     if (userType === "admin" || userType === "cliente") {
-      obtenerListaInvolucrados(user)
+      obtenerSocio(user)
         .then((data) => {
           setSocioData({
             nombre: data.name,
