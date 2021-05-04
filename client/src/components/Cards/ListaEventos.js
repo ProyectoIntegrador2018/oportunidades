@@ -77,11 +77,6 @@ export default function ListaEventos({rfp}) {
     setModalIsOpen(true);
   };
 
-
-
-
-
-
   return (
     <>
       <NuevoEvento

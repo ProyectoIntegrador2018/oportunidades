@@ -68,12 +68,11 @@ notificationService.notificacionOportunidadEliminada = (job) => {
         };
         notificacionUsuarios(OPORTUNIDAD_ELIMINADA, detalles, socios)
           .then((resp) => {
-              mailUsuarios(OPORTUNIDAD_ELIMINADA, detalles, socios)
-                .then((respMail) => {
-                  resolve(respMail);
-                })
-                .catch((error) => reject(error));
-            
+            mailUsuarios(OPORTUNIDAD_ELIMINADA, detalles, socios)
+              .then((respMail) => {
+                resolve(respMail);
+              })
+              .catch((error) => reject(error));
           })
           .catch((error) => reject(error));
       })
@@ -409,16 +408,31 @@ notificationService.notificacionCambioEvento = (eventBeforeUpdate) => {
               return resolve(SUCCESS_RESP);
             }
 
-            // TODO: notificacionUsuarios(CAMBIO_EVENTO, ...) goes here
-            if (MAIL_ENABLED) {
-              mailCambioEvento(eventBeforeUpdate, eventUpdated, sociosParticipantes)
-                .then((respMail) => {
-                  resolve(respMail);
-                })
-                .catch((error) => reject(error));
-            } else {
-              resolve(SUCCESS_RESP);
-            }
+            const detalles = {
+              rfp: eventBeforeUpdate.rfp,
+              nombreEventoPrevio: eventBeforeUpdate.name,
+              nombreEventoNuevo: eventUpdated.name,
+              juntaEventoPrevio: eventBeforeUpdate.date,
+              juntaEventoNuevo: eventUpdated.date,
+              cambioLink: eventBeforeUpdate.link !== eventUpdated.link,
+            };
+            notificacionUsuarios(CAMBIO_EVENTO, detalles, sociosParticipantes)
+              .then((resp) => {
+                if (MAIL_ENABLED) {
+                  mailCambioEvento(
+                    eventBeforeUpdate,
+                    eventUpdated,
+                    sociosParticipantes
+                  )
+                    .then((respMail) => {
+                      resolve(respMail);
+                    })
+                    .catch((error) => reject(error));
+                } else {
+                  resolve(SUCCESS_RESP);
+                }
+              })
+              .catch((error) => reject(error));
           })
           .catch((error) => reject(error));
       })
@@ -426,7 +440,11 @@ notificationService.notificacionCambioEvento = (eventBeforeUpdate) => {
   });
 };
 
-const mailCambioEvento = function (eventBeforeUpdate, eventUpdated, sociosParticipantes) {
+const mailCambioEvento = function (
+  eventBeforeUpdate,
+  eventUpdated,
+  sociosParticipantes
+) {
   return new Promise((resolve, reject) => {
     RfpModel.getNombreOportunidad(eventBeforeUpdate.rfp)
       .then((nombreOportunidad) => {

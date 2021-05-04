@@ -100,6 +100,8 @@ export default function NotificationFactory(props) {
       return <NotificacionNuevoEvento {...downProps} />;
     case NOTIFICATION_TYPES.EVENTO_ELIMINADO:
       return <NotificacionEventoEliminado {...downProps} />;
+    case NOTIFICATION_TYPES.CAMBIO_EVENTO:
+      return <NotificacionCambioEvento {...downProps} />;
   }
 }
 
@@ -418,5 +420,54 @@ class NotificacionEventoEliminado extends PortalNotification {
     const details = this.state.data.details;
     const nombreEvento = this.props.rawNotif.notificacion.detalles.detalles;
     return `El cliente ${details.author} ha eliminado el evento "${nombreEvento}" de oportunidad comercial "${details.opportunityName}"`;
+  };
+}
+
+class NotificacionCambioEvento extends PortalNotification {
+  getTitle = () => {
+    const detalles = this.props.rawNotif.notificacion.detalles;
+    if (
+      detalles.juntaEventoNuevo === detalles.juntaEventoPrevio &&
+      detalles.nombreEventoNuevo === detalles.nombreEventoPrevio
+    ) {
+      return "Cambio en Link de Evento";
+    } else if (
+      !detalles.cambioLink &&
+      detalles.nombreEventoNuevo === detalles.nombreEventoPrevio
+    ) {
+      return "Cambio en Horario de Evento";
+    } else if (
+      !detalles.cambioLink &&
+      detalles.juntaEventoNuevo === detalles.juntaEventoPrevio
+    ) {
+      return "Cambio en Nombre de Evento";
+    } else {
+      return "Cambios en Evento";
+    }
+  };
+
+  getDescription = () => {
+    const detalles = this.props.rawNotif.notificacion.detalles;
+    const details = this.state.data.details;
+    if (
+      detalles.juntaEventoNuevo === detalles.juntaEventoPrevio &&
+      detalles.nombreEventoNuevo === detalles.nombreEventoPrevio
+    ) {
+      return `La liga para el evento "${detalles.nombreEventoNuevo}" de la oportunidad "${details.opportunityName}" ha cambiado`;
+    } else if (
+      !detalles.cambioLink &&
+      detalles.nombreEventoNuevo === detalles.nombreEventoPrevio
+    ) {
+      const prevDate = new Date(detalles.juntaEventoPrevio).toLocaleString();
+      const newDate = new Date(detalles.juntaEventoNuevo).toLocaleString();
+      return `El horario del evento ${detalles.nombreEventoNuevo} de la oportunidad "${details.opportunityName}" ha cambiado de ${prevDate} a ${newDate}`;
+    } else if (
+      !detalles.cambioLink &&
+      detalles.juntaEventoNuevo === detalles.juntaEventoPrevio
+    ) {
+      return `El nombre del evento "${detalles.nombreEventoPrevio}" de la oportunidad "${details.opportunityName}" ha sido renombrado a "${detalles.nombreEventoNuevo}"`;
+    } else {
+      return `Se han registrado multiples cambios en uno de los eventos de la oportunidad "${details.opportunityName}"`;
+    }
   };
 }
