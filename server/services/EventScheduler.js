@@ -1,3 +1,4 @@
+const UserModel = require("../models/User");
 const RFPModel = require("../models/RFP");
 const EventModel = require("../models/Event");
 const notificationService = require("../services/NotificationService");
@@ -12,6 +13,10 @@ const nextStatus = {
 
 const getNextStatus = (status) => nextStatus[status];
 
+/**
+ * Actualiza a En proceso el estatus de las oportunidades
+ * con estatus Activo, que ya tuvieron el primer evento
+ */
 eventScheduler.checkForEventStatusUpdate = () => {
   cron.schedule("0 1 * * *", () => {
     EventModel.getEventsFromLastDay()
@@ -50,6 +55,43 @@ eventScheduler.checkForEventStatusUpdate = () => {
               }
             })
             .catch((error) => console.log(error));
+        });
+      })
+      .catch((error) => console.log(error));
+  });
+};
+
+/**
+ * Cierra las oportunidades que tienen 14 dias de antiguedad y
+ * que no tienen ningun participante
+ */
+eventScheduler.checkForOldRfps = () => {
+  cron.schedule("0 1 * * *", () => {
+    const daysAgo = 14;
+    RFPModel.getRfpsFromNDaysAgo(daysAgo)
+      .then((rfps) => {
+        rfps.map((rfp) => {
+          const rfpId = rfp._id;
+          UserModel.findParticipantesByRfp(rfpId).then(
+            (sociosParticipantes) => {
+              if (sociosParticipantes.length === 0) {
+                RFPModel.update(
+                  { _id: rfpId },
+                  {
+                    estatus: "Cerrada",
+                  },
+                  function (err, result) {
+                    if (err) {
+                      console.log(err);
+                    } else {
+                      console.log(result);
+                      // TODO: enviar la notificacion
+                    }
+                  }
+                );
+              }
+            }
+          );
         });
       })
       .catch((error) => console.log(error));
