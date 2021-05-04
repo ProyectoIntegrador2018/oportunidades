@@ -185,7 +185,7 @@ Te presentamos el feedback que el cliente proporcionó acerca tu participación 
       case OPORTUNIDAD_ELIMINADA:
         mailOptions.subject = "Oportunidad Comercial eliminada";
         mailOptions.text = `el cliente ${mailData.nombreCliente} ha eliminado la Oportunidad Comercial "${mailData.detalles}".`;
-        mailOptions.html = `el cliente ${mailData.nombreCliente} ha eliminado la Oportunidad Comercial "${mailData.detalles}". </p>`;
+        mailOptions.html = `el cliente ${mailData.nombreCliente} ha eliminado la Oportunidad Comercial "${mailData.detalles}".</p>`;
         break;
 
       default:

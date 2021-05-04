@@ -55,7 +55,7 @@ notificationService.notificacionNuevaOportunidad = (job) => {
 
 notificationService.notificacionOportunidadEliminada = (job) => {
   return new Promise((resolve, reject) => {
-    UserModel.findByUserType("socio", "_id")
+    UserModel.findByUserType("socio", "name email")
       .then((socios) => {
         if (!socios || socios.length == 0) {
           return resolve(SUCCESS_RESP);
@@ -68,11 +68,15 @@ notificationService.notificacionOportunidadEliminada = (job) => {
         };
         notificacionUsuarios(OPORTUNIDAD_ELIMINADA, detalles, socios)
           .then((resp) => {
+            if (MAIL_ENABLED) {
               mailUsuarios(OPORTUNIDAD_ELIMINADA, detalles, socios)
                 .then((respMail) => {
                   resolve(respMail);
                 })
                 .catch((error) => reject(error));
+            } else {
+              resolve(resp);
+            }
           })
           .catch((error) => reject(error));
       })
