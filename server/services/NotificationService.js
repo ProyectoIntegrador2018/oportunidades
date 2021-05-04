@@ -13,6 +13,7 @@ const {
   CAMBIO_EVENTO,
   CAMBIO_ESTATUS,
   PARTICIPACION_RECHAZADA,
+  PARTICIPACION_GANADOR,
 } = require("../utils/NotificationTypes");
 const detallesNotifController = require("../controllers/DetallesNotificacionController");
 const notificacionController = require("../controllers/NotificacionController");
@@ -22,7 +23,7 @@ const mailQueue = require("./MailQueue");
 
 const notificationService = {};
 const SUCCESS_RESP = { success: 1 };
-const MAIL_ENABLED = false;
+const MAIL_ENABLED = true;
 
 notificationService.notificacionNuevaOportunidad = (job) => {
   return new Promise((resolve, reject) => {
@@ -129,9 +130,9 @@ notificationService.notificacionCambioEstatusOportunidad = (job) => {
   });
 };
 
-notificationService.notificacionParticipacionRechazada = (job) => {
+notificationService.notificacionCambioEstatusParticipante = (job) => {
   return new Promise((resolve, reject) => {
-    const participacionId = job.participacionId;
+    const { participacionId, estatus } = job;
     ParticipacionModel.findById(participacionId)
       .select("socioInvolucrado rfpInvolucrado feedback")
       .then((participacion) => {
@@ -139,11 +140,12 @@ notificationService.notificacionParticipacionRechazada = (job) => {
         UserModel.findById(socioId)
           .select("name email")
           .then((socio) => {
+            const notifType = estatus === "Rechazado" ? PARTICIPACION_RECHAZADA : PARTICIPACION_GANADOR;
             const detalles = { rfp: participacion.rfpInvolucrado };
-            notificacionUsuarios(PARTICIPACION_RECHAZADA, detalles, [socio])
+            notificacionUsuarios(notifType, detalles, [socio])
               .then((resp) => {
                 if (MAIL_ENABLED) {
-                  mailRechazoParticipacion(participacion, [socio])
+                  mailCambioEstatusParticipante(notifType, participacion, [socio])
                     .then((respMail) => {
                       resolve(respMail);
                     })
@@ -160,7 +162,7 @@ notificationService.notificacionParticipacionRechazada = (job) => {
   });
 };
 
-const mailRechazoParticipacion = function (participacion, socio) {
+const mailCambioEstatusParticipante = function (notifType, participacion, socio) {
   return new Promise((resolve, reject) => {
     const rfpId = participacion.rfpInvolucrado;
     RfpModel.getNombreOportunidad(rfpId)
@@ -172,7 +174,7 @@ const mailRechazoParticipacion = function (participacion, socio) {
               nombreOportunidad: nombreOportunidad,
               feedback: participacion.feedback,
             };
-            mailUsuarios(PARTICIPACION_RECHAZADA, participacionData, socio)
+            mailUsuarios(notifType, participacionData, socio)
               .then((respMail) => {
                 resolve(respMail);
               })
