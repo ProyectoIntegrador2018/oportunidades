@@ -14,6 +14,7 @@ const {
   CAMBIO_ESTATUS,
   PARTICIPACION_RECHAZADA,
   PARTICIPACION_GANADOR,
+  EVENTO_ELIMINADO,
 } = require("../utils/NotificationTypes");
 const detallesNotifController = require("../controllers/DetallesNotificacionController");
 const notificacionController = require("../controllers/NotificacionController");
@@ -347,6 +348,37 @@ notificationService.notificacionNuevoEvento = (evento) => {
         } else {
           resolve(SUCCESS_RESP);
         }
+      })
+      .catch((error) => reject(error));
+  });
+};
+
+notificationService.notificacionEventoEliminado = (evento) => {
+  return new Promise((resolve, reject) => {
+    UserModel.findParticipantesByRfp(evento.rfp, "name email")
+      .then((sociosParticipantes) => {
+        if (!sociosParticipantes || sociosParticipantes.length == 0) {
+          return resolve(SUCCESS_RESP);
+        }
+
+        const detalles = {
+          rfp: evento.rfp,
+          detalles: evento.name,
+        };
+
+        notificacionUsuarios(EVENTO_ELIMINADO, detalles, sociosParticipantes)
+          .then((resp) => {
+            if (MAIL_ENABLED) {
+              mailUsuarios(NUEVA_OPORTUNIDAD, job.rfp, users)
+                .then((respMail) => {
+                  resolve(respMail);
+                })
+                .catch((error) => reject(error));
+            } else {
+              resolve(resp);
+            }
+          })
+          .catch((error) => reject(error));
       })
       .catch((error) => reject(error));
   });
