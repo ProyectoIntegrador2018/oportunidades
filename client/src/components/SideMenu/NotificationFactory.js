@@ -417,7 +417,6 @@ class NotificacionEventoEliminado extends PortalNotification {
   getDescription = () => {
     const details = this.state.data.details;
     const nombreEvento = this.props.rawNotif.notificacion.detalles.detalles;
-    console.log(this.props.rawNotif);
     return `El cliente ${details.author} ha eliminado el evento "${nombreEvento}" de oportunidad comercial "${details.opportunityName}"`;
   };
 }
