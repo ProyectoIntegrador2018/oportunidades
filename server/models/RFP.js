@@ -128,7 +128,7 @@ schema.statics.getRfpsFromNDaysAgo = function (daysAgo) {
   const today = new Date();
   const pastDate = new Date().setDate(today - daysAgo);
   return new Promise((resolve, reject) => {
-    this.find({ date: { $gte: pastDate, $lt: today } })
+    this.find({ createdOn: { $gte: pastDate }})
       .then((rfps) => resolve(rfps))
       .catch((error) => reject(error));
   });
