@@ -96,6 +96,8 @@ export default function NotificationFactory(props) {
       return <NotificacionRechazo {...downProps} />;
     case NOTIFICATION_TYPES.NUEVA_PARTICIPACION:
       return <NotificacionSocioAplica {...downProps} />;
+    case NOTIFICATION_TYPES.NUEVO_EVENTO:
+      return <NotificacionNuevoEvento {...downProps} />;
     case NOTIFICATION_TYPES.EVENTO_ELIMINADO:
       return <NotificacionEventoEliminado {...downProps} />;
   }
@@ -383,6 +385,30 @@ class NotificacionSocioAplica extends PortalNotification {
   };
 }
 
+class NotificacionNuevoEvento extends PortalNotification {
+  getTitle = () => {
+    return "Nuevo Evento";
+  };
+
+  getDescription = () => {
+    const details = this.state.data.details;
+    const eventName = this.props.rawNotif.notificacion.detalles.detalles;
+    return `La oportunidad comercial ${details.opportunityName} tiene un nuevo evento: "${eventName}"`;
+  };
+
+  handleClick = (e) => {
+    e.preventDefault();
+    // change state so that Navigate gets rendered
+    this.setState({
+      hasClicked: true,
+    });
+  };
+
+  getNavPath = () => {
+    return "/detalle/" + this.props.rawNotif.notificacion.detalles.rfp._id;
+  };
+}
+
 class NotificacionEventoEliminado extends PortalNotification {
   getTitle = () => {
     return "Evento Eliminado";
@@ -391,7 +417,6 @@ class NotificacionEventoEliminado extends PortalNotification {
   getDescription = () => {
     const details = this.state.data.details;
     const nombreEvento = this.props.rawNotif.notificacion.detalles.detalles;
-    console.log(this.props.rawNotif)
     return `El cliente ${details.author} ha eliminado el evento "${nombreEvento}" de oportunidad comercial "${details.opportunityName}"`;
   };
 }

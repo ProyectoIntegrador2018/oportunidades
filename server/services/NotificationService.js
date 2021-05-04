@@ -317,17 +317,23 @@ notificationService.notificacionNuevoEvento = (evento) => {
         if (!sociosParticipantes || sociosParticipantes.length == 0) {
           return resolve(SUCCESS_RESP);
         }
-
-        // TODO: notificacionUsuarios(NUEVO_EVENTO, ...) goes here
-        if (MAIL_ENABLED) {
-          mailNuevoEvento(evento, sociosParticipantes)
-            .then((respMail) => {
-              resolve(respMail);
-            })
-            .catch((error) => reject(error));
-        } else {
-          resolve(SUCCESS_RESP);
-        }
+        const detalles = {
+          rfp: evento.rfp,
+          detalles: evento.name,
+        };
+        notificacionUsuarios(NUEVO_EVENTO, detalles, sociosParticipantes).then(
+          (resp) => {
+            if (MAIL_ENABLED) {
+              mailNuevoEvento(evento, sociosParticipantes)
+                .then((respMail) => {
+                  resolve(respMail);
+                })
+                .catch((error) => reject(error));
+            } else {
+              resolve(SUCCESS_RESP);
+            }
+          }
+        );
       })
       .catch((error) => reject(error));
   });
