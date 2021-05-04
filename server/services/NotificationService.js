@@ -73,7 +73,6 @@ notificationService.notificacionOportunidadEliminada = (job) => {
                   resolve(respMail);
                 })
                 .catch((error) => reject(error));
-            
           })
           .catch((error) => reject(error));
       })
@@ -140,7 +139,10 @@ notificationService.notificacionCambioEstatusParticipante = (job) => {
         UserModel.findById(socioId)
           .select("name email")
           .then((socio) => {
-            const notifType = estatus === "Rechazado" ? PARTICIPACION_RECHAZADA : PARTICIPACION_GANADOR;
+            const notifType =
+              estatus === "Rechazado"
+                ? PARTICIPACION_RECHAZADA
+                : PARTICIPACION_GANADOR;
             const detalles = { rfp: participacion.rfpInvolucrado };
             notificacionUsuarios(notifType, detalles, [socio])
               .then((resp) => {

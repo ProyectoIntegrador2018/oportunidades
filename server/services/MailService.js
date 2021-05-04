@@ -208,9 +208,8 @@ Te presentamos el feedback que el cliente proporcionó acerca tu participación 
             "te comunicamos que se ha abierto una nueva Oportunidad Comercial, te compartimos los detalles:" +
             mailOptions.html;
           resolve(mailOptions);
-        }
-      )
-      .catch((error) => reject(error));
+        })
+        .catch((error) => reject(error));
     } else {
       resolve(mailOptions);
     }
