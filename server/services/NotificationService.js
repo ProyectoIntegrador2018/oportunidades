@@ -23,7 +23,7 @@ const mailQueue = require("./MailQueue");
 
 const notificationService = {};
 const SUCCESS_RESP = { success: 1 };
-const MAIL_ENABLED = true;
+const MAIL_ENABLED = false;
 
 notificationService.notificacionNuevaOportunidad = (job) => {
   return new Promise((resolve, reject) => {
