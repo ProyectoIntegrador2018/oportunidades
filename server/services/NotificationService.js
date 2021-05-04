@@ -148,19 +148,31 @@ notificationService.notificacionCambioEstatusParticipante = (job) => {
                 ? PARTICIPACION_RECHAZADA
                 : PARTICIPACION_GANADOR;
             const detalles = { rfp: participacion.rfpInvolucrado };
-            notificacionUsuarios(notifType, detalles, [socio])
-              .then((resp) => {
-                if (MAIL_ENABLED) {
-                  mailCambioEstatusParticipante(notifType, participacion, [socio])
-                    .then((respMail) => {
-                      resolve(respMail);
-                    })
-                    .catch((error) => reject(error));
-                } else {
-                  resolve(resp);
-                }
-              })
-              .catch((error) => reject(error));
+            if (notifType === PARTICIPACION_RECHAZADA) {
+              notificacionUsuarios(notifType, detalles, [socio])
+                .then((resp) => {
+                  if (MAIL_ENABLED) {
+                    mailCambioEstatusParticipante(notifType, participacion, [socio])
+                      .then((respMail) => {
+                        resolve(respMail);
+                      })
+                      .catch((error) => reject(error));
+                  } else {
+                    resolve(resp);
+                  }
+                })
+                .catch((error) => reject(error));
+            } else {
+              if (MAIL_ENABLED) {
+                mailCambioEstatusParticipante(notifType, participacion, [socio])
+                  .then((respMail) => {
+                    resolve(respMail);
+                  })
+                  .catch((error) => reject(error));
+              } else {
+                resolve(SUCCESS_RESP);
+              }
+            }
           })
           .catch((error) => reject(error));
       })
