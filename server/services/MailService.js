@@ -8,6 +8,7 @@ const {
   CAMBIO_EVENTO,
   CAMBIO_ESTATUS,
   PARTICIPACION_RECHAZADA,
+  PARTICIPACION_GANADOR,
   OPORTUNIDAD_ELIMINADA,
 } = require("../utils/NotificationTypes");
 
@@ -161,10 +162,22 @@ Liga de la reunión: ${mailData.eventBeforeUpdate.link}`;
 
       case PARTICIPACION_RECHAZADA:
         mailOptions.subject = "Participación Rechazada en Oportunidad Comercial";
-        mailOptions.text = `lamentamos informarte que el cliente ${mailData.nombreCliente} ha rechazado tu propuesta para la oportunidad "${mailData.nombreOportunidad}".
-        Te presentamos el feedback que el cliente proporcionó acerca tu participación en su oportunidad:
-        "${mailData.feedback}"`;
-        mailOptions.html = `lamentamos informarte que el cliente ${mailData.nombreCliente} ha rechazado tu propuesta para la oportunidad "${mailData.nombreOportunidad}".</p>
+        mailOptions.text = `lamentamos informarte que el cliente ${mailData.nombreCliente} ha rechazado tu propuesta para la oportunidad "${mailData.nombreOportunidad}".`;
+        mailOptions.html = `lamentamos informarte que el cliente ${mailData.nombreCliente} ha rechazado tu propuesta para la oportunidad "${mailData.nombreOportunidad}".</p>`;
+
+        if (mailData.feedback !== "") {
+          mailOptions.text += `\nTe presentamos el feedback que el cliente proporcionó acerca tu participación en su oportunidad:"\n${mailData.feedback}"`;
+          mailOptions.html += `<p>Te presentamos el feedback que el cliente proporcionó acerca de tu participación en su oportunidad:<br>
+          "${mailData.feedback}"</p>`;
+        }
+        break;
+      
+      case PARTICIPACION_GANADOR:
+        mailOptions.subject = "Participación Ganadora en Oportunidad Comercial";
+        mailOptions.text = `nos alegra informarte que el cliente ${mailData.nombreCliente} ha seleccionado tu propuesta como ganadora para la oportunidad "${mailData.nombreOportunidad}".
+Te presentamos el feedback que el cliente proporcionó acerca tu participación en su oportunidad:
+"${mailData.feedback}`;
+        mailOptions.html = `nos alegra informarte que el cliente ${mailData.nombreCliente} ha seleccionado tu propuesta como ganadora para la oportunidad "${mailData.nombreOportunidad}".</p>
         <p>Te presentamos el feedback que el cliente proporcionó acerca de tu participación en su oportunidad:<br>
         "${mailData.feedback}"</p>`;
         break;
@@ -172,7 +185,7 @@ Liga de la reunión: ${mailData.eventBeforeUpdate.link}`;
       case OPORTUNIDAD_ELIMINADA:
         mailOptions.subject = "Oportunidad Comercial eliminada";
         mailOptions.text = `el cliente ${mailData.nombreCliente} ha eliminado la Oportunidad Comercial "${mailData.detalles}".`;
-        mailOptions.html = `el cliente ${mailData.nombreCliente} ha eliminado la Oportunidad Comercial "${mailData.detalles}". </p>`;
+        mailOptions.html = `el cliente ${mailData.nombreCliente} ha eliminado la Oportunidad Comercial "${mailData.detalles}".</p>`;
         break;
 
       default:
@@ -195,8 +208,8 @@ Liga de la reunión: ${mailData.eventBeforeUpdate.link}`;
             "te comunicamos que se ha abierto una nueva Oportunidad Comercial, te compartimos los detalles:" +
             mailOptions.html;
           resolve(mailOptions);
-        }
-      );
+        })
+        .catch((error) => reject(error));
     } else {
       resolve(mailOptions);
     }

@@ -87,12 +87,13 @@ router.post("/update-estatus-socio/:id", userMiddleware, (req, res) => {
   participacionController
     .updateEstatusSocio(participacionId, estatus, feedback)
     .then((resp) => {
-      if (estatus === "Rechazado") {
+      if (estatus === "Rechazado" || estatus === "Ganador") {
         const job = {
           participacionId: participacionId,
+          estatus: estatus,
         };
         notificationService
-          .notificacionParticipacionRechazada(job)
+          .notificacionCambioEstatusParticipante(job)
           .then((resp) => {
             return resp;
           })
