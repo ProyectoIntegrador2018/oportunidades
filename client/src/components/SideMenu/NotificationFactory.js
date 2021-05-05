@@ -79,6 +79,7 @@ export default function NotificationFactory(props) {
   const downProps = {
     rawNotif: { ...props.component },
     styleClasses: useStyles(),
+    navigate: props.navigate,
   };
 
   switch (props.component.notificacion.tipo) {
@@ -109,7 +110,6 @@ class PortalNotification extends Component {
     this.state = {
       toggledRead: false,
       isRead: undefined,
-      hasClicked: false,
       data: this.formatNotifications(props.rawNotif),
     };
   }
@@ -175,11 +175,15 @@ class PortalNotification extends Component {
 
   // This method should be overriden by the concrete class
   getNavPath = () => {
-    return "/inicio";
+    return window.location.pathname;
   };
 
-  // This method should be overriden by the concrete class
   handleClick = (e) => {
+    this.toggleRead();
+    if (window.location.pathname !== this.getNavPath()) {
+      this.props.navigate(this.getNavPath());
+      window.location.reload();
+    }
     e.preventDefault();
   };
 
@@ -233,10 +237,6 @@ class PortalNotification extends Component {
         alignItems="flex-start"
         className={clsx(!hasBeenRead && this.props.styleClasses.unreadNotif)}
       >
-        {/* {this.state.hasClicked &&
-          !(window.location.pathname === this.getNavPath()) && (
-            <Navigate to={this.getNavPath()} replace={true} />
-          )} */}
         <IconButton
           edge="end"
           color="primary"
@@ -287,14 +287,6 @@ class NotificacionNuevaOportunidad extends PortalNotification {
     return `El cliente ${details.author} ha creado la oportunidad comercial "${details.opportunityName}"`;
   };
 
-  handleClick = (e) => {
-    e.preventDefault();
-    // change state so that Navigate gets rendered
-    this.setState({
-      hasClicked: true,
-    });
-  };
-
   getNavPath = () => {
     return "/detalle/" + this.props.rawNotif.notificacion.detalles.rfp._id;
   };
@@ -325,6 +317,10 @@ class NotificacionCambioEstatus extends PortalNotification {
     const newStatus = detalles.estatusNuevo;
     return `El cliente ${details.author} ha cambiado el estatus de la oportunidad "${details.opportunityName}" de "${prevStatus}" a "${newStatus}"`;
   };
+
+  getNavPath = () => {
+    return "/detalle/" + this.props.rawNotif.notificacion.detalles.rfp._id;
+  };
 }
 
 class NotificacionCambioHorario extends PortalNotification {
@@ -335,6 +331,10 @@ class NotificacionCambioHorario extends PortalNotification {
   getDescription = () => {
     const details = this.state.data.details;
     return `El cliente ${details.author} ha cambiado el horario de junta para la oportunidad "${details.opportunityName}" de ${details.prevSched} a ${details.newSched}`;
+  };
+
+  getNavPath = () => {
+    return "/detalle/" + this.props.rawNotif.notificacion.detalles.rfp._id;
   };
 }
 
@@ -347,6 +347,10 @@ class NotificacionNuevoHorario extends PortalNotification {
     const details = this.state.data.details;
     return `El cliente ${details.author} ha establecido el siguiente horario de junta para la oportunidad "${details.opportunityName}": ${details.sched}`;
   };
+
+  getNavPath = () => {
+    return "/detalle/" + this.props.rawNotif.notificacion.detalles.rfp._id;
+  };
 }
 
 class NotificacionRechazo extends PortalNotification {
@@ -357,6 +361,10 @@ class NotificacionRechazo extends PortalNotification {
   getDescription = () => {
     const details = this.state.data.details;
     return `Lamentamos informarle que el cliente ${details.author} ha rechazado su propuesta para la oportunidad ${details.opportunityName}`;
+  };
+
+  getNavPath = () => {
+    return "/detalle/" + this.props.rawNotif.notificacion.detalles.rfp._id;
   };
 }
 
@@ -370,14 +378,6 @@ class NotificacionSocioAplica extends PortalNotification {
     const participanteName = this.props.rawNotif.notificacion.detalles
       .participante.name;
     return `El socio ${participanteName} ha aplicado a su oportunidad comercial "${details.opportunityName}"`;
-  };
-
-  handleClick = (e) => {
-    e.preventDefault();
-    // change state so that Navigate gets rendered
-    this.setState({
-      hasClicked: true,
-    });
   };
 
   getNavPath = () => {
@@ -396,14 +396,6 @@ class NotificacionNuevoEvento extends PortalNotification {
     return `La oportunidad comercial ${details.opportunityName} tiene un nuevo evento: "${eventName}"`;
   };
 
-  handleClick = (e) => {
-    e.preventDefault();
-    // change state so that Navigate gets rendered
-    this.setState({
-      hasClicked: true,
-    });
-  };
-
   getNavPath = () => {
     return "/detalle/" + this.props.rawNotif.notificacion.detalles.rfp._id;
   };
@@ -418,5 +410,9 @@ class NotificacionEventoEliminado extends PortalNotification {
     const details = this.state.data.details;
     const nombreEvento = this.props.rawNotif.notificacion.detalles.detalles;
     return `El cliente ${details.author} ha eliminado el evento "${nombreEvento}" de oportunidad comercial "${details.opportunityName}"`;
+  };
+
+  getNavPath = () => {
+    return "/detalle/" + this.props.rawNotif.notificacion.detalles.rfp._id;
   };
 }
