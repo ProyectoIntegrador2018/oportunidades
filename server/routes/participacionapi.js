@@ -1,9 +1,25 @@
 const express = require("express");
+const multer = require("multer");
+const { mongo, connection } = require("mongoose");
 const userMiddleware = require("../middleware/User");
 const participacionController = require("../controllers/ParticipacionController");
 const notificationService = require("../services/NotificationService");
+const GridFsStorage = require("multer-gridfs-storage");
+const Grid = require("gridfs-stream");
+Grid.mongo = mongo;
 
 const router = express.Router();
+
+const gfs = Grid(connection.db);
+const storage = GridFsStorage({
+  db: connection.db,
+  file: (req, file) => {
+    return {
+      filename: file.originalname,
+    };
+  },
+});
+const upload = multer({ storage });
 
 /**
  * Ruta para registrar la participación de un socio en una Oportunidad.
@@ -116,6 +132,19 @@ router.post("/update-estatus-socio/:id", userMiddleware, (req, res) => {
       console.log("error", error);
       return res.status(400).send({ error });
     });
+});
+
+/**
+ * Ruta para que un socio pueda subir un archivo a gridfs
+ * @implements {userMiddleWare} Function to check if the request is sent by a logged user
+ * @param {Object} req contiene el id del rfp
+ * @param {Object} res respuesta del request
+ */
+router.post("/upload-file", [userMiddleware, upload.single("file")], (req, res) => {
+  if (req.file) {
+    return res.send({ file: req.file });
+  }
+  return res.status(400).send({ success: false });
 });
 
 router.get("/ping", userMiddleware, (req, res) => {
