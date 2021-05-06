@@ -80,6 +80,12 @@ router.get("/get-participaciones-rfp/:id", userMiddleware, (req, res) => {
     });
 });
 
+/**
+ * Ruta para actualizar el estatus de un socio participante
+ * @implements {userMiddleWare} Function to check if the request is sent by a logged user
+ * @param {Object} req contiene el id del rfp
+ * @param {Object} res respuesta del request
+ */
 router.post("/update-estatus-socio/:id", userMiddleware, (req, res) => {
   const participacionId = req.params.id;
   const estatus = req.body.estatus;
