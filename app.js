@@ -16,6 +16,8 @@ mongoose.connect(database, { useNewUrlParser: true });
 
 eventScheduler.checkForEventStatusUpdate();
 
+eventScheduler.checkForOldRfps();
+
 let adminConfig = require("./server/config/adminConfig");
 
 const userRouter = require("./server/routes/userapi");
