@@ -1,7 +1,6 @@
 const express = require("express");
 const userMiddleware = require("../middleware/User");
 const rfpController = require("../controllers/RFPcontroller");
-const notificationService = require("../services/NotificationService");
 
 const router = express.Router();
 

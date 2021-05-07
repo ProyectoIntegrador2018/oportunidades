@@ -1,7 +1,6 @@
 const express = require("express");
 const userMiddleware = require("../middleware/User");
 const participacionController = require("../controllers/ParticipacionController");
-const notificationService = require("../services/NotificationService");
 
 const router = express.Router();
 
