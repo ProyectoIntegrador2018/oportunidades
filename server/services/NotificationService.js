@@ -87,46 +87,38 @@ notificationService.notificacionOportunidadEliminada = (job) => {
 
 notificationService.notificacionCambioEstatusOportunidad = (job) => {
   return new Promise((resolve, reject) => {
-    const rfpId = job.id;
-    RfpModel.findById(rfpId)
-      .select("estatus nombrecliente nombreOportunidad")
-      .then((rfp) => {
-        const estatusPrevio = rfp.estatus;
-        const estatusNuevo = job.estatus;
-        if (estatusPrevio == estatusNuevo) {
+    const rfpId = job.rfpId;
+    const estatusPrevio = job.estatusPrevio;
+    const estatusNuevo = job.estatusNuevo;
+
+    UserModel.findParticipantesByRfp(rfpId, "name email")
+      .then((sociosParticipantes) => {
+        if (!sociosParticipantes || sociosParticipantes.length == 0) {
           return resolve(SUCCESS_RESP);
         }
 
-        UserModel.findParticipantesByRfp(rfpId, "name email")
-          .then((sociosParticipantes) => {
-            if (!sociosParticipantes || sociosParticipantes.length == 0) {
-              return resolve(SUCCESS_RESP);
-            }
-
-            const detalles = {
-              rfp: rfpId,
+        const detalles = {
+          rfp: rfpId,
+          estatusPrevio: estatusPrevio,
+          estatusNuevo: estatusNuevo,
+        };
+        notificacionUsuarios(CAMBIO_ESTATUS, detalles, sociosParticipantes)
+          .then((resp) => {
+            const rfpData = {
+              nombreCliente: job.nombrecliente,
+              nombreOportunidad: job.nombreOportunidad,
               estatusPrevio: estatusPrevio,
               estatusNuevo: estatusNuevo,
             };
-            notificacionUsuarios(CAMBIO_ESTATUS, detalles, sociosParticipantes)
-              .then((resp) => {
-                const rfpData = {
-                  nombreCliente: rfp.nombrecliente,
-                  nombreOportunidad: rfp.nombreOportunidad,
-                  estatusPrevio: estatusPrevio,
-                  estatusNuevo: estatusNuevo,
-                };
-                if (MAIL_ENABLED) {
-                  mailUsuarios(CAMBIO_ESTATUS, rfpData, sociosParticipantes)
-                    .then((respMail) => {
-                      resolve(respMail);
-                    })
-                    .catch((error) => reject(error));
-                } else {
-                  resolve(resp);
-                }
-              })
-              .catch((error) => reject(error));
+            if (MAIL_ENABLED) {
+              mailUsuarios(CAMBIO_ESTATUS, rfpData, sociosParticipantes)
+                .then((respMail) => {
+                  resolve(respMail);
+                })
+                .catch((error) => reject(error));
+            } else {
+              resolve(resp);
+            }
           })
           .catch((error) => reject(error));
       })
