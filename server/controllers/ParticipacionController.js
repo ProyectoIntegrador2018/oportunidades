@@ -93,7 +93,22 @@ participacionController.updateEstatusSocio = (id, estatus, feedback) => {
       { $set: { socioEstatus: estatus, feedback: feedback } }
     )
       .then((resp) => {
-        resolve(resp);
+        if (estatus === "Rechazado" || estatus === "Ganador") {
+          const job = {
+            participacionId: participacionId,
+            estatus: estatus,
+          };
+          notificationService
+            .notificacionCambioEstatusParticipante(job)
+            .then((notifResp) => {
+              resolve(resp);
+            })
+            .catch((error) => {
+              reject(error);
+            });
+        } else {
+          resolve(resp);
+        }
       })
       .catch((error) => reject(error));
   });
