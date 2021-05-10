@@ -11,6 +11,7 @@ let rfpController = {};
 rfpController.createrfp = (rawRFP, id) => {
   return new Promise((resolve, reject) => {
     rawRFP.createdBy = id;
+    rawRFP.createdOn = new Date();
     const rfp = new RFP(rawRFP);
     rfp
       .save()

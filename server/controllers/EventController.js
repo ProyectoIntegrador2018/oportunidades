@@ -43,7 +43,12 @@ eventController.createEvent = (rawEvent) => {
   });
 };
 
-eventController.assignToUsers = (opportunityId, eventId, evento, oppOwnerId) => {
+eventController.assignToUsers = (
+  opportunityId,
+  eventId,
+  evento,
+  oppOwnerId
+) => {
   return new Promise((resolve, reject) => {
     let involvedUsersIds = [oppOwnerId];
     Participacion.find({ rfpInvolucrado: opportunityId })
@@ -88,10 +93,11 @@ eventController.editEvent = (eventId, updates) => {
     Event.findByIdAndUpdate(eventId, updates)
       .then((eventUpdated) => {
         // eventUpdated contains the data of the event before the update operation was performed
-        notificationService.notificacionCambioEvento(eventUpdated)
+        notificationService
+          .notificacionCambioEvento(eventUpdated)
           .then((resp) => {})
           .catch((err) => reject(err));
-        
+
         resolve(eventUpdated);
       })
       .catch((err) => {
