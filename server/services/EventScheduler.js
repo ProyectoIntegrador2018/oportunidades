@@ -28,30 +28,29 @@ eventScheduler.checkForEventStatusUpdate = () => {
               if (rfp.estatus === "Activo") {
                 const prevStatus = rfp.estatus;
                 const nextStatus = getNextStatus(rfp.estatus);
-                const job = {
-                  id: rfp._id,
-                  estatus: nextStatus,
-                };
-                notificationService
-                  .notificacionCambioEstatusOportunidad(job)
-                  .then((resp) => {
-                    RFPModel.update(
-                      { _id: rfpId },
-                      {
-                        estatus: nextStatus,
-                      },
-                      function (err, result) {
-                        if (err) {
-                          console.log(err);
-                        } else {
-                          console.log(result);
-                        }
-                      }
-                    );
-                  })
-                  .catch((error) => {
-                    console.log(error);
-                  });
+                RFPModel.update(
+                  { _id: rfpId },
+                  {
+                    estatus: nextStatus,
+                  },
+                  function (err, result) {
+                    if (err) {
+                      console.log(err);
+                    } else {
+                      const job = {
+                        rfpId: rfp._id,
+                        estatusPrevio: prevStatus,
+                        estatusNuevo: nextStatus,
+                        nombrecliente: rfp.nombreCliente,
+                        nombreOportunidad: rfp.nombreOportunidad,
+                      };
+                      notificationService
+                        .notificacionCambioEstatusOportunidad(job)
+                        .then((resp) => console.log(resp))
+                        .catch((error) => console.log(error));
+                    }
+                  }
+                );
               }
             })
             .catch((error) => console.log(error));
