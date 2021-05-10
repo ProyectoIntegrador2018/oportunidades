@@ -3,7 +3,6 @@ const multer = require("multer");
 const { mongo, connection } = require("mongoose");
 const userMiddleware = require("../middleware/User");
 const participacionController = require("../controllers/ParticipacionController");
-const notificationService = require("../services/NotificationService");
 const GridFsStorage = require("multer-gridfs-storage");
 const Grid = require("gridfs-stream");
 Grid.mongo = mongo;
@@ -108,24 +107,6 @@ router.post("/update-estatus-socio/:id", userMiddleware, (req, res) => {
   const feedback = req.body.feedback ? req.body.feedback : "";
   participacionController
     .updateEstatusSocio(participacionId, estatus, feedback)
-    .then((resp) => {
-      if (estatus === "Rechazado" || estatus === "Ganador") {
-        const job = {
-          participacionId: participacionId,
-          estatus: estatus,
-        };
-        notificationService
-          .notificacionCambioEstatusParticipante(job)
-          .then((resp) => {
-            return resp;
-          })
-          .catch((error) => {
-            console.log("error", error);
-            return res.status(400).send({ error });
-          });
-      }
-      return resp;
-    })
     .then((resp) => {
       return res.send(resp);
     })

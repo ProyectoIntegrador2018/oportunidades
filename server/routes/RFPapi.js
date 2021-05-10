@@ -1,7 +1,6 @@
 const express = require("express");
 const userMiddleware = require("../middleware/User");
 const rfpController = require("../controllers/RFPcontroller");
-const notificationService = require("../services/NotificationService");
 
 const router = express.Router();
 
@@ -127,23 +126,13 @@ router.delete("/deleterfp", userMiddleware, (req, res) => {
  * @param {Object} res response for the request
  */
 router.patch("/updaterfp", userMiddleware, (req, res) => {
-  notificationService
-    .notificacionCambioEstatusOportunidad(req.body)
-    .then((resp) => {
-      rfpController
-        .updaterfp(req.user._id, req.body)
-        .then((rfp) => {
-          return res.send({
-            success: 1,
-            rfp,
-          });
-        })
-        .catch((error) => {
-          return res.status(401).send({
-            success: 0,
-            error,
-          });
-        });
+  rfpController
+    .updaterfp(req.user._id, req.body)
+    .then((rfp) => {
+      return res.send({
+        success: 1,
+        rfp,
+      });
     })
     .catch((error) => {
       return res.status(401).send({

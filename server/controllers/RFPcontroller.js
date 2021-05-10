@@ -82,7 +82,25 @@ rfpController.updaterfp = (id, updatedRFP) => {
   return new Promise((resolve, reject) => {
     RFP.findByIdAndUpdate(updatedRFP.id, updatedRFP)
       .then((rfp) => {
-        return resolve(rfp);
+        const estatusPrevio = rfp.estatus;
+        const estatusNuevo = updatedRFP.estatus;
+
+        if (estatusPrevio == estatusNuevo) {
+          return resolve(rfp);
+        }
+
+        const job = {
+          rfpId: rfp._id,
+          estatusPrevio: rfp.estatus,
+          estatusNuevo: updatedRFP.estatus,
+          nombrecliente: updatedRFP.nombreCliente,
+          nombreOportunidad: updatedRFP.nombreOportunidad,
+        };
+
+        notificationService
+          .notificacionCambioEstatusOportunidad(job)
+          .then((resp) => resolve(rfp))
+          .catch((error) => reject(error));
       })
       .catch((error) => {
         return reject(error);
