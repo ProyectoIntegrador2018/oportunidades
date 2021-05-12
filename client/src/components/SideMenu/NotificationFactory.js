@@ -95,6 +95,8 @@ export default function NotificationFactory(props) {
       return <NotificacionNuevoHorario {...downProps} />;
     case NOTIFICATION_TYPES.PARTICIPACION_RECHAZADA:
       return <NotificacionRechazo {...downProps} />;
+    case NOTIFICATION_TYPES.PARTICIPACION_GANADOR:
+      return <NotificacionGanador {...downProps} />;
     case NOTIFICATION_TYPES.NUEVA_PARTICIPACION:
       return <NotificacionSocioAplica {...downProps} />;
     case NOTIFICATION_TYPES.NUEVO_EVENTO:
@@ -363,6 +365,21 @@ class NotificacionRechazo extends PortalNotification {
   getDescription = () => {
     const details = this.state.data.details;
     return `Lamentamos informarle que el cliente ${details.author} ha rechazado su propuesta para la oportunidad ${details.opportunityName}`;
+  };
+
+  getNavPath = () => {
+    return "/detalle/" + this.props.rawNotif.notificacion.detalles.rfp._id;
+  };
+}
+
+class NotificacionGanador extends PortalNotification {
+  getTitle = () => {
+    return "Ganador de Propuesta";
+  };
+
+  getDescription = () => {
+    const details = this.state.data.details;
+    return `Nos alegra informarte que el cliente ${details.author} ha seleccionado tu propuesta como ganadora para la oportunidad ${details.opportunityName}`;
   };
 
   getNavPath = () => {

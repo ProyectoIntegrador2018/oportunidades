@@ -141,7 +141,6 @@ notificationService.notificacionCambioEstatusParticipante = (job) => {
                 ? PARTICIPACION_RECHAZADA
                 : PARTICIPACION_GANADOR;
             const detalles = { rfp: participacion.rfpInvolucrado };
-            if (notifType === PARTICIPACION_RECHAZADA) {
               notificacionUsuarios(notifType, detalles, [socio])
                 .then((resp) => {
                   if (MAIL_ENABLED) {
@@ -154,18 +153,7 @@ notificationService.notificacionCambioEstatusParticipante = (job) => {
                     resolve(resp);
                   }
                 })
-                .catch((error) => reject(error));
-            } else {
-              if (MAIL_ENABLED) {
-                mailCambioEstatusParticipante(notifType, participacion, [socio])
-                  .then((respMail) => {
-                    resolve(respMail);
-                  })
-                  .catch((error) => reject(error));
-              } else {
-                resolve(SUCCESS_RESP);
-              }
-            }
+                .catch((error) => reject(error));             
           })
           .catch((error) => reject(error));
       })
