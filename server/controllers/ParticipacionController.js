@@ -95,7 +95,7 @@ participacionController.updateEstatusSocio = (id, estatus, feedback) => {
       .then((resp) => {
         if (estatus === "Rechazado" || estatus === "Ganador") {
           const job = {
-            participacionId: participacionId,
+            participacionId: id,
             estatus: estatus,
           };
           notificationService
