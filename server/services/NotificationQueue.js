@@ -1,12 +1,20 @@
 const Queue = require("bull");
-const redisConfig = require("../config/redisConfig");
+const { port, host, db, url } = require("../config/redisConfig");
 const {
   NUEVA_OPORTUNIDAD,
-  OPORTUNIDAD_ELIMINADA,CAMBIO_ESTATUS,
+  OPORTUNIDAD_ELIMINADA,
+  CAMBIO_ESTATUS,
 } = require("../utils/NotificationTypes");
 const notificationService = require("../services/NotificationService");
 
-const notificationQueue = new Queue("notification-queue", { redisConfig });
+let notificationQueue;
+if (process.env.HEROKU_ENV === "production") {
+  notificationQueue = new Queue("notification-queue", url)
+} else {
+  notificationQueue = new Queue("notification-queue", {
+    redis: { port: port, host: host},
+  });
+}
 
 notificationQueue.process(NUEVA_OPORTUNIDAD, (job) => {
   return notificationService.notificacionNuevaOportunidad(job);
@@ -20,8 +28,8 @@ notificationQueue.process(CAMBIO_ESTATUS, (job) => {
   return notificationService.notificacionCambioEstatusOportunidad(job);
 });
 
-notificationQueue.on('stalled', function(job){
-  console.log('stalled job, restarting it again!', job.queue.name, job.data);
+notificationQueue.on("stalled", function (job) {
+  console.log("stalled job, restarting it again!", job.queue.name, job.data);
 });
 
 module.exports = notificationQueue;
