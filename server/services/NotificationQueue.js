@@ -8,7 +8,7 @@ const {
 const notificationService = require("../services/NotificationService");
 
 let notificationQueue;
-if (process.env.HEROKU_ENV === "production") {
+if (process.env.REDIS_ENV === "production") {
   notificationQueue = new Queue("notification-queue", url)
 } else {
   notificationQueue = new Queue("notification-queue", {

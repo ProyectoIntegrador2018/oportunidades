@@ -13,7 +13,7 @@ const {
 const mailService = require("./MailService");
 
 let mailQueue;
-if (process.env.HEROKU_ENV === "production") {
+if (process.env.REDIS_ENV === "production") {
   mailQueue = new Queue("mail-queue", url);
 } else {
   mailQueue = new Queue("mail-queue", {
