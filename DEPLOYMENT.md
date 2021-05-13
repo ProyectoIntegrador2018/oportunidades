@@ -15,10 +15,14 @@ Go to settings and then go to the environment variables section to add the follo
 * `ADMIN_EMAIL` = The system administrator email. This is the email the System Admin will use to login into the system.
 * `ADMIN_PASSWORD` = The system administrator password. This password can be changed once the system admin logins into the system.
 * `ADMIN_NAME` = The system administrator name.
-* `REDIS_URL` = Redis url which contains host, password and port
+* `REDIS_ENV` = Redis environment, either "production" or "development" depending on redis host
+* `REDIS_URL` = Redis url which contains host, password and port. Used in redis production env
 * `MAIL_USER` = Email address from which the notification emails will be sent
 * `MAIL_PASSWORD` = Email password from which the notification emails will be sent
 * `MAIL_SERVICE` = Mail service that nodemailer will use to send notification emails, this depends on the email used in MAIL_USER
+* `REDIS_PORT`= Redis port
+* `REDIS_HOST`= Redis host
+* `REDIS_DB`= Redis db
 
 ## Login to Heroku in your terminal
 
