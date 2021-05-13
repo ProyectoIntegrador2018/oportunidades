@@ -17,6 +17,7 @@ Go to settings and then go to the environment variables section to add the follo
 * `ADMIN_NAME` = The system administrator name.
 * `REDIS_ENV` = Redis environment, either "production" or "development" depending on redis host
 * `REDIS_URL` = Redis url which contains host, password and port. Used in redis production env
+* `MAIL_ENABLED` = Boolean indicating whether notifications should be sent by mail
 * `MAIL_USER` = Email address from which the notification emails will be sent
 * `MAIL_PASSWORD` = Email password from which the notification emails will be sent
 * `MAIL_SERVICE` = Mail service that nodemailer will use to send notification emails, this depends on the email used in MAIL_USER
