@@ -8,6 +8,7 @@ const {
   CAMBIO_EVENTO,
   EVENTO_ELIMINADO,
   NUEVA_PARTICIPACION,
+  CAMBIO_ESTATUS_PARTICIPACION,
 } = require("../utils/NotificationTypes");
 const notificationService = require("../services/NotificationService");
 
@@ -24,6 +25,10 @@ notificationQueue.process(OPORTUNIDAD_ELIMINADA, (job) => {
 notificationQueue.process(NUEVA_PARTICIPACION, (job) => {
   return notificationService.notificacionNuevaParticipacion(job);
 });
+
+notificationQueue.process(CAMBIO_ESTATUS_PARTICIPACION, (job) => {
+  return notificationService.notificacionCambioEstatusParticipante(job);
+})
 
 notificationQueue.process(CAMBIO_ESTATUS, (job) => {
   return notificationService.notificacionCambioEstatusOportunidad(job);

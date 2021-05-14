@@ -128,7 +128,7 @@ notificationService.notificacionCambioEstatusOportunidad = (job) => {
 
 notificationService.notificacionCambioEstatusParticipante = (job) => {
   return new Promise((resolve, reject) => {
-    const { participacionId, estatus } = job;
+    const { participacionId, estatus } = job.data;
     ParticipacionModel.findById(participacionId)
       .select("socioInvolucrado rfpInvolucrado feedback")
       .then((participacion) => {
