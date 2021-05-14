@@ -1,5 +1,4 @@
 const Participacion = require("../models/Participaciones");
-const notificationService = require("../services/NotificationService");
 const { SOCIO_ACTIVO } = require("../utils/SocioTypes");
 const {
   NUEVA_PARTICIPACION,
