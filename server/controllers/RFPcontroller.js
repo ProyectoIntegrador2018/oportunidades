@@ -56,12 +56,7 @@ rfpController.deleterfp = (id) => {
               nombreCliente: rfp.nombrecliente,
               nombreOportunidad: rfp.nombreOportunidad,
             };
-            // notificationQueue.add(OPORTUNIDAD_ELIMINADA, job);
-            notificationService
-              .notificacionOportunidadEliminada(job)
-              .then((resp) => resp)
-              .catch((error) => reject(error));
-            return rfp;
+            notificationQueue.add(OPORTUNIDAD_ELIMINADA, job);
           })
           .then((rfp) => {
             return resolve(rfp);

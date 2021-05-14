@@ -55,6 +55,7 @@ notificationService.notificacionNuevaOportunidad = (job) => {
 };
 
 notificationService.notificacionOportunidadEliminada = (job) => {
+  const { nombreCliente, nombreOportunidad } = job.data;
   return new Promise((resolve, reject) => {
     UserModel.findByUserType("socio", "name email")
       .then((socios) => {
@@ -63,9 +64,8 @@ notificationService.notificacionOportunidadEliminada = (job) => {
         }
 
         const detalles = {
-          // detalles: job.data.nombreOportunidad,
-          nombreCliente: job.nombreCliente,
-          detalles: job.nombreOportunidad,
+          nombreCliente: nombreCliente,
+          detalles: nombreOportunidad,
         };
         notificacionUsuarios(OPORTUNIDAD_ELIMINADA, detalles, socios)
           .then((resp) => {
