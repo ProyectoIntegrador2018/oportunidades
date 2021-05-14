@@ -4,6 +4,7 @@ const notificationService = require("../services/NotificationService");
 const {
   NUEVA_OPORTUNIDAD,
   OPORTUNIDAD_ELIMINADA,
+  CAMBIO_ESTATUS,
 } = require("../utils/NotificationTypes");
 
 let rfpController = {};
@@ -88,10 +89,7 @@ rfpController.updaterfp = (id, updatedRFP) => {
           nombreOportunidad: updatedRFP.nombreOportunidad,
         };
 
-        notificationService
-          .notificacionCambioEstatusOportunidad(job)
-          .then((resp) => resolve(rfp))
-          .catch((error) => reject(error));
+        notificationQueue.add(CAMBIO_ESTATUS, job);
       })
       .catch((error) => {
         return reject(error);

@@ -87,9 +87,13 @@ notificationService.notificacionOportunidadEliminada = (job) => {
 
 notificationService.notificacionCambioEstatusOportunidad = (job) => {
   return new Promise((resolve, reject) => {
-    const rfpId = job.rfpId;
-    const estatusPrevio = job.estatusPrevio;
-    const estatusNuevo = job.estatusNuevo;
+    const {
+      rfpId,
+      estatusPrevio,
+      estatusNuevo,
+      nombrecliente,
+      nombreOportunidad,
+    } = job.data;
 
     UserModel.findParticipantesByRfp(rfpId, "name email")
       .then((sociosParticipantes) => {
@@ -105,8 +109,8 @@ notificationService.notificacionCambioEstatusOportunidad = (job) => {
         notificacionUsuarios(CAMBIO_ESTATUS, detalles, sociosParticipantes)
           .then((resp) => {
             const rfpData = {
-              nombreCliente: job.nombrecliente,
-              nombreOportunidad: job.nombreOportunidad,
+              nombreCliente: nombrecliente,
+              nombreOportunidad: nombreOportunidad,
               estatusPrevio: estatusPrevio,
               estatusNuevo: estatusNuevo,
             };
