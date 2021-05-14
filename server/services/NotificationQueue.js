@@ -28,7 +28,7 @@ notificationQueue.process(NUEVA_PARTICIPACION, (job) => {
 
 notificationQueue.process(CAMBIO_ESTATUS_PARTICIPACION, (job) => {
   return notificationService.notificacionCambioEstatusParticipante(job);
-})
+});
 
 notificationQueue.process(CAMBIO_ESTATUS, (job) => {
   return notificationService.notificacionCambioEstatusOportunidad(job);

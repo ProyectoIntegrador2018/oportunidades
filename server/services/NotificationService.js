@@ -27,6 +27,7 @@ const SUCCESS_RESP = { success: 1 };
 const MAIL_ENABLED = false;
 
 notificationService.notificacionNuevaOportunidad = (job) => {
+  const rfp = job.data.rfp;
   return new Promise((resolve, reject) => {
     UserModel.findByUserTypes(["socio", "admin"], "name email")
       .then((users) => {
@@ -34,12 +35,11 @@ notificationService.notificacionNuevaOportunidad = (job) => {
           return resolve(SUCCESS_RESP);
         }
 
-        // const detalles = { rfp: job.data.rfp._id };
-        const detalles = { rfp: job.rfp._id };
+        const detalles = { rfp: rfp._id };
         notificacionUsuarios(NUEVA_OPORTUNIDAD, detalles, users)
           .then((resp) => {
             if (MAIL_ENABLED) {
-              mailUsuarios(NUEVA_OPORTUNIDAD, job.rfp, users)
+              mailUsuarios(NUEVA_OPORTUNIDAD, rfp, users)
                 .then((respMail) => {
                   resolve(respMail);
                 })
