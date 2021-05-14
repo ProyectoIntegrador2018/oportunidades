@@ -340,7 +340,8 @@ notificationService.notificacionNuevoEvento = (job) => {
   });
 };
 
-notificationService.notificacionEventoEliminado = (evento) => {
+notificationService.notificacionEventoEliminado = (job) => {
+  const evento = job.data.deletedEvent;
   return new Promise((resolve, reject) => {
     UserModel.findParticipantesByRfp(evento.rfp, "name email")
       .then((sociosParticipantes) => {

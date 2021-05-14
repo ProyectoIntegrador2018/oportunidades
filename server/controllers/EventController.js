@@ -4,6 +4,7 @@ const Participacion = require("../models/Participaciones");
 const {
   NUEVO_EVENTO,
   CAMBIO_EVENTO,
+  EVENTO_ELIMINADO,
 } = require("../utils/NotificationTypes");
 const notificationQueue = require("../services/NotificationQueue");
 const notificationService = require("../services/NotificationService");
@@ -108,10 +109,7 @@ eventController.deleteEvent = (eventId) => {
   return new Promise((resolve, reject) => {
     Event.findByIdAndDelete(eventId)
       .then((deletedEvent) => {
-        notificationService
-          .notificacionEventoEliminado(deletedEvent)
-          .then((resp) => {})
-          .catch((err) => reject(err));
+        notificationQueue.add(EVENTO_ELIMINADO, { deletedEvent });
       })
       .then((deletedEvent) => {
         resolve(deletedEvent);
