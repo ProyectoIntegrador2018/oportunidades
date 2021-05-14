@@ -24,7 +24,7 @@ const mailQueue = require("./MailQueue");
 
 const notificationService = {};
 const SUCCESS_RESP = { success: 1 };
-const MAIL_ENABLED = process.env.MAIL_ENABLED;
+const MAIL_ENABLED = process.env.MAIL_ENABLED === 'true' ? true : false;
 
 notificationService.notificacionNuevaOportunidad = (job) => {
   return new Promise((resolve, reject) => {
