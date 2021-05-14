@@ -1,6 +1,8 @@
 const Participacion = require("../models/Participaciones");
 const notificationService = require("../services/NotificationService");
 const { SOCIO_ACTIVO } = require("../utils/SocioTypes");
+const { NUEVA_PARTICIPACION } = require("../utils/NotificationTypes");
+const notificationQueue = require("../services/NotificationQueue");
 const Event = require("../models/Event");
 const User = require("../models/User");
 let participacionController = {};
@@ -24,14 +26,10 @@ participacionController.createParticipacion = (rawPart, id) => {
         });
       })
       .then(() => {
-        return notificationService
-          .notificacionNuevaParticipacion(participacion)
-          .then(() => {
-            return resolve(participacion);
-          })
-          .catch((error) => {
-            return reject(error);
-          });
+        notificationQueue.add(NUEVA_PARTICIPACION, { participacion });
+      })
+      .then(() => {
+        resolve(participacion);
       })
       .catch((error) => {
         return reject(error);

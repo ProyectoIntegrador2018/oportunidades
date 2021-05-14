@@ -279,7 +279,8 @@ const mailNuevaParticipacion = function (detallesParticipacion, cliente) {
   });
 };
 
-notificationService.notificacionNuevaParticipacion = (participacion) => {
+notificationService.notificacionNuevaParticipacion = (job) => {
+  const participacion = job.data.participacion;
   return new Promise((resolve, reject) => {
     getClienteRfp(participacion.rfpInvolucrado)
       .then((cliente) => {
