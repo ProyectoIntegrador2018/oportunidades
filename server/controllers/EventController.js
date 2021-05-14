@@ -7,7 +7,6 @@ const {
   EVENTO_ELIMINADO,
 } = require("../utils/NotificationTypes");
 const notificationQueue = require("../services/NotificationQueue");
-const notificationService = require("../services/NotificationService");
 let eventController = {};
 
 eventController.getUserEvents = (userId) => {
