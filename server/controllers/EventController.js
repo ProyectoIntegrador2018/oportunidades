@@ -1,6 +1,10 @@
 const Event = require("../models/Event");
 const User = require("../models/User");
 const Participacion = require("../models/Participaciones");
+const {
+  NUEVO_EVENTO,
+} = require("../utils/NotificationTypes");
+const notificationQueue = require("../services/NotificationQueue");
 const notificationService = require("../services/NotificationService");
 let eventController = {};
 
@@ -29,10 +33,7 @@ eventController.createEvent = (rawEvent) => {
     newEvent
       .save()
       .then(() => {
-        return notificationService
-          .notificacionNuevoEvento(newEvent)
-          .then((resp) => {})
-          .catch((error) => reject(error));
+        notificationQueue.add(NUEVO_EVENTO, { newEvent });
       })
       .then((event) => {
         resolve(newEvent);

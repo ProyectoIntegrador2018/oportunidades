@@ -310,7 +310,8 @@ notificationService.notificacionNuevaParticipacion = (participacion) => {
   });
 };
 
-notificationService.notificacionNuevoEvento = (evento) => {
+notificationService.notificacionNuevoEvento = (job) => {
+  const evento = job.data.newEvent;
   return new Promise((resolve, reject) => {
     UserModel.findParticipantesByRfp(evento.rfp, "name email")
       .then((sociosParticipantes) => {

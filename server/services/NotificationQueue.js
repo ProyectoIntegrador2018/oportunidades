@@ -3,6 +3,7 @@ const redisConfig = require("../config/redisConfig");
 const {
   NUEVA_OPORTUNIDAD,
   OPORTUNIDAD_ELIMINADA,CAMBIO_ESTATUS,
+  NUEVO_EVENTO,
 } = require("../utils/NotificationTypes");
 const notificationService = require("../services/NotificationService");
 
@@ -19,6 +20,10 @@ notificationQueue.process(OPORTUNIDAD_ELIMINADA, (job) => {
 notificationQueue.process(CAMBIO_ESTATUS, (job) => {
   return notificationService.notificacionCambioEstatusOportunidad(job);
 });
+
+notificationQueue.process(NUEVO_EVENTO, (job) => {
+  return notificationService.notificacionNuevoEvento(job);
+})
 
 notificationQueue.on('stalled', function(job){
   console.log('stalled job, restarting it again!', job.queue.name, job.data);
