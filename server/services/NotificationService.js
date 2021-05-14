@@ -391,7 +391,8 @@ const mailNuevoEvento = function (evento, sociosParticipantes) {
   });
 };
 
-notificationService.notificacionCambioEvento = (eventBeforeUpdate) => {
+notificationService.notificacionCambioEvento = (job) => {
+  const eventBeforeUpdate = job.data.eventUpdated;
   return new Promise((resolve, reject) => {
     EventModel.findById(eventBeforeUpdate._id)
       .select("name date link")

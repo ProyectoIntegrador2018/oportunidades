@@ -3,6 +3,7 @@ const User = require("../models/User");
 const Participacion = require("../models/Participaciones");
 const {
   NUEVO_EVENTO,
+  CAMBIO_EVENTO,
 } = require("../utils/NotificationTypes");
 const notificationQueue = require("../services/NotificationQueue");
 const notificationService = require("../services/NotificationService");
@@ -94,11 +95,7 @@ eventController.editEvent = (eventId, updates) => {
     Event.findByIdAndUpdate(eventId, updates)
       .then((eventUpdated) => {
         // eventUpdated contains the data of the event before the update operation was performed
-        notificationService
-          .notificacionCambioEvento(eventUpdated)
-          .then((resp) => {})
-          .catch((err) => reject(err));
-
+        notificationQueue.add(CAMBIO_EVENTO, { eventUpdated });
         resolve(eventUpdated);
       })
       .catch((err) => {
