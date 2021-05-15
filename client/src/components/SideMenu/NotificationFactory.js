@@ -493,9 +493,9 @@ class NotificacionOportunidadCerradaNoParticipaciones extends PortalNotification
   };
 
   getDescription = () => {
-    const detalles = this.props.rawNotif.notificacion.detalles;
-    const nombreOportunidad = detalles.nombreOportunidad;
-    return `Se ha cerrado automáticamente la oportunidad ${nombreOportunidad} debido a que no tuvo participaciones por dos semanas.`;
+    const nombreOportunidad =
+      this.props.rawNotif.notificacion.detalles.detalles;
+    return `Se ha cerrado automáticamente la oportunidad "${nombreOportunidad}" debido a que no tuvo participaciones por dos semanas.`;
   };
 
   getNavPath = () => {

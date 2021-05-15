@@ -71,7 +71,10 @@ eventScheduler.checkForOldRfps = () => {
           const rfpId = rfp._id;
           UserModel.findParticipantesByRfp(rfpId).then(
             (sociosParticipantes) => {
-              if (sociosParticipantes.length === 0) {
+              if (
+                sociosParticipantes.length === 0 &&
+                rfp.estatus !== "Cerrada"
+              ) {
                 RFPModel.update(
                   { _id: rfpId },
                   {

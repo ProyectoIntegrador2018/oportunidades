@@ -138,11 +138,13 @@ notificationService.notificacionOportunidadCerradaNoParticipaciones = (job) => {
       rfp: rfpId,
       detalles: nombreOportunidad,
     };
-    notificacionUsuarios(OPORTUNIDAD_CERRADA_NO_PARTICIPACIONES, detalles, [
-      clienteId,
-    ])
-      .then((resp) => {
-        resolve(resp);
+    UserModel.findById(clienteId)
+      .then((cliente) => {
+        notificacionUsuarios(OPORTUNIDAD_CERRADA_NO_PARTICIPACIONES, detalles, [
+          cliente,
+        ])
+          .then((resp) => resolve(resp))
+          .catch((error) => reject(error));
       })
       .catch((error) => reject(error));
   });
