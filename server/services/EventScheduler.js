@@ -82,7 +82,8 @@ eventScheduler.checkForOldRfps = () => {
                       console.log(err);
                     } else {
                       const job = {
-                        cliente: rfp.createdBy,
+                        rfpId: rfp._id,
+                        clienteId: rfp.createdBy,
                         nombreOportunidad: rfp.nombreOportunidad,
                       };
                       notificationQueue.add(

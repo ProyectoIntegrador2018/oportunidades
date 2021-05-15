@@ -132,13 +132,14 @@ notificationService.notificacionCambioEstatusOportunidad = (job) => {
 };
 
 notificationService.notificacionOportunidadCerradaNoParticipaciones = (job) => {
-  const { cliente, nombreOportunidad } = job.data;
+  const { rfpId, clienteId, nombreOportunidad } = job.data;
   return new Promise((resolve, reject) => {
     const detalles = {
+      rfp: rfpId,
       detalles: nombreOportunidad,
     };
     notificacionUsuarios(OPORTUNIDAD_CERRADA_NO_PARTICIPACIONES, detalles, [
-      cliente,
+      clienteId,
     ])
       .then((resp) => {
         resolve(resp);
