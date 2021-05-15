@@ -1,5 +1,5 @@
 const Queue = require("bull");
-const redisConfig = require("../config/redisConfig");
+const { port, host, db, url } = require("../config/redisConfig");
 const {
   NUEVA_OPORTUNIDAD,
   OPORTUNIDAD_ELIMINADA,
@@ -8,11 +8,18 @@ const {
   CAMBIO_EVENTO,
   EVENTO_ELIMINADO,
   NUEVA_PARTICIPACION,
-  CAMBIO_ESTATUS_PARTICIPACION,
+  CAMBIO_ESTATUS_PARTICIPACION
 } = require("../utils/NotificationTypes");
 const notificationService = require("../services/NotificationService");
 
-const notificationQueue = new Queue("notification-queue", { redisConfig });
+let notificationQueue;
+if (process.env.REDIS_ENV === "production") {
+  notificationQueue = new Queue("notification-queue", url)
+} else {
+  notificationQueue = new Queue("notification-queue", {
+    redis: { port: port, host: host},
+  });
+}
 
 notificationQueue.process(NUEVA_OPORTUNIDAD, (job) => {
   return notificationService.notificacionNuevaOportunidad(job);
