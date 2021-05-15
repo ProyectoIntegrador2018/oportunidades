@@ -1,7 +1,8 @@
 const UserModel = require("../models/User");
 const RFPModel = require("../models/RFP");
 const EventModel = require("../models/Event");
-const notificationService = require("../services/NotificationService");
+const { CAMBIO_ESTATUS } = require("../utils/NotificationTypes");
+const notificationQueue = require("../services/NotificationQueue");
 const cron = require("node-cron");
 const eventScheduler = {};
 
@@ -44,10 +45,7 @@ eventScheduler.checkForEventStatusUpdate = () => {
                         nombrecliente: rfp.nombreCliente,
                         nombreOportunidad: rfp.nombreOportunidad,
                       };
-                      notificationService
-                        .notificacionCambioEstatusOportunidad(job)
-                        .then((resp) => console.log(resp))
-                        .catch((error) => console.log(error));
+                      notificationQueue.add(CAMBIO_ESTATUS, job);
                     }
                   }
                 );

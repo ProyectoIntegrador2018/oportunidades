@@ -27,6 +27,7 @@ const SUCCESS_RESP = { success: 1 };
 const MAIL_ENABLED = process.env.MAIL_ENABLED === 'true' ? true : false;
 
 notificationService.notificacionNuevaOportunidad = (job) => {
+  const rfp = job.data.rfp;
   return new Promise((resolve, reject) => {
     UserModel.findByUserTypes(["socio", "admin"], "name email")
       .then((users) => {
@@ -34,12 +35,11 @@ notificationService.notificacionNuevaOportunidad = (job) => {
           return resolve(SUCCESS_RESP);
         }
 
-        // const detalles = { rfp: job.data.rfp._id };
-        const detalles = { rfp: job.rfp._id };
+        const detalles = { rfp: rfp._id };
         notificacionUsuarios(NUEVA_OPORTUNIDAD, detalles, users)
           .then((resp) => {
             if (MAIL_ENABLED) {
-              mailUsuarios(NUEVA_OPORTUNIDAD, job.rfp, users)
+              mailUsuarios(NUEVA_OPORTUNIDAD, rfp, users)
                 .then((respMail) => {
                   resolve(respMail);
                 })
@@ -55,6 +55,7 @@ notificationService.notificacionNuevaOportunidad = (job) => {
 };
 
 notificationService.notificacionOportunidadEliminada = (job) => {
+  const { nombreCliente, nombreOportunidad } = job.data;
   return new Promise((resolve, reject) => {
     UserModel.findByUserType("socio", "name email")
       .then((socios) => {
@@ -63,9 +64,8 @@ notificationService.notificacionOportunidadEliminada = (job) => {
         }
 
         const detalles = {
-          // detalles: job.data.nombreOportunidad,
-          nombreCliente: job.nombreCliente,
-          detalles: job.nombreOportunidad,
+          nombreCliente: nombreCliente,
+          detalles: nombreOportunidad,
         };
         notificacionUsuarios(OPORTUNIDAD_ELIMINADA, detalles, socios)
           .then((resp) => {
@@ -87,9 +87,13 @@ notificationService.notificacionOportunidadEliminada = (job) => {
 
 notificationService.notificacionCambioEstatusOportunidad = (job) => {
   return new Promise((resolve, reject) => {
-    const rfpId = job.rfpId;
-    const estatusPrevio = job.estatusPrevio;
-    const estatusNuevo = job.estatusNuevo;
+    const {
+      rfpId,
+      estatusPrevio,
+      estatusNuevo,
+      nombrecliente,
+      nombreOportunidad,
+    } = job.data;
 
     UserModel.findParticipantesByRfp(rfpId, "name email")
       .then((sociosParticipantes) => {
@@ -105,8 +109,8 @@ notificationService.notificacionCambioEstatusOportunidad = (job) => {
         notificacionUsuarios(CAMBIO_ESTATUS, detalles, sociosParticipantes)
           .then((resp) => {
             const rfpData = {
-              nombreCliente: job.nombrecliente,
-              nombreOportunidad: job.nombreOportunidad,
+              nombreCliente: nombrecliente,
+              nombreOportunidad: nombreOportunidad,
               estatusPrevio: estatusPrevio,
               estatusNuevo: estatusNuevo,
             };
@@ -128,7 +132,7 @@ notificationService.notificacionCambioEstatusOportunidad = (job) => {
 
 notificationService.notificacionCambioEstatusParticipante = (job) => {
   return new Promise((resolve, reject) => {
-    const { participacionId, estatus } = job;
+    const { participacionId, estatus } = job.data;
     ParticipacionModel.findById(participacionId)
       .select("socioInvolucrado rfpInvolucrado feedback")
       .then((participacion) => {
@@ -279,7 +283,8 @@ const mailNuevaParticipacion = function (detallesParticipacion, cliente) {
   });
 };
 
-notificationService.notificacionNuevaParticipacion = (participacion) => {
+notificationService.notificacionNuevaParticipacion = (job) => {
+  const participacion = job.data.participacion;
   return new Promise((resolve, reject) => {
     getClienteRfp(participacion.rfpInvolucrado)
       .then((cliente) => {
@@ -310,7 +315,8 @@ notificationService.notificacionNuevaParticipacion = (participacion) => {
   });
 };
 
-notificationService.notificacionNuevoEvento = (evento) => {
+notificationService.notificacionNuevoEvento = (job) => {
+  const evento = job.data.newEvent;
   return new Promise((resolve, reject) => {
     UserModel.findParticipantesByRfp(evento.rfp, "name email")
       .then((sociosParticipantes) => {
@@ -339,7 +345,8 @@ notificationService.notificacionNuevoEvento = (evento) => {
   });
 };
 
-notificationService.notificacionEventoEliminado = (evento) => {
+notificationService.notificacionEventoEliminado = (job) => {
+  const evento = job.data.deletedEvent;
   return new Promise((resolve, reject) => {
     UserModel.findParticipantesByRfp(evento.rfp, "name email")
       .then((sociosParticipantes) => {
@@ -390,7 +397,8 @@ const mailNuevoEvento = function (evento, sociosParticipantes) {
   });
 };
 
-notificationService.notificacionCambioEvento = (eventBeforeUpdate) => {
+notificationService.notificacionCambioEvento = (job) => {
+  const eventBeforeUpdate = job.data.eventUpdated;
   return new Promise((resolve, reject) => {
     EventModel.findById(eventBeforeUpdate._id)
       .select("name date link")
