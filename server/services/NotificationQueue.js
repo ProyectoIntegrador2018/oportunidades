@@ -3,12 +3,12 @@ const { port, host, db, url } = require("../config/redisConfig");
 const {
   NUEVA_OPORTUNIDAD,
   OPORTUNIDAD_ELIMINADA,
+  NUEVA_PARTICIPACION,
+  CAMBIO_ESTATUS_PARTICIPACION,
   CAMBIO_ESTATUS,
   NUEVO_EVENTO,
   CAMBIO_EVENTO,
   EVENTO_ELIMINADO,
-  NUEVA_PARTICIPACION,
-  CAMBIO_ESTATUS_PARTICIPACION
 } = require("../utils/NotificationTypes");
 const notificationService = require("../services/NotificationService");
 
