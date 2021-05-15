@@ -13,7 +13,9 @@ let rfpController = {};
 rfpController.createrfp = (rawRFP, id) => {
   return new Promise((resolve, reject) => {
     rawRFP.createdBy = id;
-    rawRFP.createdOn = moment(new Date()).format("YYYY-MM-DD[T00:00:00.000Z]");
+    rawRFP.createdOn = new Date(
+      moment(new Date()).format("YYYY-MM-DD[T00:00:00.000Z]")
+    );
     const rfp = new RFP(rawRFP);
     rfp
       .save()
