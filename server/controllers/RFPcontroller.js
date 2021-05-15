@@ -6,16 +6,13 @@ const {
   OPORTUNIDAD_ELIMINADA,
   CAMBIO_ESTATUS,
 } = require("../utils/NotificationTypes");
-const moment = require("moment");
 
 let rfpController = {};
 
 rfpController.createrfp = (rawRFP, id) => {
   return new Promise((resolve, reject) => {
     rawRFP.createdBy = id;
-    rawRFP.createdOn = new Date(
-      moment(new Date()).format("YYYY-MM-DD[T00:00:00.000Z]")
-    );
+    rawRFP.createdOn = new Date();
     const rfp = new RFP(rawRFP);
     rfp
       .save()

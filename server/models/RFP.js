@@ -126,7 +126,7 @@ schema.statics.getNombreCliente = function (rfpId) {
 
 schema.statics.getRfpsFromNDaysAgo = function (daysAgo) {
   const today = new Date();
-  const pastDate = new Date().setDate(today - daysAgo);
+  const pastDate = new Date().setDate(today.getDate() - daysAgo);
   return new Promise((resolve, reject) => {
     this.find({ createdOn: { $gte: pastDate }})
       .then((rfps) => resolve(rfps))
