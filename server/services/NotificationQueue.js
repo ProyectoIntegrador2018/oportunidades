@@ -21,6 +21,7 @@ if (process.env.REDIS_ENV === "production") {
     redis: { port: port, host: host },
   });
 }
+notificationQueue.LOCK_RENEW_TIME = 60 * 1000;
 
 notificationQueue.process(NUEVA_OPORTUNIDAD, (job) => {
   return notificationService.notificacionNuevaOportunidad(job);
