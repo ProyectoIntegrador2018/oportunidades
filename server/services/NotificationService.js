@@ -15,6 +15,7 @@ const {
   PARTICIPACION_RECHAZADA,
   PARTICIPACION_GANADOR,
   EVENTO_ELIMINADO,
+  OPORTUNIDAD_CERRADA_NO_PARTICIPACIONES,
 } = require("../utils/NotificationTypes");
 const detallesNotifController = require("../controllers/DetallesNotificacionController");
 const notificacionController = require("../controllers/NotificacionController");
@@ -24,7 +25,7 @@ const mailQueue = require("./MailQueue");
 
 const notificationService = {};
 const SUCCESS_RESP = { success: 1 };
-const MAIL_ENABLED = process.env.MAIL_ENABLED === 'true' ? true : false;
+const MAIL_ENABLED = process.env.MAIL_ENABLED === "true" ? true : false;
 
 notificationService.notificacionNuevaOportunidad = (job) => {
   const rfp = job.data.rfp;
@@ -130,6 +131,22 @@ notificationService.notificacionCambioEstatusOportunidad = (job) => {
   });
 };
 
+notificationService.notificacionOportunidadCerradaNoParticipaciones = (job) => {
+  const { cliente, nombreOportunidad } = job.data;
+  return new Promise((resolve, reject) => {
+    const detalles = {
+      detalles: nombreOportunidad,
+    };
+    notificacionUsuarios(OPORTUNIDAD_CERRADA_NO_PARTICIPACIONES, detalles, [
+      cliente,
+    ])
+      .then((resp) => {
+        resolve(resp);
+      })
+      .catch((error) => reject(error));
+  });
+};
+
 notificationService.notificacionCambioEstatusParticipante = (job) => {
   return new Promise((resolve, reject) => {
     const { participacionId, estatus } = job.data;
@@ -145,19 +162,21 @@ notificationService.notificacionCambioEstatusParticipante = (job) => {
                 ? PARTICIPACION_RECHAZADA
                 : PARTICIPACION_GANADOR;
             const detalles = { rfp: participacion.rfpInvolucrado };
-              notificacionUsuarios(notifType, detalles, [socio])
-                .then((resp) => {
-                  if (MAIL_ENABLED) {
-                    mailCambioEstatusParticipante(notifType, participacion, [socio])
-                      .then((respMail) => {
-                        resolve(respMail);
-                      })
-                      .catch((error) => reject(error));
-                  } else {
-                    resolve(resp);
-                  }
-                })
-                .catch((error) => reject(error));             
+            notificacionUsuarios(notifType, detalles, [socio])
+              .then((resp) => {
+                if (MAIL_ENABLED) {
+                  mailCambioEstatusParticipante(notifType, participacion, [
+                    socio,
+                  ])
+                    .then((respMail) => {
+                      resolve(respMail);
+                    })
+                    .catch((error) => reject(error));
+                } else {
+                  resolve(resp);
+                }
+              })
+              .catch((error) => reject(error));
           })
           .catch((error) => reject(error));
       })
@@ -165,7 +184,11 @@ notificationService.notificacionCambioEstatusParticipante = (job) => {
   });
 };
 
-const mailCambioEstatusParticipante = function (notifType, participacion, socio) {
+const mailCambioEstatusParticipante = function (
+  notifType,
+  participacion,
+  socio
+) {
   return new Promise((resolve, reject) => {
     const rfpId = participacion.rfpInvolucrado;
     RfpModel.getNombreOportunidad(rfpId)
