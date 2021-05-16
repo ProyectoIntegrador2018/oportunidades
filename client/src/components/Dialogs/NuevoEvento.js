@@ -15,6 +15,9 @@ import "react-datepicker/dist/react-datepicker.css";
 import { addDays } from 'date-fns';
 import Axios from "axios";
 import moment from 'moment';
+import { registerLocale, setDefaultLocale } from  "react-datepicker";
+import es from 'date-fns/locale/es';
+registerLocale('es', es);
 
 const styles = (theme) => ({
    root: {
@@ -80,11 +83,24 @@ const DialogActions = withStyles((theme) => ({
    return time.getHours() > 12 ? "text-success" : "text-error";
  };
 
+// Función que redondea una Date hacia arriba, al intervalo de 30 minutos más cercano
+const roundUpTime = (date) => {
+  if (date.getMinutes() >= 30) {
+    date.setHours(date.getHours() + 1, 0, 0, 0);
+  }
+  else {
+    date.setHours(date.getHours(), 30, 0, 0, 0);
+  }
+  return date;
+};
+
 export default function NuevoEvento(params) {
    const [open, setOpen] = React.useState(false);
    const [nombre, guardarNombre] = React.useState('');
-   const [fecha, guardarFecha] = React.useState(new Date());
+  const [horaActual, guardarHoraActual] = React.useState( roundUpTime(new Date()) );
+   const [fecha, guardarFecha] = React.useState(horaActual);
    const [link, guardarLink] = React.useState('');
+  const [excludedTimes, setExcludedTimes] = React.useState([]);
 
    const config = {
       headers: {
@@ -94,6 +110,21 @@ export default function NuevoEvento(params) {
    };
    
    useEffect(() => {
+    const haceUnaHora = new Date(horaActual);
+    haceUnaHora.setHours(haceUnaHora.getHours() - 1);
+
+    Axios.get("/events/get-occupied-event-times/" + haceUnaHora.toISOString(), config)
+      .then((res) => {
+        const occupiedTimes = res.data.occupiedTimes.map(elem => {
+          return new Date(elem);
+        });
+
+        setExcludedTimes(occupiedTimes);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
       setOpen(params.isOpen);
    }, [params]);
 
@@ -114,6 +145,10 @@ export default function NuevoEvento(params) {
          console.log(error);
       })
    };
+
+  const excludedTimesInSelectedDay = excludedTimes.filter(date => {
+    return date.getDate() === fecha.getDate();
+  });
 
    return (
       <div>
@@ -136,9 +171,13 @@ export default function NuevoEvento(params) {
                     showTimeSelect
                     selected={fecha}
                     onChange={date => guardarFecha(date)}
+                    excludeTimes={excludedTimesInSelectedDay}
                     timeClassName={handleColor}
+                    timeCaption="Hora"
+                    dateFormat="dd/MM/yyyy h:mm aa"
+                    timeFormat="h:mm aa"
                     minDate={new Date()}
-                    //timeIntervals="15"
+                    //timeIntervals={15}
                     locale="es"
                     title="Selecciona un horario"
                />
@@ -153,7 +192,7 @@ export default function NuevoEvento(params) {
                />
                <TextField
                   id="link"
-                  className={[styles.textField, styles.marginBott]}
+                  className={styles.marginBott}
                   label="Link"
                   margin="normal"
                   fullWidth

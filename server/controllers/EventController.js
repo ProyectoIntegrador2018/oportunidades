@@ -36,7 +36,7 @@ eventController.createEvent = (rawEvent) => {
       .then(() => {
         notificationQueue.add(NUEVO_EVENTO, { newEvent });
       })
-      .then((event) => {
+      .then(() => {
         resolve(newEvent);
       })
       .catch((err) => {
@@ -154,5 +154,37 @@ eventController.getAllEvents = () => {
       });
   });
 };
+
+eventController.getOccupiedEventTimesFromDate = (startingDateISOString) => {
+  return new Promise((resolve, reject) => {
+    const startingDate = new Date(startingDateISOString);
+
+    Event.find({ date: { $gte: startingDate } }, "date")
+      .then((events) => {
+        const occupiedTimes = [];
+
+        events.forEach((event) => {
+          const date = event.date;
+          // Events last 1:30 hrs, adds timeslots that would cause overlapping to occupiedTimes
+          for (i = -60; i <= 60; i += 30) {
+            const dateToBeAdded = addMinutesToDate(date, i).toISOString();
+            if (!occupiedTimes.includes(dateToBeAdded)) {
+              occupiedTimes.push(dateToBeAdded);
+            }
+          }
+        });
+
+        resolve(occupiedTimes);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+};
+
+function addMinutesToDate(date, minutes) {
+  // Date is set in miliseconds, 1 minute is 60,000 ms
+  return new Date(date.getTime() + minutes * 60000);
+}
 
 module.exports = eventController;

@@ -65,6 +65,17 @@ router.get("/get-rfp-events/:id", userMiddleware, (req, res) => {
       });
 });
 
+router.get("/get-occupied-event-times/:date", userMiddleware, (req, res) => {
+  eventController
+    .getOccupiedEventTimesFromDate(req.params.date)
+    .then((occupiedTimes) => {
+      return res.send({ occupiedTimes });
+    })
+    .catch((err) => {
+      return res.status(401).send({ err });
+    });
+});
+
 router.patch("/:id", userMiddleware, (req, res) => {
    const updates = req.body;
    const allowedUpdates = ["name", "date", "link"];
