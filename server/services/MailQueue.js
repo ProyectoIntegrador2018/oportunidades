@@ -1,5 +1,5 @@
 const Queue = require("bull");
-const redisConfig = require("../config/redisConfig");
+const { port, host, db, url } = require("../config/redisConfig");
 const {
   NUEVA_OPORTUNIDAD,
   NUEVA_PARTICIPACION,
@@ -13,7 +13,14 @@ const {
 } = require("../utils/NotificationTypes");
 const mailService = require("./MailService");
 
-const mailQueue = new Queue("mail-queue", { redisConfig });
+let mailQueue;
+if (process.env.REDIS_ENV === "production") {
+  mailQueue = new Queue("mail-queue", url);
+} else {
+  mailQueue = new Queue("mail-queue", {
+    redis: { port: port, host: host },
+  });
+}
 
 mailQueue.process(NUEVA_OPORTUNIDAD, (job) => {
   return mailService.sendEmail(job.data);

@@ -1,7 +1,12 @@
 const Event = require("../models/Event");
 const User = require("../models/User");
 const Participacion = require("../models/Participaciones");
-const notificationService = require("../services/NotificationService");
+const {
+  NUEVO_EVENTO,
+  CAMBIO_EVENTO,
+  EVENTO_ELIMINADO,
+} = require("../utils/NotificationTypes");
+const notificationQueue = require("../services/NotificationQueue");
 let eventController = {};
 
 eventController.getUserEvents = (userId) => {
@@ -29,10 +34,7 @@ eventController.createEvent = (rawEvent) => {
     newEvent
       .save()
       .then(() => {
-        return notificationService
-          .notificacionNuevoEvento(newEvent)
-          .then((resp) => {})
-          .catch((error) => reject(error));
+        notificationQueue.add(NUEVO_EVENTO, { newEvent });
       })
       .then((event) => {
         resolve(newEvent);
@@ -93,11 +95,7 @@ eventController.editEvent = (eventId, updates) => {
     Event.findByIdAndUpdate(eventId, updates)
       .then((eventUpdated) => {
         // eventUpdated contains the data of the event before the update operation was performed
-        notificationService
-          .notificacionCambioEvento(eventUpdated)
-          .then((resp) => {})
-          .catch((err) => reject(err));
-
+        notificationQueue.add(CAMBIO_EVENTO, { eventUpdated });
         resolve(eventUpdated);
       })
       .catch((err) => {
@@ -110,10 +108,7 @@ eventController.deleteEvent = (eventId) => {
   return new Promise((resolve, reject) => {
     Event.findByIdAndDelete(eventId)
       .then((deletedEvent) => {
-        notificationService
-          .notificacionEventoEliminado(deletedEvent)
-          .then((resp) => {})
-          .catch((err) => reject(err));
+        notificationQueue.add(EVENTO_ELIMINADO, { deletedEvent });
       })
       .then((deletedEvent) => {
         resolve(deletedEvent);
