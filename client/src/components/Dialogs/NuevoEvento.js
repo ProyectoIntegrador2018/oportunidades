@@ -97,8 +97,8 @@ const roundUpTime = (date) => {
 export default function NuevoEvento(params) {
    const [open, setOpen] = React.useState(false);
    const [nombre, guardarNombre] = React.useState('');
-  const [horaActual, guardarHoraActual] = React.useState( roundUpTime(new Date()) );
-   const [fecha, guardarFecha] = React.useState(horaActual);
+  const [horaActualRedondeada, guardarHoraActualRedondeada] = React.useState( roundUpTime(new Date()) );
+   const [fecha, guardarFecha] = React.useState(horaActualRedondeada);
    const [link, guardarLink] = React.useState('');
   const [excludedTimes, setExcludedTimes] = React.useState([]);
 
@@ -110,7 +110,7 @@ export default function NuevoEvento(params) {
    };
    
    useEffect(() => {
-    const haceUnaHora = new Date(horaActual);
+    const haceUnaHora = new Date(horaActualRedondeada);
     haceUnaHora.setHours(haceUnaHora.getHours() - 1);
 
     Axios.get("/events/get-occupied-event-times/" + haceUnaHora.toISOString(), config)
@@ -150,6 +150,13 @@ export default function NuevoEvento(params) {
     return date.getDate() === fecha.getDate();
   });
 
+  // Si la fecha seleccionada es hoy, deshabilitar horarios anteriores a la hora actual
+  const now = new Date();
+  const dateMinTime =
+    now.getDate() === fecha.getDate()
+      ? now
+      : new Date(new Date().setHours(0, 0, 0, 0));
+
    return (
       <div>
          <Dialog
@@ -176,7 +183,9 @@ export default function NuevoEvento(params) {
                     timeCaption="Hora"
                     dateFormat="dd/MM/yyyy h:mm aa"
                     timeFormat="h:mm aa"
-                    minDate={new Date()}
+                    minDate={now}
+                    minTime={dateMinTime}
+                    maxTime={new Date(new Date().setHours(23, 59, 0, 0))}
                     //timeIntervals={15}
                     locale="es"
                     title="Selecciona un horario"
