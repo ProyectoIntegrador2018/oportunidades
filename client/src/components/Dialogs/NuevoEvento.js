@@ -146,6 +146,14 @@ export default function NuevoEvento(params) {
       })
    };
 
+  const isExcludedDate = () => {
+    return excludedTimes.includes(fecha) || fecha < new Date() ;
+  };
+
+   const isSendDisabled = () => {
+    return nombre.length < 1 || link.length < 1 || isExcludedDate();
+  };
+
   const excludedTimesInSelectedDay = excludedTimes.filter(date => {
     return date.getDate() === fecha.getDate();
   });
@@ -190,11 +198,12 @@ export default function NuevoEvento(params) {
                     locale="es"
                     title="Selecciona un horario"
                />
+               <div>{isExcludedDate() ? <p className="error-titulo-rojo">El horario seleccionado no está disponible</p> : <br/>}</div>
                <TextField
                   id="nombre"
                   className={styles.textField}
                   label="Nombre"
-                  margin="normal"
+                  margin="dense"
                   fullWidth
                   defaultValue={nombre}
                   onChange={(event) => guardarNombre(event.target.value)}
@@ -211,7 +220,7 @@ export default function NuevoEvento(params) {
                <div className="mb-4">  </div>
             </DialogContent>
             <DialogActions >
-               <Button autoFocus onClick={handleSave} color="primary">
+               <Button autoFocus onClick={handleSave} color="primary" disabled={isSendDisabled()}>
                   GUARDAR EVENTO
                </Button>
             </DialogActions>
