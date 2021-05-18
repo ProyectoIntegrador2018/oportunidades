@@ -371,6 +371,7 @@ notificationService.notificacionNuevoEvento = (job) => {
   });
 };
 
+
 notificationService.notificacionEventoEliminado = (job) => {
   const evento = job.data.deletedEvent;
   return new Promise((resolve, reject) => {
@@ -387,15 +388,25 @@ notificationService.notificacionEventoEliminado = (job) => {
 
         notificacionUsuarios(EVENTO_ELIMINADO, detalles, sociosParticipantes)
           .then((resp) => {
-            if (MAIL_ENABLED) {
-              mailUsuarios(NUEVA_OPORTUNIDAD, job.rfp, users)
-                .then((respMail) => {
-                  resolve(respMail);
-                })
-                .catch((error) => reject(error));
-            } else {
-              resolve(resp);
-            }
+            RfpModel.getNombreOportunidad(evento.rfp)
+            .then((nombreOportunidad) => {
+              RfpModel.getNombreCliente(evento.rfp)
+              .then((nombrecliente)=>{
+                const eventData = {
+                  name: evento.name,
+                  nombreOportunidad: nombreOportunidad,
+                  nombreCliente: nombrecliente,
+                };
+                mailUsuarios(EVENTO_ELIMINADO, eventData, sociosParticipantes)
+                  .then((resp) => {
+                    resolve(resp);
+                  })
+                  .catch((error) => reject(error));
+              })
+              .catch((error)=>(error));
+              
+            })
+            .catch((error) => reject(error));
           })
           .catch((error) => reject(error));
       })

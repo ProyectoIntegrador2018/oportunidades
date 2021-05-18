@@ -6,6 +6,7 @@ const {
   NUEVA_PARTICIPACION,
   NUEVO_EVENTO,
   CAMBIO_EVENTO,
+  EVENTO_ELIMINADO,
   CAMBIO_ESTATUS,
   PARTICIPACION_RECHAZADA,
   PARTICIPACION_GANADOR,
@@ -153,6 +154,12 @@ Liga de la reunión: ${mailData.eventBeforeUpdate.link}`;
         <b>Fecha:</b> ${dateEventBeforeUpdate}<br>
         <b>Liga de la reunión:</b> <a href="${mailData.eventBeforeUpdate.link}">${mailData.eventBeforeUpdate.link}</a></p>`;
         break;
+      
+      case EVENTO_ELIMINADO:
+        mailOptions.subject = "Evento eliminado de la Oportunidad Comercial";
+        mailOptions.text = `el cliente ${mailData.nombreCliente} ha eliminado el evento "${mailData.name}" de la Oportunidad Comercial "${mailData.nombreOportunidad}".`;
+        mailOptions.html = `el cliente ${mailData.nombreCliente} ha eliminado el evento "${mailData.name}" de la Oportunidad Comercial "${mailData.nombreOportunidad}".`;
+        break;
 
       case CAMBIO_ESTATUS:
         mailOptions.subject = "Cambio de estatus en la Oportunidad Comercial";
@@ -175,8 +182,8 @@ Liga de la reunión: ${mailData.eventBeforeUpdate.link}`;
       case PARTICIPACION_GANADOR:
         mailOptions.subject = "Participación Ganadora en Oportunidad Comercial";
         mailOptions.text = `nos alegra informarte que el cliente ${mailData.nombreCliente} ha seleccionado tu propuesta como ganadora para la oportunidad "${mailData.nombreOportunidad}".
-Te presentamos el feedback que el cliente proporcionó acerca tu participación en su oportunidad:
-"${mailData.feedback}`;
+        Te presentamos el feedback que el cliente proporcionó acerca tu participación en su oportunidad:
+        "${mailData.feedback}`;
         mailOptions.html = `nos alegra informarte que el cliente ${mailData.nombreCliente} ha seleccionado tu propuesta como ganadora para la oportunidad "${mailData.nombreOportunidad}".</p>
         <p>Te presentamos el feedback que el cliente proporcionó acerca de tu participación en su oportunidad:<br>
         "${mailData.feedback}"</p>`;

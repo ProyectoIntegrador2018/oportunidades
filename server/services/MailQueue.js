@@ -6,6 +6,7 @@ const {
   NUEVO_EVENTO,
   CAMBIO_EVENTO,
   CAMBIO_ESTATUS,
+  EVENTO_ELIMINADO,
   PARTICIPACION_RECHAZADA,
   PARTICIPACION_GANADOR,
   OPORTUNIDAD_ELIMINADA,
@@ -35,6 +36,10 @@ mailQueue.process(NUEVO_EVENTO, (job) => {
 });
 
 mailQueue.process(CAMBIO_EVENTO, (job) => {
+  return mailService.sendEmail(job.data);
+});
+
+mailQueue.process(EVENTO_ELIMINADO, (job) => {
   return mailService.sendEmail(job.data);
 });
 
