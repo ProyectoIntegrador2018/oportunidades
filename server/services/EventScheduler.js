@@ -1,7 +1,7 @@
 const UserModel = require("../models/User");
 const RFPModel = require("../models/RFP");
 const EventModel = require("../models/Event");
-const { CAMBIO_ESTATUS } = require("../utils/NotificationTypes");
+const { CAMBIO_ESTATUS, OPORTUNIDAD_CERRADA_NO_PARTICIPACIONES } = require("../utils/NotificationTypes");
 const notificationQueue = require("../services/NotificationQueue");
 const cron = require("node-cron");
 const eventScheduler = {};
@@ -71,7 +71,10 @@ eventScheduler.checkForOldRfps = () => {
           const rfpId = rfp._id;
           UserModel.findParticipantesByRfp(rfpId).then(
             (sociosParticipantes) => {
-              if (sociosParticipantes.length === 0) {
+              if (
+                sociosParticipantes.length === 0 &&
+                rfp.estatus !== "Cerrada"
+              ) {
                 RFPModel.update(
                   { _id: rfpId },
                   {
@@ -81,8 +84,15 @@ eventScheduler.checkForOldRfps = () => {
                     if (err) {
                       console.log(err);
                     } else {
-                      console.log(result);
-                      // TODO: enviar la notificacion
+                      const job = {
+                        rfpId: rfp._id,
+                        clienteId: rfp.createdBy,
+                        nombreOportunidad: rfp.nombreOportunidad,
+                      };
+                      notificationQueue.add(
+                        OPORTUNIDAD_CERRADA_NO_PARTICIPACIONES,
+                        job
+                      );
                     }
                   }
                 );

@@ -105,6 +105,8 @@ export default function NotificationFactory(props) {
       return <NotificacionEventoEliminado {...downProps} />;
     case NOTIFICATION_TYPES.CAMBIO_EVENTO:
       return <NotificacionCambioEvento {...downProps} />;
+    case NOTIFICATION_TYPES.OPORTUNIDAD_CERRADA_NO_PARTICIPACIONES:
+      return <NotificacionOportunidadCerradaNoParticipaciones {...downProps} />;
   }
 }
 
@@ -482,5 +484,21 @@ class NotificacionCambioEvento extends PortalNotification {
     } else {
       return `Se han registrado multiples cambios en uno de los eventos de la oportunidad "${details.opportunityName}"`;
     }
+  };
+}
+
+class NotificacionOportunidadCerradaNoParticipaciones extends PortalNotification {
+  getTitle = () => {
+    return "Oportunidad Cerrada";
+  };
+
+  getDescription = () => {
+    const nombreOportunidad =
+      this.props.rawNotif.notificacion.detalles.detalles;
+    return `Se ha cerrado automáticamente la oportunidad "${nombreOportunidad}" debido a que no tuvo participaciones por dos semanas.`;
+  };
+
+  getNavPath = () => {
+    return "/detalle/" + this.props.rawNotif.notificacion.detalles.rfp._id;
   };
 }

@@ -20,6 +20,7 @@ if (process.env.REDIS_ENV === "production") {
     redis: { port: port, host: host },
   });
 }
+mailQueue.LOCK_RENEW_TIME = 60 * 1000;
 
 mailQueue.process(NUEVA_OPORTUNIDAD, (job) => {
   return mailService.sendEmail(job.data);

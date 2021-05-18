@@ -9,17 +9,19 @@ const {
   NUEVO_EVENTO,
   CAMBIO_EVENTO,
   EVENTO_ELIMINADO,
+  OPORTUNIDAD_CERRADA_NO_PARTICIPACIONES,
 } = require("../utils/NotificationTypes");
 const notificationService = require("../services/NotificationService");
 
 let notificationQueue;
 if (process.env.REDIS_ENV === "production") {
-  notificationQueue = new Queue("notification-queue", url)
+  notificationQueue = new Queue("notification-queue", url);
 } else {
   notificationQueue = new Queue("notification-queue", {
-    redis: { port: port, host: host},
+    redis: { port: port, host: host },
   });
 }
+notificationQueue.LOCK_RENEW_TIME = 60 * 1000;
 
 notificationQueue.process(NUEVA_OPORTUNIDAD, (job) => {
   return notificationService.notificacionNuevaOportunidad(job);
@@ -51,6 +53,12 @@ notificationQueue.process(CAMBIO_EVENTO, (job) => {
 
 notificationQueue.process(EVENTO_ELIMINADO, (job) => {
   return notificationService.notificacionEventoEliminado(job);
+});
+
+notificationQueue.process(OPORTUNIDAD_CERRADA_NO_PARTICIPACIONES, (job) => {
+  return notificationService.notificacionOportunidadCerradaNoParticipaciones(
+    job
+  );
 });
 
 notificationQueue.on("stalled", function (job) {
