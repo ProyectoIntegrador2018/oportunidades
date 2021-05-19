@@ -1,7 +1,10 @@
 const UserModel = require("../models/User");
 const RFPModel = require("../models/RFP");
 const EventModel = require("../models/Event");
-const { CAMBIO_ESTATUS, OPORTUNIDAD_CERRADA_NO_PARTICIPACIONES } = require("../utils/NotificationTypes");
+const {
+  CAMBIO_ESTATUS,
+  OPORTUNIDAD_CERRADA_NO_PARTICIPACIONES,
+} = require("../utils/NotificationTypes");
 const notificationQueue = require("../services/NotificationQueue");
 const cron = require("node-cron");
 const eventScheduler = {};
@@ -65,7 +68,7 @@ eventScheduler.checkForEventStatusUpdate = () => {
 eventScheduler.checkForOldRfps = () => {
   cron.schedule("0 1 * * *", () => {
     const daysAgo = 14;
-    RFPModel.getRfpsFromNDaysAgo(daysAgo)
+    RFPModel.getRfpsCreatedNDaysAgo(daysAgo)
       .then((rfps) => {
         rfps.map((rfp) => {
           const rfpId = rfp._id;
