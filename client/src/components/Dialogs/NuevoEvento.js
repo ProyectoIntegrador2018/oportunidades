@@ -135,7 +135,7 @@ export default function NuevoEvento(params) {
     setOpen(false);
   };
   const handleSave = () => {
-    // Guardar el nuevo usuario en la base de datos
+    // Guardar el nuevo evento en la base de datos
     Axios.post(
       "/events/",
       {
@@ -155,23 +155,28 @@ export default function NuevoEvento(params) {
   };
 
   const isExcludedDate = () => {
-    return excludedTimes.includes(fecha) || fecha < new Date();
+    return fecha < new Date() || excludedTimes.some((elem) => elem.getTime() === fecha.getTime());
   };
 
   const isSendDisabled = () => {
     return nombre.length < 1 || link.length < 1 || isExcludedDate();
   };
 
+  const calculateMinTime = () => {
+    // Si la fecha seleccionada es hoy, deshabilitar horarios anteriores a la hora actual
+    const now = new Date();
+    if (now.getDate() === fecha.getDate()) {
+      return now;
+    } else {
+      return now.setHours(0, 0, 0, 0);
+    }
+  };
+
+  const dateMinTime = calculateMinTime();
+
   const excludedTimesInSelectedDay = excludedTimes.filter((date) => {
     return date.getDate() === fecha.getDate();
   });
-
-  // Si la fecha seleccionada es hoy, deshabilitar horarios anteriores a la hora actual
-  const now = new Date();
-  const dateMinTime =
-    now.getDate() === fecha.getDate()
-      ? now
-      : new Date(new Date().setHours(0, 0, 0, 0));
 
   return (
     <div>
@@ -201,7 +206,7 @@ export default function NuevoEvento(params) {
             timeCaption="Hora"
             dateFormat="dd/MM/yyyy h:mm aa"
             timeFormat="h:mm aa"
-            minDate={now}
+            minDate={dateMinTime}
             minTime={dateMinTime}
             maxTime={new Date(new Date().setHours(23, 59, 0, 0))}
             //timeIntervals={15}
