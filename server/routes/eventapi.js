@@ -33,7 +33,13 @@ router.post("/", userMiddleware, (req, res) => {
       });
     })
     .catch((err) => {
-      return res.status(401).send({ err });
+      if (err === eventController.ERR_EVENT_DATE_UNAVAILABLE) {
+        // 409. Conflict
+        return res.status(409).send({ err });
+      } else {
+        // 401. Unauthorized
+        return res.status(401).send({ err });
+      }
     });
 });
 

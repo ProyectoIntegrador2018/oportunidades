@@ -100,6 +100,7 @@ export default function NuevoEvento(params) {
   const [fecha, guardarFecha] = React.useState(horaActualRedondeada);
   const [link, guardarLink] = React.useState("");
   const [excludedTimes, setExcludedTimes] = React.useState([]);
+  //const [errorOccurred, setErrorOccurred] = React.useState(false);
 
   const config = {
     headers: {
@@ -109,23 +110,7 @@ export default function NuevoEvento(params) {
   };
 
   useEffect(() => {
-    const haceUnaHora = new Date(horaActualRedondeada);
-    haceUnaHora.setHours(haceUnaHora.getHours() - 1);
-
-    Axios.get(
-      "/events/get-occupied-event-times/" + haceUnaHora.toISOString(),
-      config
-    )
-      .then((res) => {
-        const occupiedTimes = res.data.occupiedTimes.map((elem) => {
-          return new Date(elem);
-        });
-
-        setExcludedTimes(occupiedTimes);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    updateExcludedTimes();
 
     setOpen(params.isOpen);
   }, [params]);
@@ -150,9 +135,32 @@ export default function NuevoEvento(params) {
         window.location.reload();
       })
       .catch((error) => {
+        if (error.message.includes('409')) {
+          updateExcludedTimes();
+        }
         console.log(error);
       });
   };
+
+  const updateExcludedTimes = () => {
+    const haceUnaHora = new Date(horaActualRedondeada);
+    haceUnaHora.setHours(haceUnaHora.getHours() - 1);
+    
+    Axios.get(
+      "/events/get-occupied-event-times/" + haceUnaHora.toISOString(),
+      config
+    )
+      .then((res) => {
+        const occupiedTimes = res.data.occupiedTimes.map((elem) => {
+          return new Date(elem);
+        });
+
+        setExcludedTimes(occupiedTimes);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
 
   const isExcludedDate = () => {
     return fecha < new Date() || excludedTimes.some((elem) => elem.getTime() === fecha.getTime());

@@ -9,6 +9,9 @@ const {
 const notificationQueue = require("../services/NotificationQueue");
 let eventController = {};
 
+const ERR_EVENT_DATE_UNAVAILABLE = "Event date is unavailable";
+eventController.ERR_EVENT_DATE_UNAVAILABLE = ERR_EVENT_DATE_UNAVAILABLE;
+
 eventController.getUserEvents = (userId) => {
   return new Promise((resolve, reject) => {
     User.findById(userId)
@@ -31,17 +34,36 @@ eventController.getUserEvents = (userId) => {
 eventController.createEvent = (rawEvent) => {
   return new Promise((resolve, reject) => {
     let newEvent = new Event(rawEvent);
-    newEvent
-      .save()
-      .then(() => {
-        notificationQueue.add(NUEVO_EVENTO, { newEvent });
-      })
-      .then(() => {
-        resolve(newEvent);
+
+    const newEventDate = newEvent.date;
+    const oneHourBeforeEventDate = addMinutesToDate(newEventDate, -60);
+    const oneHourAfterEventDate = addMinutesToDate(newEventDate, 60);
+
+    // Check if there are no events with date that overlaps with newEvent, 
+    // considering event duration is 1hr 30 min & event dates can be every 30 min
+    Event.find({ date: { $gte: oneHourBeforeEventDate, $lte: oneHourAfterEventDate } }, "date")
+      .then((events) => {
+        // If an event is found, abort event creation
+        if (events.length > 0) {
+          return reject(ERR_EVENT_DATE_UNAVAILABLE);
+        } else {
+          newEvent
+            .save()
+            .then(() => {
+              notificationQueue.add(NUEVO_EVENTO, { newEvent });
+            })
+            .then(() => {
+              resolve(newEvent);
+            })
+            .catch((err) => {
+              reject(err);
+            });
+        }
       })
       .catch((err) => {
         reject(err);
       });
+
   });
 };
 
