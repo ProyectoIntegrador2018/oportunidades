@@ -194,7 +194,6 @@ class PortalNotification extends Component {
   };
 
   toggleRead = () => {
-    // TODO: One-way call to the backend to update the bd
     if (!this.state.toggledRead) {
       this.setState({
         toggledRead: true,
@@ -205,6 +204,24 @@ class PortalNotification extends Component {
         isRead: !this.state.isRead,
       });
     }
+
+    const config = {
+      headers: {
+        Authorization: "Bearer " + sessionStorage.getItem("token"),
+        "Content-Type": "application/json",
+      },
+      params:{
+        id: this.state.data.id,
+      },
+    }
+    axios
+    .patch("/notificaciones/toggle-is-read",{},config)
+    .then((res)=>{
+
+    })
+    .catch((error)=>{
+      console.log(error);
+    });
   };
 
   deleteNotification = (id) => {

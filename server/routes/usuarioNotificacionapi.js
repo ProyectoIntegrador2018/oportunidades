@@ -21,4 +21,15 @@ router.delete("/delete-usuario-notificacion", userMiddleware, (req, res) => {
     });
 });
 
+router.patch("/toggle-is-read", userMiddleware, (req, res) => {
+  usuarioNotificacionController
+  .toggleRead(req.query.id)
+  .then(() => {
+    return res.send({ success: 1 });
+  })
+  .catch((error) => {
+    return res.status(400).send({ success: 0, error });
+  });
+});
+
 module.exports = router;
