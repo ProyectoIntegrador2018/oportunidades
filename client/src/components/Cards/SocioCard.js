@@ -1,121 +1,84 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { makeStyles } from "@material-ui/core/styles";
-import Card from "@material-ui/core/Card";
-import CardActions from "@material-ui/core/CardActions";
-import CardContent from "@material-ui/core/CardContent";
-import Button from "@material-ui/core/Button";
+
+import {
+  Card,
+  CardActions,
+  CardContent,
+  IconButton,
+  Typography,
+} from "@material-ui/core";
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
-import Typography from "@material-ui/core/Typography";
-import { IconButton } from "@material-ui/core";
-import Axios from "axios";
 import ConfirmDialog from "../Dialogs/ConfirmDialog";
+import useStyles from "../Cards/styles";
 
-//import FabEditRFP from "../ui/FabEditRFP";
-
-const useStyles = makeStyles({
-   root: {
-      minWidth: 250,
-      maxWidth: 400,
-   },
-   bullet: {
-      display: "inline-block",
-      margin: "0 2px",
-      transform: "scale(0.8)",
-   },
-   title: {
-      fontSize: 18,
-      fontWeight: 800,
-      color: "#EE5D36",
-      marginTop: "1em",
-   },
-   description: {
-      fontSize: 14,
-   },
-   estatus: {
-      fontSize: 16,
-      fontWeight: 800,
-      textAlign: "left",
-      marginRight: "1em",
-   },
-   texto: {
-      fontSize: 16,
-      textAlign: "left",
-   },
-   containerText: {
-      display: "flex",
-      flexDirection: "row",
-   },
-   contenedorBotones: {
-      display: "flex",
-      flexDirection: "row",
-      width: "100%",
-      alignContent: "flex-end",
-      justifyContent: "space-between",
-      marginLeft: "1.5em",
-   },
-});
+import axios from "axios";
 
 export default function SocioCard({ socio }) {
-   const config = {
-      headers: {
-         Authorization: "Bearer " + sessionStorage.getItem("token"),
-         "Content-Type": "application/json",
-      },
-   };
+  const config = {
+    headers: {
+      Authorization: "Bearer " + sessionStorage.getItem("token"),
+      "Content-Type": "application/json",
+    },
+  };
 
-   const classes = useStyles();
+  const classes = useStyles();
 
-   // hook para redireccionar
-   const navigate = useNavigate();
+  const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
 
-   const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
+  const deleteSocio = () => {
+    axios
+      .delete("/admin/socio/" + socio._id, config)
+      .then((response) => {
+        window.location.reload();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
-   const deleteSocio = () => {
-      Axios.delete("/admin/socio/" + socio._id, config)
-         .then((response) => {
-            window.location.reload();
-         })
-         .catch((error) => {
-            console.log(error);
-         });
-   };
-
-   return (
-      <div className="rfp-card">
-         <Card className={classes.root}>
-            <CardContent>
-               <Typography className={classes.title}>{socio.name}</Typography>
-               <Typography className={classes.description} gutterBottom>
-                  {socio.empresa}
-               </Typography>
-               <Typography className={classes.description} gutterBottom>
-                  {socio.email}
-               </Typography>
-            </CardContent>
-            <CardActions>
-               <div className={classes.contenedorBotones}>
-                  <IconButton
-                     aria-label="borrar socio"
-                     onClick={() => {
-                        setIsConfirmationOpen(true);
-                     }}
-                  >
-                     <DeleteIcon />
-                  </IconButton>
-                  <IconButton aria-label="editar socio">
-                     <EditIcon />
-                  </IconButton>
-               </div>
-            </CardActions>
-            <ConfirmDialog
-               title="¿Está seguro de que desea borrar el socio?"
-               open={isConfirmationOpen}
-               setOpen={setIsConfirmationOpen}
-               onConfirm={deleteSocio}
-            />
-         </Card>
-      </div>
-   );
+  return (
+    <div>
+      <Card className={classes.socioCard}>
+        <CardContent className={classes.root}>
+          <div className={classes.containerText}>
+            <Typography className={classes.labelText}>Nombre:</Typography>
+            <Typography className={classes.valueText}>{socio.name}</Typography>
+          </div>
+          <div className={classes.containerText}>
+            <Typography className={classes.labelText}>Empresa:</Typography>
+            <Typography className={classes.valueText}>
+              {socio.empresa}
+            </Typography>
+          </div>
+          <div className={classes.containerText}>
+            <Typography className={classes.labelText}>Email:</Typography>
+            <Typography className={classes.valueText}>{socio.email}</Typography>
+          </div>
+        </CardContent>
+        <CardActions>
+          <div className={classes.contenedorBotones}>
+            <IconButton
+              aria-label="borrar socio"
+              onClick={() => {
+                setIsConfirmationOpen(true);
+              }}
+              className={classes.editIcon}
+            >
+              <DeleteIcon />
+            </IconButton>
+            <IconButton aria-label="editar socio" className={classes.editIcon}>
+              <EditIcon />
+            </IconButton>
+          </div>
+        </CardActions>
+        <ConfirmDialog
+          title="¿Está seguro de que desea borrar el socio?"
+          open={isConfirmationOpen}
+          setOpen={setIsConfirmationOpen}
+          onConfirm={deleteSocio}
+        />
+      </Card>
+    </div>
+  );
 }

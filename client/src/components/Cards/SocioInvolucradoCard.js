@@ -1,25 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import { Button, Card, CardContent, Typography } from "@material-ui/core";
-import { obtenerSocio } from "../../fetchers/fetcher";
 
-const useStyles = makeStyles({
-  title: {
-    fontSize: 20,
-    fontWeight: 800,
-    color: "#EE5D36",
-  },
-  estatus: {
-    fontSize: 18,
-    fontWeight: 800,
-    textAlign: "left",
-    marginRight: "1em",
-  },
-  texto: {
-    fontSize: 18,
-    textAlign: "left",
-  },
-});
+import { Button, Card, CardContent, Typography } from "@material-ui/core";
+import useStyles from "../Cards/styles";
+
+import { obtenerSocio } from "../../fetchers/fetcher";
 
 export default function SimpleCard({
   user,
@@ -56,22 +40,26 @@ export default function SimpleCard({
 
   return (
     <div className="rfp-card">
-      <Card className="card-Socio">
+      <Card className={classes.socioInvolucradoCard}>
         <CardContent>
-          <Typography className={classes.title}>{socioData.nombre}</Typography>
-          <div className="container-text-socioInvolucrado">
-            <Typography className={classes.estatus}>Email:</Typography>
-            <Typography className={classes.texto}>{socioData.email}</Typography>
+          <Typography className={classes.itemName}>
+            {socioData.nombre}
+          </Typography>
+          <div className={classes.containerText}>
+            <Typography className={classes.labelText}>Email:</Typography>
+            <Typography className={classes.valueText}>
+              {socioData.email}
+            </Typography>
           </div>
-          <div className="container-text-socioInvolucrado">
-            <Typography className={classes.estatus}>Empresa:</Typography>
-            <Typography className={classes.texto}>
+          <div className={classes.containerText}>
+            <Typography className={classes.labelText}>Empresa:</Typography>
+            <Typography className={classes.valueText}>
               {socioData.empresa}
             </Typography>
           </div>
-          <div className="container-text-socioInvolucrado">
-            <Typography className={classes.estatus}>Estatus:</Typography>
-            <Typography className={classes.texto}>{estatus}</Typography>
+          <div className={classes.containerText}>
+            <Typography className={classes.labelText}>Estatus:</Typography>
+            <Typography className={classes.valueText}>{estatus}</Typography>
           </div>
           {estatus === "Activo" && (
             <Button
@@ -84,6 +72,8 @@ export default function SimpleCard({
                   estatus
                 );
               }}
+              variant="contained"
+              className="boton-alt"
             >
               RECHAZAR PROPUESTA
             </Button>

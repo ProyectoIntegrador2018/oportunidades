@@ -1,73 +1,33 @@
 import React, { useState, useEffect } from "react";
-import { withStyles } from "@material-ui/core/styles";
+
 import {
   Button,
+  Checkbox,
   Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   FormControl,
+  FormControlLabel,
+  FormGroup,
   IconButton,
   MenuItem,
   Select,
   TextField,
   Typography,
 } from "@material-ui/core";
-import MuiDialogTitle from "@material-ui/core/DialogTitle";
 import CloseIcon from "@material-ui/icons/Close";
-import {
-  Checkbox,
-  FormControlLabel,
-  FormGroup,
-  DialogContent,
-  DialogActions,
-} from "@material-ui/core";
+import useStyles from "./styles";
+
 import { actualizarEstatusSocio, obtenerSocio } from "../../fetchers/fetcher";
-
-const styles = (theme) => ({
-  root: {
-    margin: 0,
-    padding: theme.spacing(2),
-  },
-  closeButton: {
-    position: "absolute",
-    right: theme.spacing(1),
-    top: theme.spacing(1),
-    color: theme.palette.grey[500],
-  },
-  labeledTextContainer: {
-    display: "flex",
-    flexDirection: "row",
-  },
-  boldLabel: {
-    fontSize: 16,
-    fontWeight: 700,
-  },
-  labeledInfoText: {
-    fontSize: 16,
-  },
-});
-
-const DialogTitle = withStyles(styles)((props) => {
-  const { children, classes, onClose, ...other } = props;
-  return (
-    <MuiDialogTitle disableTypography className={classes.root} {...other}>
-      <Typography variant="h6">{children}</Typography>
-      {onClose ? (
-        <IconButton
-          aria-label="close"
-          className={classes.closeButton}
-          onClick={onClose}
-        >
-          <CloseIcon />
-        </IconButton>
-      ) : null}
-    </MuiDialogTitle>
-  );
-});
 
 export default function AceptarPropuesta(props) {
   const [reason, setReason] = useState("");
   const [markedSure, setMarkedSure] = useState(false);
   const [participacionWinnerId, setParticipacionWinnerId] = useState("");
   const [listaSocioParticipacion, setListaSocioParticipacion] = useState({});
+
+  const classes = useStyles();
 
   useEffect(() => {
     props.listaParticipaciones.forEach((participacion) => {
@@ -124,29 +84,39 @@ export default function AceptarPropuesta(props) {
         onClose={handleClose}
         aria-labelledby="customized-dialog-title"
         open={props.isOpen}
+        maxWidth="md"
+        fullWidth={true}
       >
-        <DialogTitle id="customized-dialog-title" onClose={handleClose}>
-          Aceptar Propuesta de Socio
+        <DialogTitle disableTypography className={classes.header}>
+          <Typography className={classes.title}>
+            Aceptar Propuesta de Socio
+          </Typography>
+          {handleClose ? (
+            <IconButton
+              aria-label="close"
+              className={classes.closeButton}
+              onClick={handleClose}
+              color="inherit"
+            >
+              <CloseIcon />
+            </IconButton>
+          ) : null}
         </DialogTitle>
         <DialogContent dividers>
           <FormGroup>
-            <div style={{ display: "flex" }}>
-              <Typography
-                style={{ fontSize: 16, fontWeight: 700, marginRight: "0.5em" }}
-              >
+            <div className={classes.containerText}>
+              <Typography className={classes.labelText}>
                 Nombre de la Oportunidad:
               </Typography>
-              <Typography style={{ fontSize: 16 }}>
+              <Typography className={classes.valueText}>
                 {props.opportunityName}
               </Typography>
             </div>
-            <div style={{ display: "flex" }}>
-              <Typography
-                style={{ fontSize: 16, fontWeight: 700, marginRight: "0.5em" }}
-              >
+            <div className={classes.containerText}>
+              <Typography className={classes.labelText}>
                 Nombre del Socio Ganador:
               </Typography>
-              <FormControl>
+              <FormControl className={classes.valueText}>
                 <Select
                   value={participacionWinnerId}
                   onChange={handleChangeWinner}
@@ -185,7 +155,7 @@ export default function AceptarPropuesta(props) {
           <Button
             autoFocus
             onClick={handleSend}
-            color="primary"
+            className="boton"
             disabled={isSendDisabled()}
           >
             MANDAR RETROALIMENTACIÓN

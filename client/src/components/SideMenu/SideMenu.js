@@ -14,8 +14,6 @@ import "../../styles/globalStyles.css";
 import useStyles from "../SideMenu/styles";
 import ListItems from "../SideMenu/ListItems";
 import ListItemsAdmin from "../SideMenu/ListItemsAdmin";
-import NotificationFactory from "../SideMenu/NotificationFactory";
-import NOTIFICATION_TYPES from "../utils/NotificationTypes";
 import NotificationsTab from "../SideMenu/NotificationsTab";
 import axios from "axios";
 
@@ -68,43 +66,44 @@ const SideMenu = () => {
   return (
     <div>
       <AppBar
-        position="absolute"
-        color="transparent"
         className={clsx(classes.appBar, drawerOpen && classes.appBarShift)}
       >
-        <Toolbar className="toolbar">
+        <Toolbar className={classes.toolbar}>
           <IconButton
+            className={classes.menuButton}
             edge="start"
-            color="primary"
+            color="inherit"
             aria-label="open drawer"
             onClick={handleDrawerOpen}
           >
             <Menu />
           </IconButton>
+          <img src="/csoft.png" className={classes.logo} />
           <Typography
             component="h1"
             variant="h6"
-            color="inherit"
             noWrap
             className={classes.title}
           >
-            <p className="texto-primary">Oportunidades Comerciales</p>
+            <p>Oportunidades Comerciales</p>
           </Typography>
           <IconButton
             edge="end"
-            color="primary"
+            color="inherit"
             aria-label="notifications"
             onClick={toggleNotifications}
           >
             <Notifications />
           </IconButton>
         </Toolbar>
+      </AppBar>
+      <div className={classes.notificationsDiv}>
         {notificationsOpen && (
           <NotificationsTab notificaciones={notificaciones} />
         )}
-      </AppBar>
+      </div>
       <Drawer anchor="left" open={drawerOpen}>
-        <div className="toolbarIcon">
+        <div className={classes.toolbarIcon}>
           <IconButton onClick={handleDrawerClose} color="primary">
             <ChevronLeft />
           </IconButton>
