@@ -12,7 +12,6 @@ import TextField from "@material-ui/core/TextField";
 import DatePicker from "react-datepicker";
 import { FormLabel } from "@material-ui/core";
 import "react-datepicker/dist/react-datepicker.css";
-import { addDays } from "date-fns";
 import Axios from "axios";
 import moment from "moment";
 import { registerLocale, setDefaultLocale } from "react-datepicker";
@@ -100,7 +99,6 @@ export default function NuevoEvento(params) {
   const [fecha, guardarFecha] = React.useState(horaActualRedondeada);
   const [link, guardarLink] = React.useState("");
   const [excludedTimes, setExcludedTimes] = React.useState([]);
-  //const [errorOccurred, setErrorOccurred] = React.useState(false);
 
   const config = {
     headers: {
