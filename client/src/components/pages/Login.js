@@ -6,8 +6,11 @@ import * as Yup from 'yup';
 import axios from 'axios';
 
 import '../../styles/globalStyles.css';
+import useStyles from './styles';
 
 const Login = () => {
+   const classes = useStyles();
+
    // state de error
    const [mensajeError, guardarMensajeError] = useState('');
 
@@ -60,6 +63,9 @@ const Login = () => {
             className="container"
          >
             <form onSubmit={formik.handleSubmit} className="container-white">
+               <div className={classes.logo}>
+                  <img src="/csoft.png" style={{maxWidth: "100%", maxHeight: "100%"}}/>
+               </div>
                <h1 className="texto-primary">Inicia sesión</h1>
                {mensajeError === '' 
                ? null

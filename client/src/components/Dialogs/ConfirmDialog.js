@@ -1,24 +1,32 @@
-import React from 'react';
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
+import React from "react";
+
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+} from "@material-ui/core";
+import useStyles from "./styles";
+
 const ConfirmDialog = (props) => {
   const { title, children, open, setOpen, onConfirm } = props;
+
+  const classes = useStyles();
+
   return (
     <Dialog
       open={open}
       onClose={() => setOpen(false)}
       aria-labelledby="confirm-dialog"
     >
-      <DialogTitle id="confirm-dialog">{title}</DialogTitle>
+      <DialogTitle className={classes.header}>{title}</DialogTitle>
       <DialogContent>{children}</DialogContent>
-      <DialogActions>
+      <DialogActions className={classes.contenedorBotones}>
         <Button
           variant="contained"
           onClick={() => setOpen(false)}
-          color="secondary"
+          className="boton-alt"
         >
           No
         </Button>
@@ -28,9 +36,9 @@ const ConfirmDialog = (props) => {
             setOpen(false);
             onConfirm();
           }}
-          color="primary"
+          className="boton"
         >
-          Yes
+          Sí
         </Button>
       </DialogActions>
     </Dialog>

@@ -18,8 +18,11 @@ import {
   obtenerListaParticipaciones,
 } from "../../fetchers/fetcher";
 import AceptarPropuesta from "../Dialogs/AceptarPropuesta";
+import useStyles from "./styles";
 
 const Inicio = ({ route }) => {
+  const classes = useStyles();
+
   let match = useMatch("/detalle/:rfp_id");
   // state de RFP
   const [RFP, setRFP] = useState({});
@@ -144,20 +147,22 @@ const Inicio = ({ route }) => {
           <Grid container direction="row" className="container-dashboard ">
             {llamadaParticipaciones ? (
               listaParticipaciones.length === 0 ? (
-                <Card className="cardNoHaySocios">
+                <Card className="card-mensaje">
                   <Typography>
                     No hay socios involucrados hasta ahora
                   </Typography>
                 </Card>
               ) : (
-                <Card className="cardHaySocios">
-                  <Typography>Socios involucrados:</Typography>
+                <Card className="card-mensaje">
+                  <Typography className={classes.sectionSubtitle}>Socios involucrados</Typography>
                   {hasValidCandidates() ? (
                     <Button
                       size="small"
                       onClick={(e) => {
                         handleChooseWinner(e);
                       }}
+                      variant="contained"
+                      className="boton-alt"
                     >
                       SELECCIONAR GANADOR
                     </Button>

@@ -1,46 +1,15 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { makeStyles } from "@material-ui/core/styles";
-import Card from "@material-ui/core/Card";
-import CardActions from "@material-ui/core/CardActions";
-import CardContent from "@material-ui/core/CardContent";
-import Button from "@material-ui/core/Button";
-import Typography from "@material-ui/core/Typography";
 
+import {
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  Typography,
+} from "@material-ui/core";
 import FabEditRFP from "../ui/FabEditRFP";
-
-const useStyles = makeStyles({
-  title: {
-    fontSize: 18,
-    fontWeight: 800,
-    color: "#EE5D36",
-  },
-  description: {
-    fontSize: 14,
-  },
-  estatus: {
-    fontSize: 16,
-    fontWeight: 800,
-    textAlign: "left",
-    marginRight: "1em",
-  },
-  texto: {
-    fontSize: 16,
-    textAlign: "left",
-  },
-  containerText: {
-    display: "flex",
-    flexDirection: "row",
-  },
-  contenedorBotones: {
-    display: "flex",
-    flexDirection: "row",
-    width: "100%",
-    alignContent: "flex-end",
-    justifyContent: "center",
-    marginLeft: "1.5em",
-  },
-});
+import useStyles from "../Cards/styles";
 
 export default function SimpleCard({ rfp }) {
   const classes = useStyles();
@@ -50,7 +19,7 @@ export default function SimpleCard({ rfp }) {
 
   return (
     <div className="rfp-card">
-      <Card className="card-RFP">
+      <Card className={classes.cardRfp}>
         <FabEditRFP rfp={rfp} />
         <CardContent>
           <Typography className={classes.title}>
@@ -62,8 +31,8 @@ export default function SimpleCard({ rfp }) {
               : rfp.descripcionProblematica}
           </Typography>
           <div className={classes.containerText}>
-            <Typography className={classes.estatus}>Estatus:</Typography>
-            <Typography className={classes.texto}>{rfp.estatus}</Typography>
+            <Typography className={classes.labelText}>Estatus:</Typography>
+            <Typography className={classes.valueText}>{rfp.estatus}</Typography>
           </div>
         </CardContent>
         <CardActions>
@@ -73,6 +42,8 @@ export default function SimpleCard({ rfp }) {
               onClick={() => {
                 navigate("/detalle/" + rfp._id);
               }}
+              variant="contained"
+              className="boton-alt"
             >
               SABER MÁS
             </Button>

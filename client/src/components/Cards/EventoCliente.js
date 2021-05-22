@@ -1,33 +1,14 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { makeStyles } from "@material-ui/core/styles";
-import Button from "@material-ui/core/Button";
-import Typography from "@material-ui/core/Typography";
-import { Link } from "@material-ui/core";
-import IconButton from "@material-ui/core/IconButton";
+
+import { IconButton, Link, Typography } from "@material-ui/core";
 import EditIcon from "@material-ui/icons/Edit";
 import DeleteIcon from "@material-ui/icons/Delete";
-import axios from "axios";
-import moment from "moment";
-
 import EditarEvento from "../Dialogs/EditarEvento";
 import ConfirmDialog from "../Dialogs/ConfirmDialog";
+import useStyles from "../Cards/styles";
 
-const useStyles = makeStyles({
-  title: {
-    fontSize: 25,
-    fontWeight: 800,
-    color: "#EE5D36",
-    flex: 1,
-  },
-  estatus: {
-    fontSize: 16,
-    fontWeight: 700,
-    textAlign: "left",
-    marginRight: "0.5em",
-    color: "#EE5D36",
-  },
-});
+import axios from "axios";
+import moment from "moment";
 
 export default function EventoCliente({ evento }) {
   const config = {
@@ -47,9 +28,6 @@ export default function EventoCliente({ evento }) {
     day: "numeric",
   };
 
-  // hook para redireccionar
-  const navigate = useNavigate();
-
   // State de los valores
   const [nombre, guardarNombre] = useState(evento.name);
   const [fecha, guardarFecha] = useState(evento.date);
@@ -66,6 +44,7 @@ export default function EventoCliente({ evento }) {
   const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
 
   const deleteEvento = () => {
+    // TODO: Refactor to fetchers
     axios
       .delete("/events/" + evento._id, config)
       .then((response) => {
@@ -87,41 +66,48 @@ export default function EventoCliente({ evento }) {
         setModalIsOpen={setModalIsOpen}
       />
       <ConfirmDialog
-        title="¿Está seguro de que desea borrar el evento?"
+        title="Confirmación"
         open={isConfirmationOpen}
         setOpen={setIsConfirmationOpen}
         onConfirm={deleteEvento}
-      />
-      <div className="container-evento">
-        <Typography className={classes.estatus}>
-          {nombre}
-          <IconButton
-            aria-label="edit"
-            onClick={() => {
-              handleEditClick();
-            }}
-          >
-            <EditIcon />
-          </IconButton>
-          <IconButton
-            aria-label="delete"
-            onClick={() => {
-              setIsConfirmationOpen(true);
-            }}
-          >
-            <DeleteIcon />
-          </IconButton>
-        </Typography>
-        <Typography>
-          {moment.utc(fecha).toDate().toLocaleDateString("es-ES", options)}{" "}
-          {moment.utc(fecha).toDate().toLocaleTimeString("en-US")}
-        </Typography>
-        <Link href={link} target="_blank">
-          {link}
-        </Link>
-        {/* <Button type="submit" onClick={() => {handleEditClick()}} variant="contained" className="boton">EDITAR EVENTO</Button> */}
-        {/* {modalShow ? <ModalEvento show={modalShow}/> : null} */}
-        {/* <ModalEvento onClose={modalShow} show={modalShow} /> */}
+      >
+        ¿Está seguro de que desea borrar el evento?
+      </ConfirmDialog>
+      <div className={classes.containerEventoControles}>
+        <Typography className={classes.itemName}>{nombre}</Typography>
+        <IconButton
+          aria-label="edit"
+          onClick={() => {
+            handleEditClick();
+          }}
+          className={classes.editIcon}
+        >
+          <EditIcon />
+        </IconButton>
+        <IconButton
+          aria-label="delete"
+          onClick={() => {
+            setIsConfirmationOpen(true);
+          }}
+          className={classes.editIcon}
+        >
+          <DeleteIcon />
+        </IconButton>
+      </div>
+      <div className={classes.containerEventoDetalles}>
+        <div className={classes.containerText}>
+          <Typography className={classes.labelText}>Horario:</Typography>
+          <Typography className={classes.valueText}>
+            {moment.utc(fecha).toDate().toLocaleDateString("es-ES", options)}{" "}
+            {moment.utc(fecha).toDate().toLocaleTimeString("en-US")}
+          </Typography>
+        </div>
+        <div className={classes.containerText}>
+          <Typography className={classes.labelText}>Link:</Typography>
+          <Link href={link} target="_blank">
+            {link}
+          </Link>
+        </div>
       </div>
     </>
   );
