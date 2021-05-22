@@ -14,18 +14,12 @@ import {
 import CloseIcon from "@material-ui/icons/Close";
 import useStyles from "./styles";
 
-import DatePicker from "react-datepicker";
+import DatePicker, { registerLocale } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import axios from "axios";
 import moment from "moment";
-import { registerLocale, setDefaultLocale } from "react-datepicker";
 import es from "date-fns/locale/es";
 registerLocale("es", es);
-
-// Función para date picker
-let handleColor = (time) => {
-  return time.getHours() > 12 ? "text-success" : "text-error";
-};
 
 // Función que redondea una Date hacia arriba, al intervalo de 30 minutos más cercano
 const roundUpTime = (date) => {
@@ -39,14 +33,14 @@ const roundUpTime = (date) => {
 
 export default function EditarEvento(params) {
   const [open, setOpen] = React.useState(false);
-  const [nombre, guardarNombre] = React.useState(params.nombre);
   const [horaActualRedondeada, guardarHoraActualRedondeada] = React.useState(
     roundUpTime(new Date())
   );
-  const [fecha, guardarFecha] = React.useState(moment(params.fecha).toDate());
-  const [link, guardarLink] = React.useState(params.link);
-  const [excludedTimes, setExcludedTimes] = React.useState([]);
   const [id, guardarId] = React.useState(params.id);
+  const [nombre, guardarNombre] = React.useState(params.nombre);
+  const [link, guardarLink] = React.useState(params.link);
+  const [fecha, guardarFecha] = React.useState(moment(params.fecha).toDate());
+  const [excludedTimes, setExcludedTimes] = React.useState([]);
 
   const classes = useStyles();
 
@@ -56,7 +50,7 @@ export default function EditarEvento(params) {
       "Content-Type": "application/json",
     },
     params: {
-      eventId: id
+      eventId: id,
     },
   };
 
@@ -86,7 +80,7 @@ export default function EditarEvento(params) {
         window.location.reload();
       })
       .catch((error) => {
-        if (error.message.includes('409')) {
+        if (error.message.includes("409")) {
           updateExcludedTimes();
         }
         console.log(error);
@@ -94,10 +88,12 @@ export default function EditarEvento(params) {
   };
 
   const updateExcludedTimes = () => {
-    Axios.get(
-      "/events/get-occupied-event-times/" + horaActualRedondeada.toISOString(),
-      config
-    )
+    axios
+      .get(
+        "/events/get-occupied-event-times/" +
+          horaActualRedondeada.toISOString(),
+        config
+      )
       .then((res) => {
         const occupiedTimes = res.data.occupiedTimes.map((elem) => {
           return new Date(elem);
@@ -111,7 +107,10 @@ export default function EditarEvento(params) {
   };
 
   const isExcludedDate = () => {
-    return fecha < new Date() || excludedTimes.some((elem) => elem.getTime() === fecha.getTime());
+    return (
+      fecha < new Date() ||
+      excludedTimes.some((elem) => elem.getTime() === fecha.getTime())
+    );
   };
 
   const isSendDisabled = () => {
@@ -163,52 +162,56 @@ export default function EditarEvento(params) {
               Selecciona la fecha de la siguiente reunión
             </FormLabel>
           </div>
-          <DatePicker
-            showTimeSelect
-            selected={fecha}
-            onChange={(date) => guardarFecha(date)}
-            excludeTimes={excludedTimesInSelectedDay}
-            timeClassName={handleColor}
-            timeCaption="Hora"
-            dateFormat="dd/MM/yyyy h:mm aa"
-            timeFormat="h:mm aa"
-            minDate={dateMinTime}
-            minTime={dateMinTime}
-            maxTime={new Date(new Date().setHours(23, 59, 0, 0))}
-            //timeIntervals={15}
-            locale="es"
-            title="Selecciona un horario"
-          />
+          <div className="mb-0">
+            <DatePicker
+              showTimeSelect
+              selected={fecha}
+              onChange={(date) => guardarFecha(date)}
+              excludeTimes={excludedTimesInSelectedDay}
+              minDate={dateMinTime}
+              minTime={dateMinTime}
+              maxTime={new Date(new Date().setHours(23, 59, 0, 0))}
+              dateFormat="dd/MM/yyyy h:mm aa"
+              timeFormat="h:mm aa"
+              timeCaption="Hora"
+              locale="es"
+            />
+          </div>
           <div>
             {isExcludedDate() ? (
               <p className="error-titulo-rojo">
                 El horario seleccionado no está disponible
               </p>
-            ) : (
-              <br />
-            )}
+            ) : null}
           </div>
-          <TextField
-            id="nombre"
-            className={classes.textField}
-            label="Nombre"
-            margin="dense"
-            fullWidth
-            defaultValue={nombre}
-            onChange={(event) => guardarNombre(event.target.value)}
-          />
-          <TextField
-            id="link"
-            className={classes.textField}
-            label="Link"
-            margin="normal"
-            fullWidth
-            defaultValue={link}
-            onChange={(event) => guardarLink(event.target.value)}
-          />
+          <div className="mb-0">
+            <TextField
+              id="nombre"
+              className={classes.textField}
+              label="Nombre"
+              margin="dense"
+              fullWidth
+              defaultValue={nombre}
+              onChange={(event) => guardarNombre(event.target.value)}
+            />
+            <TextField
+              id="link"
+              className={classes.textField}
+              label="Link"
+              margin="normal"
+              fullWidth
+              defaultValue={link}
+              onChange={(event) => guardarLink(event.target.value)}
+            />
+          </div>
         </DialogContent>
         <DialogActions>
-          <Button autoFocus onClick={handleSave} disabled={isSendDisabled} className="boton">
+          <Button
+            autoFocus
+            onClick={handleSave}
+            disabled={isSendDisabled()}
+            className="boton"
+          >
             GUARDAR CAMBIOS
           </Button>
         </DialogActions>
