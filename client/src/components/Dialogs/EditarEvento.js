@@ -106,6 +106,9 @@ export default function EditarEvento(params) {
       Authorization: "Bearer " + sessionStorage.getItem("token"),
       "Content-Type": "application/json",
     },
+    params: {
+      eventId: id
+    },
   };
 
   useEffect(() => {
@@ -140,11 +143,8 @@ export default function EditarEvento(params) {
   };
 
   const updateExcludedTimes = () => {
-    const haceUnaHora = new Date(horaActualRedondeada);
-    haceUnaHora.setHours(haceUnaHora.getHours() - 1);
-
     Axios.get(
-      "/events/get-occupied-event-times/" + haceUnaHora.toISOString(),
+      "/events/get-occupied-event-times/" + horaActualRedondeada.toISOString(),
       config
     )
       .then((res) => {

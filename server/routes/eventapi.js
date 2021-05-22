@@ -78,7 +78,7 @@ router.get("/get-rfp-events/:id", userMiddleware, (req, res) => {
 
 router.get("/get-occupied-event-times/:date", userMiddleware, (req, res) => {
   eventController
-    .getOccupiedEventTimesFromDate(req.params.date)
+    .getOccupiedEventTimesFromDate(req.params.date, req.query.eventId)
     .then((occupiedTimes) => {
       return res.send({ occupiedTimes });
     })
@@ -105,7 +105,13 @@ router.patch("/:id", userMiddleware, (req, res) => {
       return res.send({ updatedEvent });
     })
     .catch((err) => {
-      return res.status(401).send({ err });
+      if (err === eventController.ERR_EVENT_DATE_UNAVAILABLE) {
+        // 409. Conflict
+        return res.status(409).send({ err });
+      } else {
+        // 401. Unauthorized
+        return res.status(401).send({ err });
+      }
     });
 });
 

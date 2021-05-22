@@ -141,11 +141,8 @@ export default function NuevoEvento(params) {
   };
 
   const updateExcludedTimes = () => {
-    const haceUnaHora = new Date(horaActualRedondeada);
-    haceUnaHora.setHours(haceUnaHora.getHours() - 1);
-    
     Axios.get(
-      "/events/get-occupied-event-times/" + haceUnaHora.toISOString(),
+      "/events/get-occupied-event-times/" + horaActualRedondeada.toISOString(),
       config
     )
       .then((res) => {

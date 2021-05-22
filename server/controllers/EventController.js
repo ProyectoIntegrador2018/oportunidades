@@ -35,16 +35,10 @@ eventController.createEvent = (rawEvent) => {
   return new Promise((resolve, reject) => {
     let newEvent = new Event(rawEvent);
 
-    const newEventDate = newEvent.date;
-    const oneHourBeforeEventDate = addMinutesToDate(newEventDate, -60);
-    const oneHourAfterEventDate = addMinutesToDate(newEventDate, 60);
-
-    // Check if there are no events with date that overlaps with newEvent, 
-    // considering event duration is 1hr 30 min & event dates can be every 30 min
-    Event.find({ date: { $gte: oneHourBeforeEventDate, $lte: oneHourAfterEventDate } }, "date")
-      .then((events) => {
-        // If an event is found, abort event creation
-        if (events.length > 0) {
+    overlappingEventExists(newEvent.date)
+      .then((overlapExists) => {
+        // If an overlapping event is found, abort event creation
+        if (overlapExists) {
           return reject(ERR_EVENT_DATE_UNAVAILABLE);
         } else {
           newEvent
@@ -55,15 +49,10 @@ eventController.createEvent = (rawEvent) => {
             .then(() => {
               resolve(newEvent);
             })
-            .catch((err) => {
-              reject(err);
-            });
+            .catch((err) => { reject(err) });
         }
       })
-      .catch((err) => {
-        reject(err);
-      });
-
+      .catch((err) => { reject(err) });
   });
 };
 
@@ -114,15 +103,24 @@ eventController.deleteUserFromEvent = (userId, eventId) => {
 
 eventController.editEvent = (eventId, updates) => {
   return new Promise((resolve, reject) => {
-    Event.findByIdAndUpdate(eventId, updates)
-      .then((eventUpdated) => {
-        // eventUpdated contains the data of the event before the update operation was performed
-        notificationQueue.add(CAMBIO_EVENTO, { eventUpdated });
-        resolve(eventUpdated);
+    const updatedDate = new Date(updates.date);
+
+    overlappingEventExists(updatedDate)
+      .then((overlapExists) => {
+        // If an overlapping event is found, abort event update
+        if (overlapExists) {
+          return reject(ERR_EVENT_DATE_UNAVAILABLE);
+        } else {
+          Event.findByIdAndUpdate(eventId, updates)
+            .then((eventUpdated) => {
+              // eventUpdated contains the data of the event before the update operation was performed
+              notificationQueue.add(CAMBIO_EVENTO, { eventUpdated });
+              resolve(eventUpdated);
+            })
+            .catch((err) => { reject(err) });
+        }
       })
-      .catch((err) => {
-        reject(err);
-      });
+      .catch((err) => { reject(err) });
   });
 };
 
@@ -177,11 +175,17 @@ eventController.getAllEvents = () => {
   });
 };
 
-eventController.getOccupiedEventTimesFromDate = (startingDateISOString) => {
+eventController.getOccupiedEventTimesFromDate = (eventDateISOString, eventId=null) => {
   return new Promise((resolve, reject) => {
-    const startingDate = new Date(startingDateISOString);
+    const oneHourBeforeEventDate = addMinutesToDate(new Date(eventDateISOString), -60);
+    const dbQuery = {
+      date: { $gte: oneHourBeforeEventDate },
+    };
+    if (eventId) {
+      dbQuery._id = { $ne: eventId };
+    }
 
-    Event.find({ date: { $gte: startingDate } }, "date")
+    Event.find(dbQuery, "date")
       .then((events) => {
         const occupiedTimes = [];
 
@@ -198,11 +202,29 @@ eventController.getOccupiedEventTimesFromDate = (startingDateISOString) => {
 
         resolve(occupiedTimes);
       })
-      .catch((err) => {
-        reject(err);
-      });
+      .catch((err) => { reject(err) });
   });
 };
+
+/**
+ * Function to check if a given date overlaps with another event
+ * @param {Date} eventDate 
+ * @returns {boolean} True if overlap exists, false otherwise
+ */
+function overlappingEventExists(eventDate) {
+  return new Promise((resolve, reject) => {
+    const oneHourBeforeEventDate = addMinutesToDate(eventDate, -60);
+    const oneHourAfterEventDate = addMinutesToDate(eventDate, 60);
+
+    // Check if there are no events with date that overlaps with newEvent, 
+    // considering event duration is 1hr 30 min & event dates can be every 30 min
+    Event.find({ date: { $gte: oneHourBeforeEventDate, $lte: oneHourAfterEventDate } }, "date")
+      .then((overlappingEvents) => {
+        resolve(overlappingEvents.length > 0);
+      })
+      .catch((err) => { reject(err) });
+  });
+}
 
 function addMinutesToDate(date, minutes) {
   // Date is set in miliseconds, 1 minute is 60,000 ms
