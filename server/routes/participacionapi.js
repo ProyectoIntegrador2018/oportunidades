@@ -9,7 +9,11 @@ Grid.mongo = mongo;
 
 const router = express.Router();
 
-const gfs = Grid(connection.db);
+// Init GridFS
+const gfs = Grid(connection.db, mongo);
+gfs.collection('fileUploads');
+
+// Create storage engine
 const storage = GridFsStorage({
   db: connection.db,
   file: (req, file) => {
