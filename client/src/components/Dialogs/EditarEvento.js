@@ -1,79 +1,26 @@
 import React, { useState, useEffect } from "react";
-import { withStyles } from "@material-ui/core/styles";
-import Button from "@material-ui/core/Button";
-import Dialog from "@material-ui/core/Dialog";
-import MuiDialogTitle from "@material-ui/core/DialogTitle";
-import MuiDialogContent from "@material-ui/core/DialogContent";
-import MuiDialogActions from "@material-ui/core/DialogActions";
-import IconButton from "@material-ui/core/IconButton";
+
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  FormLabel,
+  IconButton,
+  TextField,
+  Typography,
+} from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
-import Typography from "@material-ui/core/Typography";
-import TextField from "@material-ui/core/TextField";
+import useStyles from "./styles";
+
 import DatePicker from "react-datepicker";
-import { FormLabel } from "@material-ui/core";
 import "react-datepicker/dist/react-datepicker.css";
-import Axios from "axios";
+import axios from "axios";
 import moment from "moment";
 import { registerLocale, setDefaultLocale } from "react-datepicker";
 import es from "date-fns/locale/es";
 registerLocale("es", es);
-
-const styles = (theme) => ({
-  root: {
-    margin: 0,
-    padding: theme.spacing(2),
-  },
-  closeButton: {
-    position: "absolute",
-    right: theme.spacing(1),
-    top: theme.spacing(1),
-    color: theme.palette.grey[500],
-  },
-  textField: {
-    marginLeft: theme.spacing(1),
-    marginRight: theme.spacing(1),
-    width: 200,
-  },
-  fechaDiv: {
-    height: 200,
-    margin: theme.spacing(2),
-  },
-  title: {},
-  marginBott: {
-    marginBottom: theme.spacing(1),
-  },
-});
-
-const DialogTitle = withStyles(styles)((props) => {
-  const { children, classes, onClose, ...other } = props;
-  return (
-    <MuiDialogTitle disableTypography className={classes.root} {...other}>
-      <Typography variant="h6">{children}</Typography>
-      {onClose ? (
-        <IconButton
-          aria-label="close"
-          className={classes.closeButton}
-          onClick={onClose}
-        >
-          <CloseIcon />
-        </IconButton>
-      ) : null}
-    </MuiDialogTitle>
-  );
-});
-
-const DialogContent = withStyles((theme) => ({
-  root: {
-    padding: theme.spacing(2),
-  },
-}))(MuiDialogContent);
-
-const DialogActions = withStyles((theme) => ({
-  root: {
-    margin: 0,
-    padding: theme.spacing(1),
-  },
-}))(MuiDialogActions);
 
 // Función para date picker
 let handleColor = (time) => {
@@ -101,6 +48,8 @@ export default function EditarEvento(params) {
   const [excludedTimes, setExcludedTimes] = React.useState([]);
   const [id, guardarId] = React.useState(params.id);
 
+  const classes = useStyles();
+
   const config = {
     headers: {
       Authorization: "Bearer " + sessionStorage.getItem("token"),
@@ -121,16 +70,18 @@ export default function EditarEvento(params) {
     params.setModalIsOpen(false);
     setOpen(false);
   };
+  // TODO: Refactor to fetchers
   const handleSave = () => {
-    Axios.patch(
-      "/events/" + params.id,
-      {
-        name: nombre,
-        date: fecha,
-        link: link,
-      },
-      config
-    )
+    axios
+      .patch(
+        "/events/" + params.id,
+        {
+          name: nombre,
+          date: fecha,
+          link: link,
+        },
+        config
+      )
       .then((res) => {
         window.location.reload();
       })
@@ -157,7 +108,7 @@ export default function EditarEvento(params) {
       .catch((error) => {
         console.log(error);
       });
-  }
+  };
 
   const isExcludedDate = () => {
     return fecha < new Date() || excludedTimes.some((elem) => elem.getTime() === fecha.getTime());
@@ -189,12 +140,22 @@ export default function EditarEvento(params) {
         onClose={handleClose}
         aria-labelledby="customized-dialog-title"
         open={open}
-        maxWidth="md"
+        maxWidth="sm"
         fullWidth={true}
         scroll="paper"
       >
-        <DialogTitle id="customized-dialog-title" onClose={handleClose}>
-          Editar Evento
+        <DialogTitle disableTypography className={classes.header}>
+          <Typography className={classes.title}>Editar Evento</Typography>
+          {handleClose ? (
+            <IconButton
+              aria-label="close"
+              className={classes.closeButton}
+              onClick={handleClose}
+              color="inherit"
+            >
+              <CloseIcon />
+            </IconButton>
+          ) : null}
         </DialogTitle>
         <DialogContent dividers>
           <div className="mb-0">
@@ -229,7 +190,7 @@ export default function EditarEvento(params) {
           </div>
           <TextField
             id="nombre"
-            className={styles.textField}
+            className={classes.textField}
             label="Nombre"
             margin="dense"
             fullWidth
@@ -238,22 +199,16 @@ export default function EditarEvento(params) {
           />
           <TextField
             id="link"
-            className={styles.marginBott}
+            className={classes.textField}
             label="Link"
             margin="normal"
             fullWidth
             defaultValue={link}
             onChange={(event) => guardarLink(event.target.value)}
           />
-          <div className="mb-4"> </div>
         </DialogContent>
         <DialogActions>
-          <Button
-            autoFocus
-            onClick={handleSave}
-            color="primary"
-            disabled={isSendDisabled()}
-          >
+          <Button autoFocus onClick={handleSave} disabled={isSendDisabled} className="boton">
             GUARDAR CAMBIOS
           </Button>
         </DialogActions>

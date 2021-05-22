@@ -39,7 +39,7 @@ export default function NotificationsTab(props) {
       <Grid container className={classes.notificationsPaper}>
         <List anchor="right">
           {sortedNotifications.map((notif) => (
-            <NotificationFactory component={notif} key={notif._id} />
+            <NotificationFactory component={notif} navigate={navigate} key={notif._id} />
           ))}
         </List>
       </Grid>

@@ -1,46 +1,16 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { makeStyles } from "@material-ui/core/styles";
-import Card from "@material-ui/core/Card";
-import CardActions from "@material-ui/core/CardActions";
-import CardContent from "@material-ui/core/CardContent";
-import Button from "@material-ui/core/Button";
-import Typography from "@material-ui/core/Typography";
-import axios from "axios";
 
-const useStyles = makeStyles({
-  title: {
-    fontSize: 18,
-    fontWeight: 800,
-    color: "#EE5D36",
-    marginTop: "1em",
-  },
-  description: {
-    fontSize: 14,
-  },
-  estatus: {
-    fontSize: 16,
-    fontWeight: 800,
-    textAlign: "left",
-    marginRight: "1em",
-  },
-  texto: {
-    fontSize: 16,
-    textAlign: "left",
-  },
-  containerText: {
-    display: "flex",
-    flexDirection: "row",
-  },
-  contenedorBotones: {
-    display: "flex",
-    flexDirection: "row",
-    width: "100%",
-    alignContent: "flex-end",
-    justifyContent: "space-between",
-    marginLeft: "1.5em",
-  },
-});
+import {
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  Typography,
+} from "@material-ui/core";
+import useStyles from "../Cards/styles";
+
+import axios from "axios";
 
 export default function SimpleCard({ rfp }) {
   const config = {
@@ -55,6 +25,7 @@ export default function SimpleCard({ rfp }) {
   // hook para redireccionar
   const navigate = useNavigate();
 
+  // TODO: Refactor to fetchers
   const handleClick = () => {
     axios
       .post(
@@ -71,12 +42,14 @@ export default function SimpleCard({ rfp }) {
         console.log(error);
       });
   };
+  // TODO: Refactor to fetchers
   const handleDejarDeParticipar = () => {
     axios
       .get("/participacion/get-participaciones-socio", config)
       .then((res) => {
         for (var i = 0; i < res.data.length; i++) {
           if (res.data[i].rfpInvolucrado == rfp._id) {
+            // TODO: Refactor to fetchers
             axios
               .delete(
                 "/participacion/delete-participacion-socio/" + res.data[i]._id,
@@ -98,7 +71,7 @@ export default function SimpleCard({ rfp }) {
 
   return (
     <div className="rfp-card">
-      <Card className="card-RFP">
+      <Card className={classes.cardRfp}>
         <CardContent>
           <Typography className={classes.title}>
             {rfp.nombreOportunidad}
@@ -109,17 +82,20 @@ export default function SimpleCard({ rfp }) {
               : rfp.descripcionProblematica}
           </Typography>
           <div className={classes.containerText}>
-            <Typography className={classes.estatus}>Estatus:</Typography>
-            <Typography className={classes.texto}>{rfp.estatus}</Typography>
+            <Typography className={classes.labelText}>Estatus:</Typography>
+            <Typography className={classes.labelValue}>
+              {rfp.estatus}
+            </Typography>
           </div>
         </CardContent>
         <CardActions>
           <div className={classes.contenedorBotones}>
             <Button
-              size="small"
               onClick={() => {
                 navigate("/detalle/" + rfp._id);
               }}
+              variant="contained"
+              className="boton-alt"
             >
               SABER MÁS
             </Button>

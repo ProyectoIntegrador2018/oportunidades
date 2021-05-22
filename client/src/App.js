@@ -20,8 +20,16 @@ import { ProtectedRoute } from './components/ProtectedRoute/ProtectedRoute';
 
 const theme = createMuiTheme({
    palette: {
-      primary: { main: '#EE5D36' },
-      secondary: { main: '#FFFFFF'}
+      primary: { 
+         main: "#e0673b",
+         light: "#fadfd2",
+         dark: "#924f31",
+      },
+      secondary: { 
+         main: "#f5bfa5",
+         light: "#8694a6",
+         dark: "#30384b",
+      }
    }
 })
 function App() {

@@ -105,6 +105,8 @@ export default function NotificationFactory(props) {
       return <NotificacionEventoEliminado {...downProps} />;
     case NOTIFICATION_TYPES.CAMBIO_EVENTO:
       return <NotificacionCambioEvento {...downProps} />;
+    case NOTIFICATION_TYPES.OPORTUNIDAD_CERRADA_NO_PARTICIPACIONES:
+      return <NotificacionOportunidadCerradaNoParticipaciones {...downProps} />;
   }
 }
 
@@ -192,7 +194,6 @@ class PortalNotification extends Component {
   };
 
   toggleRead = () => {
-    // TODO: One-way call to the backend to update the bd
     if (!this.state.toggledRead) {
       this.setState({
         toggledRead: true,
@@ -203,6 +204,24 @@ class PortalNotification extends Component {
         isRead: !this.state.isRead,
       });
     }
+
+    const config = {
+      headers: {
+        Authorization: "Bearer " + sessionStorage.getItem("token"),
+        "Content-Type": "application/json",
+      },
+      params:{
+        id: this.state.data.id,
+      },
+    }
+    axios
+    .patch("/notificaciones/toggle-is-read",{},config)
+    .then((res)=>{
+
+    })
+    .catch((error)=>{
+      console.log(error);
+    });
   };
 
   deleteNotification = (id) => {
@@ -428,7 +447,7 @@ class NotificacionEventoEliminado extends PortalNotification {
   getDescription = () => {
     const details = this.state.data.details;
     const nombreEvento = this.props.rawNotif.notificacion.detalles.detalles;
-    return `El cliente ${details.author} ha eliminado el evento "${nombreEvento}" de oportunidad comercial "${details.opportunityName}"`;
+    return `El cliente ${details.author} ha eliminado el evento "${nombreEvento}" de la Oportunidad Comercial "${details.opportunityName}"`;
   };
 
   getNavPath = () => {
@@ -482,5 +501,21 @@ class NotificacionCambioEvento extends PortalNotification {
     } else {
       return `Se han registrado multiples cambios en uno de los eventos de la oportunidad "${details.opportunityName}"`;
     }
+  };
+}
+
+class NotificacionOportunidadCerradaNoParticipaciones extends PortalNotification {
+  getTitle = () => {
+    return "Oportunidad Cerrada";
+  };
+
+  getDescription = () => {
+    const nombreOportunidad =
+      this.props.rawNotif.notificacion.detalles.detalles;
+    return `Se ha cerrado automáticamente la oportunidad "${nombreOportunidad}" debido a que no tuvo participaciones por dos semanas`;
+  };
+
+  getNavPath = () => {
+    return "/detalle/" + this.props.rawNotif.notificacion.detalles.rfp._id;
   };
 }

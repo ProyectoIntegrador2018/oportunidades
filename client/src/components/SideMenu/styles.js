@@ -1,6 +1,5 @@
 import { makeStyles } from "@material-ui/core";
 import { orange } from "@material-ui/core/colors";
-import { MicNone } from "@material-ui/icons";
 const drawerWidth = 240;
 const notificationsTabWidth = 396;
 const notificationsTabHeight = 480;
@@ -10,6 +9,8 @@ const useStyles = makeStyles((theme) => ({
    },
    toolbar: {
       paddingRight: 24, // keep right padding when drawer closed
+      backgroundColor: "white",
+      color: theme.palette.primary.main,
    },
    toolbarIcon: {
       display: "flex",
@@ -20,11 +21,11 @@ const useStyles = makeStyles((theme) => ({
    },
    appBar: {
       zIndex: theme.zIndex.drawer + 1,
-      boxShadow: "none",
       transition: theme.transitions.create(["width", "margin"], {
          easing: theme.transitions.easing.sharp,
          duration: theme.transitions.duration.leavingScreen,
       }),
+      position: "absolute",
    },
    appBarShift: {
       marginLeft: drawerWidth,
@@ -33,12 +34,25 @@ const useStyles = makeStyles((theme) => ({
          easing: theme.transitions.easing.sharp,
          duration: theme.transitions.duration.enteringScreen,
       }),
+      position: "absolute",
+   },
+   notificationsDiv: {
+      zIndex: theme.zIndex.drawer,
+      position: "absolute",
+      right: "0px",
+      top: "66px",
+      backgroundColor: "transparent",
    },
    menuButton: {
       marginRight: 36,
    },
    menuButtonHidden: {
       display: "none",
+   },
+   logo: {
+      position: "absolute",
+      left: "100px",
+      height: "36px",
    },
    title: {
       flexGrow: 1,
@@ -116,7 +130,7 @@ const useStyles = makeStyles((theme) => ({
       right: theme.spacing(2),
    },
    success: {
-      backgroundColor: orange[600],
+      backgroundColor: orange[0],
    },
    error: {
       backgroundColor: theme.palette.error.dark,

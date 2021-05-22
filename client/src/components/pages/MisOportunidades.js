@@ -1,13 +1,9 @@
 import React, {useState, useEffect} from "react";
-import { Grid, Typography } from "@material-ui/core";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import Card from '@material-ui/core/Card';
+import { Card, CircularProgress, Grid, Typography } from "@material-ui/core";
 import axios from 'axios';
-
 import "../../styles/globalStyles.css";
 import SideMenu from "../SideMenu/SideMenu";
 import MisOportunidadesCardSocio from "../Cards/MisOportunidadesCardSocio";
-import FabButton from "../ui/FabButton";
 
 const MisOportunidades = () => {
    // state de lista de RFPs
@@ -78,7 +74,7 @@ const MisOportunidades = () => {
             {llamada === 'false' ? (<CircularProgress color="secondary"/>) : null}
             {llamada === 'true'
                ? (listaRFPsFinal.length === 0
-                  ? (<Card className="cardMensaje"><Typography>No estás participando en ninguna oportunidad actualmente</Typography></Card>)
+                  ? (<Card className="card-mensaje"><Typography>No estás participando en ninguna oportunidad actualmente</Typography></Card>)
                   : null)
                : null}
             {userType === 'socio'
