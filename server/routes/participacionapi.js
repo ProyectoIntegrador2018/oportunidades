@@ -13,8 +13,10 @@ const gfs = Grid(connection.db);
 const storage = GridFsStorage({
   db: connection.db,
   file: (req, file) => {
+    const fileNum = req.body.fileNumber;
+    const userId = eq.user._id;
     return {
-      filename: file.originalname,
+      filename: `${file.originalname}_${userId}_${fileNum}.pdf`,
     };
   },
 });
