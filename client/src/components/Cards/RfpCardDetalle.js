@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import {
@@ -7,6 +7,7 @@ import {
   CardActions,
   CardContent,
   Typography,
+  Input,
 } from "@material-ui/core";
 import KeyboardArrowLeft from "@material-ui/icons/KeyboardArrowLeft";
 import FabEditRFPFlex from "../ui/FabEditRFPFlex";
@@ -17,12 +18,33 @@ import axios from "axios";
 import moment from "moment";
 
 export default function SimpleCard({ rfp, isParticipating }) {
+  const [selectedFile, setSelectedFile] = useState(null);
+
   const config = {
     headers: {
       Authorization: "Bearer " + sessionStorage.getItem("token"),
       "Content-Type": "application/json",
     },
   };
+
+  // On file upload (click the upload button) 
+  const onFileUpload = () => { 
+    const formData = new FormData(); 
+
+    formData.append( 
+      "file", 
+      selectedFile, 
+      selectedFile.name
+    ); 
+
+    axios.post("/participacion/upload-file", formData, config)
+      .then((res) => {
+        window.location.reload();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }; 
 
   const classes = useStyles();
 
@@ -230,6 +252,17 @@ export default function SimpleCard({ rfp, isParticipating }) {
           {userType === "socio" ? null : (
             <ListaEventos key={rfp._id} rfp={rfp} />
           )}
+          <Typography className={classes.sectionSubtitle}>Carga de Archivos:</Typography>
+          <form>
+            <div className={classes.containerText}>
+              <Input type="file"
+                onChange={(event) => setSelectedFile(event.target.files[0])}/> 
+              <Button className="boton" onClick={onFileUpload}> 
+                SUBIR ARCHIVO
+              </Button> 
+            </div> 
+          </form>
+            
         </CardContent>
         <CardActions>
           <div className={classes.contenedorBotones}>
