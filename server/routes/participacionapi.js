@@ -157,6 +157,23 @@ router.post(
  * @param {Object} req contiene el id del rfp
  * @param {Object} res respuesta del request
  */
+router.get('/get-file/:filename', userMiddleware, (req, res) => {
+  gfs.files.findOne({ filename: req.params.filename }, (err, file) => {
+    if (!file || file.length === 0) {
+      return res.status(404).json({
+        err: 'No file exists'
+      });
+    }
+    return res.json(file);
+  });
+});
+
+/**
+ * Ruta para que un socio pueda subir un archivo a gridfs
+ * @implements {userMiddleWare} Function to check if the request is sent by a logged user
+ * @param {Object} req contiene el id del rfp
+ * @param {Object} res respuesta del request
+ */
 router.delete("/delete-file/:id", userMiddleware, (req, res) => {
   gfs.remove({ _id: req.params.id, root: "fileUploads" }, (error) => {
     if (error) return res.status(404).send({ error });
