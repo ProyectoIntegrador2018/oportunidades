@@ -1,5 +1,7 @@
 const express = require("express");
 const multer = require("multer");
+const path = require("path");
+const crypto = require("crypto");
 const { mongo, connection } = require("mongoose");
 const userMiddleware = require("../middleware/User");
 const participacionController = require("../controllers/ParticipacionController");
@@ -9,13 +11,29 @@ Grid.mongo = mongo;
 
 const router = express.Router();
 
-const gfs = Grid(connection.db);
+const FILE_COLLECTION = "fileUploads";
+
+// Init GridFS
+const gfs = Grid(connection.db, mongo);
+gfs.collection(FILE_COLLECTION);
+
+// Create storage engine
 const storage = GridFsStorage({
   db: connection.db,
   file: (req, file) => {
-    return {
-      filename: file.originalname,
-    };
+    return new Promise((resolve, reject) => {
+      crypto.randomBytes(16, (err, buf) => {
+        if (err) {
+          return reject(err);
+        }
+        const filename = buf.toString("hex") + path.extname(file.originalname);
+        const fileInfo = {
+          filename: filename,
+          bucketName: FILE_COLLECTION,
+        };
+        resolve(fileInfo);
+      });
+    });
   },
 });
 const upload = multer({ storage });
@@ -122,11 +140,45 @@ router.post("/update-estatus-socio/:id", userMiddleware, (req, res) => {
  * @param {Object} req contiene el id del rfp
  * @param {Object} res respuesta del request
  */
-router.post("/upload-file", [userMiddleware, upload.single("file")], (req, res) => {
-  if (req.file) {
-    return res.send({ file: req.file });
+router.post(
+  "/upload-file",
+  [userMiddleware, upload.single("file")],
+  (req, res) => {
+    if (req.file) {
+      return res.send({ file: req.file });
+    }
+    return res.status(400).send({ success: false });
   }
-  return res.status(400).send({ success: false });
+);
+
+/**
+ * Ruta para que un socio pueda subir un archivo a gridfs
+ * @implements {userMiddleWare} Function to check if the request is sent by a logged user
+ * @param {Object} req contiene el id del rfp
+ * @param {Object} res respuesta del request
+ */
+router.get('/get-file/:filename', userMiddleware, (req, res) => {
+  gfs.files.findOne({ filename: req.params.filename }, (err, file) => {
+    if (!file || file.length === 0) {
+      return res.status(404).json({
+        err: 'No file exists'
+      });
+    }
+    return res.json(file);
+  });
+});
+
+/**
+ * Ruta para que un socio pueda subir un archivo a gridfs
+ * @implements {userMiddleWare} Function to check if the request is sent by a logged user
+ * @param {Object} req contiene el id del rfp
+ * @param {Object} res respuesta del request
+ */
+router.delete("/delete-file/:id", userMiddleware, (req, res) => {
+  gfs.remove({ _id: req.params.id, root: FILE_COLLECTION}, (error) => {
+    if (error) return res.status(404).send({ error });
+    res.sendStatus(204);
+  });
 });
 
 router.get("/ping", userMiddleware, (req, res) => {
