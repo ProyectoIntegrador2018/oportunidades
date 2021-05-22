@@ -175,7 +175,7 @@ router.get('/get-file/:filename', userMiddleware, (req, res) => {
  * @param {Object} res respuesta del request
  */
 router.delete("/delete-file/:id", userMiddleware, (req, res) => {
-  gfs.remove({ _id: req.params.id, root: "fileUploads" }, (error) => {
+  gfs.remove({ _id: req.params.id, root: FILE_COLLECTION}, (error) => {
     if (error) return res.status(404).send({ error });
     res.sendStatus(204);
   });
