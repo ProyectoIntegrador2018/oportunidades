@@ -129,6 +129,19 @@ router.post("/upload-file", [userMiddleware, upload.single("file")], (req, res) 
   return res.status(400).send({ success: false });
 });
 
+/**
+ * Ruta para que un socio pueda subir un archivo a gridfs
+ * @implements {userMiddleWare} Function to check if the request is sent by a logged user
+ * @param {Object} req contiene el id del rfp
+ * @param {Object} res respuesta del request
+ */
+router.delete("/delete-file/:id", userMiddleware, (req, res) => {
+  gfs.remove({ _id: req.params.fileId }, (error) => {
+    if (error) return res.status(400).send({ error });
+    res.sendStatus(204);
+  });
+});
+
 router.get("/ping", userMiddleware, (req, res) => {
   return res.send({ info: "ping is working for authorized user" });
 });
