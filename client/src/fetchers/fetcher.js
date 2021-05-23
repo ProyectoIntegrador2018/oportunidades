@@ -62,11 +62,45 @@ async function obtenerFileNamesParticipaciones(participacionId){
   return response;
 }
 
-async function getFile(filename){
+async function getFile(filename) {
   updateConfig();
   const response = await axios
     .get(
-      "/participacion/get-file/" + filename
+      "/participacion/get-file/" + filename,
+      config
+    )
+    .then((res) => {
+      return res.data;
+    })
+    .catch((error) => {
+      return error;
+    });
+  return response;
+}
+
+async function getPdfStream(filename) {
+  updateConfig();
+
+  const response = await axios
+    .get(
+      "/participacion/pdf/" + filename,
+      config
+    )
+    .then((res) => {
+      return res.data;
+    })
+    .catch((error) => {
+      return error;
+    });
+  return response;
+}
+
+async function getImageStream(filename) {
+  updateConfig();
+  const response = await axios
+    .get(
+      "/participacion/image/" + filename,
+      config
     )
     .then((res) => {
       return res.data;
@@ -109,4 +143,4 @@ async function actualizarEstatusSocio(participacionId, estatus, feedback) {
     });
 }
 
-export { obtenerSocio, obtenerRFP, actualizarEstatusSocio, obtenerListaParticipaciones, obtenerFileNamesParticipaciones, getFile };
+export { obtenerSocio, obtenerRFP, actualizarEstatusSocio, obtenerListaParticipaciones, obtenerFileNamesParticipaciones, getFile, getPdfStream, getImageStream };

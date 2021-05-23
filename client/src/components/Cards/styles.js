@@ -59,7 +59,6 @@ const useStyles = makeStyles((theme) => ({
   },
   socioInvolucradoCard: {
     width: "400px",
-    height: "210px",
     display: "flex",
     flexDirection: "column",
     justifyContent: "space-between",

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 
-import { Button, Card, CardContent, Typography } from "@material-ui/core";
+import { Button, Card, CardContent, Typography, Link } from "@material-ui/core";
 import useStyles from "../Cards/styles";
 
-import { obtenerSocio, obtenerFileNamesParticipaciones, getFile } from "../../fetchers/fetcher";
+import { obtenerSocio, obtenerFileNamesParticipaciones, getFile, getPdfStream } from "../../fetchers/fetcher";
 
 export default function SimpleCard({
   user,
@@ -47,6 +47,20 @@ export default function SimpleCard({
     }
   }, []);
 
+  const downloadPdf = (filename) => {
+    getPdfStream(filename)
+        .then((pdfBase64) => {
+          const linkSource = `data:application/pdf;base64,${pdfBase64}`;
+          const downloadLink = document.createElement("a");
+          downloadLink.href = linkSource;
+          downloadLink.download = filename;
+          downloadLink.click();
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+  }
+
   return (
     <div className="rfp-card">
       <Card className={classes.socioInvolucradoCard}>
@@ -73,9 +87,14 @@ export default function SimpleCard({
           <div className={classes.containerText}>
             <Typography className={classes.labelText}>Archivos:</Typography>
           </div>
-            {files.map((elem) => (
-              <Typography key={elem} className={classes.valueText}>{elem}</Typography>
-            ))}
+            {files.map((elem, index) => {
+              console.log(elem, index)
+              return (
+                <div>
+                <Link key={index} className={classes.valueText} onClick={() => downloadPdf(elem)}>{elem}</Link>
+              </div>
+              )
+            })}
           {estatus === "Activo" && (
             <Button
               size="small"

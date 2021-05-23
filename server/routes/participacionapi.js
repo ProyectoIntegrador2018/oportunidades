@@ -175,6 +175,71 @@ router.get('/get-file/:filename', userMiddleware, (req, res) => {
   });
 });
 
+// @route GET /pdf/:filename
+// @desc Display pdf
+router.get('/pdf/:filename', (req, res) => {
+  gfs.files.findOne({ filename: req.params.filename }, (err, file) => {
+    console.log('file', file);
+
+    // Check if file
+    if (!file || file.length === 0) {
+      return res.status(404).json({
+        err: 'No file exists'
+      });
+    }
+
+    // Check if pdf
+    if (file.contentType === 'application/pdf') {
+      res.set('Content-Type', file.contentType);
+      res.set('Content-Disposition', 'attachment; filename="' + file.filename + '"');
+
+      // Read output to browser
+      const readstream = gfs.createReadStream(file.filename);
+
+      const bufs = [];
+      readstream.on('data', function (chunk) {
+        bufs.push(chunk);
+      });
+      readstream.on('end', function () {
+        const fbuf = Buffer.concat(bufs);
+        const base64 = fbuf.toString('base64');
+        console.log("base64", base64);
+        res.status(200).send(base64);
+      });
+
+      // readstream.pipe(res);
+    } else {
+      res.status(404).json({
+        err: 'Not a pdf file'
+      });
+    }
+  });
+});
+
+// @route GET /image/:filename
+// @desc Display Image
+router.get('/image/:filename', (req, res) => {
+  gfs.files.findOne({ filename: req.params.filename }, (err, file) => {
+    // Check if file
+    if (!file || file.length === 0) {
+      return res.status(404).json({
+        err: 'No file exists'
+      });
+    }
+
+    // Check if image
+    if (file.contentType === 'image/jpeg' || file.contentType === 'image/png') {
+      // Read output to browser
+      const readstream = gfs.createReadStream(file.filename);
+      readstream.pipe(res);
+    } else {
+      res.status(404).json({
+        err: 'Not an image'
+      });
+    }
+  });
+});
+
 /**
  * Ruta para que un socio pueda borrar un archivo previamente subido a gridfs
  * @implements {userMiddleWare} Function to check if the request is sent by a logged user
