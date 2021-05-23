@@ -14,20 +14,31 @@ import {
 import CloseIcon from "@material-ui/icons/Close";
 import useStyles from "./styles";
 
-import DatePicker from "react-datepicker";
+import DatePicker, { registerLocale } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import axios from "axios";
+import es from "date-fns/locale/es";
+registerLocale("es", es);
 
-// Función para date picker
-let handleColor = (time) => {
-  return time.getHours() > 12 ? "text-success" : "text-error";
+// Función que redondea una Date hacia arriba, al intervalo de 30 minutos más cercano
+const roundUpTime = (date) => {
+  if (date.getMinutes() >= 30) {
+    date.setHours(date.getHours() + 1, 0, 0, 0);
+  } else {
+    date.setHours(date.getHours(), 30, 0, 0, 0);
+  }
+  return date;
 };
 
 export default function NuevoEvento(params) {
-  const [open, setOpen] = useState(false);
-  const [nombre, guardarNombre] = useState("");
-  const [fecha, guardarFecha] = useState(new Date());
-  const [link, guardarLink] = useState("");
+  const [open, setOpen] = React.useState(false);
+  const [horaActualRedondeada, guardarHoraActualRedondeada] = React.useState(
+    roundUpTime(new Date())
+  );
+  const [nombre, guardarNombre] = React.useState("");
+  const [link, guardarLink] = React.useState("");
+  const [fecha, guardarFecha] = React.useState(horaActualRedondeada);
+  const [excludedTimes, setExcludedTimes] = React.useState([]);
 
   const classes = useStyles();
 
@@ -39,6 +50,8 @@ export default function NuevoEvento(params) {
   };
 
   useEffect(() => {
+    updateExcludedTimes();
+
     setOpen(params.isOpen);
   }, [params]);
 
@@ -48,7 +61,7 @@ export default function NuevoEvento(params) {
   };
   // TODO: Refactor to fetchers
   const handleSave = () => {
-    // Guardar el nuevo usuario en la base de datos
+    // Guardar el nuevo evento en la base de datos
     axios
       .post(
         "/events/",
@@ -64,9 +77,58 @@ export default function NuevoEvento(params) {
         window.location.reload();
       })
       .catch((error) => {
+        if (error.message.includes("409")) {
+          updateExcludedTimes();
+        }
         console.log(error);
       });
   };
+
+  const updateExcludedTimes = () => {
+    axios
+      .get(
+        "/events/get-occupied-event-times/" +
+          horaActualRedondeada.toISOString(),
+        config
+      )
+      .then((res) => {
+        const occupiedTimes = res.data.occupiedTimes.map((elem) => {
+          return new Date(elem);
+        });
+
+        setExcludedTimes(occupiedTimes);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const isExcludedDate = () => {
+    return (
+      fecha < new Date() ||
+      excludedTimes.some((elem) => elem.getTime() === fecha.getTime())
+    );
+  };
+
+  const isSendDisabled = () => {
+    return nombre.length < 1 || link.length < 1 || isExcludedDate();
+  };
+
+  const calculateMinTime = () => {
+    // Si la fecha seleccionada es hoy, deshabilitar horarios anteriores a la hora actual
+    const now = new Date();
+    if (now.getDate() === fecha.getDate()) {
+      return now;
+    } else {
+      return now.setHours(0, 0, 0, 0);
+    }
+  };
+
+  const dateMinTime = calculateMinTime();
+
+  const excludedTimesInSelectedDay = excludedTimes.filter((date) => {
+    return date.getDate() === fecha.getDate();
+  });
 
   return (
     <div>
@@ -97,36 +159,56 @@ export default function NuevoEvento(params) {
               Selecciona la fecha de la siguiente reunión
             </FormLabel>
           </div>
-          <DatePicker
-            showTimeSelect
-            selected={fecha}
-            onChange={(date) => guardarFecha(date)}
-            timeClassName={handleColor}
-            minDate={new Date()}
-            locale="es"
-            title="Selecciona un horario"
-          />
-          <TextField
-            id="nombre"
-            className={classes.textField}
-            label="Nombre"
-            margin="normal"
-            fullWidth
-            defaultValue={nombre}
-            onChange={(event) => guardarNombre(event.target.value)}
-          />
-          <TextField
-            id="link"
-            className={classes.textField}
-            label="Link"
-            margin="normal"
-            fullWidth
-            defaultValue={link}
-            onChange={(event) => guardarLink(event.target.value)}
-          />
+          <div className="mb-0">
+            <DatePicker
+              showTimeSelect
+              selected={fecha}
+              onChange={(date) => guardarFecha(date)}
+              excludeTimes={excludedTimesInSelectedDay}
+              minDate={dateMinTime}
+              minTime={dateMinTime}
+              maxTime={new Date(new Date().setHours(23, 59, 0, 0))}
+              dateFormat="dd/MM/yyyy h:mm aa"
+              timeFormat="h:mm aa"
+              timeCaption="Hora"
+              locale="es"
+            />
+          </div>
+          <div>
+            {isExcludedDate() ? (
+              <p className="error-titulo-rojo">
+                El horario seleccionado no está disponible
+              </p>
+            ) : null}
+          </div>
+          <div className="mb-0">
+            <TextField
+              id="nombre"
+              className={classes.textField}
+              label="Nombre"
+              margin="normal"
+              fullWidth
+              defaultValue={nombre}
+              onChange={(event) => guardarNombre(event.target.value)}
+            />
+            <TextField
+              id="link"
+              className={classes.textField}
+              label="Link"
+              margin="normal"
+              fullWidth
+              defaultValue={link}
+              onChange={(event) => guardarLink(event.target.value)}
+            />
+          </div>
         </DialogContent>
         <DialogActions>
-          <Button autoFocus onClick={handleSave} className="boton">
+          <Button
+            autoFocus
+            onClick={handleSave}
+            disabled={isSendDisabled()}
+            className="boton"
+          >
             GUARDAR EVENTO
           </Button>
         </DialogActions>
