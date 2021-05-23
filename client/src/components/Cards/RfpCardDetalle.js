@@ -255,17 +255,18 @@ export default function SimpleCard({ rfp, isParticipating }) {
           {userType === "socio" ? null : (
             <ListaEventos key={rfp._id} rfp={rfp} />
           )}
-          <Typography className={classes.sectionSubtitle}>Carga de Archivos:</Typography>
-          <form>
-            <div className={classes.containerText}>
-              <Input type="file"
-                onChange={(event) => setSelectedFile(event.target.files[0])}/> 
-              <Button className="boton" onClick={onFileUpload}> 
-                SUBIR ARCHIVO
-              </Button> 
-            </div> 
-          </form>
-            
+          {userType === "socio" && isParticipating ? (
+            <form>
+              <Typography className={classes.sectionSubtitle}>Carga de Archivos:</Typography>
+              <div className={classes.containerText}>
+                <Input type="file"
+                  onChange={(event) => setSelectedFile(event.target.files[0])}/> 
+                <Button className="boton" onClick={onFileUpload}> 
+                  SUBIR ARCHIVO
+                </Button> 
+              </div> 
+            </form>
+          ) : null}
         </CardContent>
         <CardActions>
           <div className={classes.contenedorBotones}>
