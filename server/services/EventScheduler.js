@@ -29,7 +29,7 @@ eventScheduler.checkForEventStatusUpdate = () => {
           const rfpId = event.rfp;
           RFPModel.findById(rfpId)
             .then((rfp) => {
-              if (rfp.estatus === "Activo") {
+              if (rfp != null && rfp.estatus === "Activo") {
                 const prevStatus = rfp.estatus;
                 const nextStatus = getNextStatus(rfp.estatus);
                 RFPModel.update(
