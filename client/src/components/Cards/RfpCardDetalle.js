@@ -25,17 +25,20 @@ export default function SimpleCard({ rfp, isParticipating }) {
       Authorization: "Bearer " + sessionStorage.getItem("token"),
       "Content-Type": "application/json",
     },
+    params: {
+      rfpInvolucrado: rfp._id
+    },
   };
 
   // On file upload (click the upload button) 
-  const onFileUpload = () => { 
-    const formData = new FormData(); 
+  const onFileUpload = () => {
+    const formData = new FormData();
 
     formData.append( 
-      "file", 
-      selectedFile, 
+      "file",
+      selectedFile,
       selectedFile.name
-    ); 
+    );
 
     axios.post("/participacion/upload-file", formData, config)
       .then((res) => {
