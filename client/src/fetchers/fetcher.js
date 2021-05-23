@@ -46,6 +46,37 @@ async function obtenerListaParticipaciones(rfp_id) {
   return response;
 }
 
+async function obtenerFileNamesParticipaciones(participacionId){
+  updateConfig();
+  const response = await axios
+    .get(
+      "/participacion/get-files/" + participacionId,
+      config
+    )
+    .then((res) => {
+      return res.data;
+    })
+    .catch((error) => {
+      return error;
+    });
+  return response;
+}
+
+async function getFile(filename){
+  updateConfig();
+  const response = await axios
+    .get(
+      "/participacion/get-file/" + filename
+    )
+    .then((res) => {
+      return res.data;
+    })
+    .catch((error) => {
+      return error;
+    });
+  return response;
+}
+
 async function obtenerRFP(rfp_id) {
   updateConfig();
   const response = await axios
@@ -78,4 +109,4 @@ async function actualizarEstatusSocio(participacionId, estatus, feedback) {
     });
 }
 
-export { obtenerSocio, obtenerRFP, actualizarEstatusSocio, obtenerListaParticipaciones };
+export { obtenerSocio, obtenerRFP, actualizarEstatusSocio, obtenerListaParticipaciones, obtenerFileNamesParticipaciones, getFile };

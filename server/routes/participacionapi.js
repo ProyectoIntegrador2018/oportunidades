@@ -194,7 +194,6 @@ router.delete("/delete-file/:id", userMiddleware, (req, res) => {
  * @param {Object} req contiene el id de la participacion
  * @param {Object} res respuesta del request
  */
-
 router.get("/get-files/:participacionId", userMiddleware, (req, res) => {
   ParticipacionFileController
   .getFilesFromParticipacion(req.params.participacionId)
