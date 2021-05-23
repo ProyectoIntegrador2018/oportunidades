@@ -24,4 +24,17 @@ participacionFile.createParticipacionFile = (rfpInvolucrado, socioInvolucrado, f
   });
 };
 
+participacionFile.getFilesFromParticipacion = (participacionId) => {
+  return new Promise((resolve, reject) => {
+    ParticipacionFile.find({ participacion: participacionId }, "name")
+      .then((files) => {
+        const filenames = files.map((file) => {
+          return file.name;
+        });
+        resolve(filenames);
+      })
+      .catch((err) => reject(err));
+  });
+}
+
 module.exports = participacionFile;

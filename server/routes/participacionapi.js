@@ -176,9 +176,9 @@ router.get('/get-file/:filename', userMiddleware, (req, res) => {
 });
 
 /**
- * Ruta para que un socio pueda subir un archivo a gridfs
+ * Ruta para que un socio pueda borrar un archivo previamente subido a gridfs
  * @implements {userMiddleWare} Function to check if the request is sent by a logged user
- * @param {Object} req contiene el id del rfp
+ * @param {Object} req contiene el id del archivo
  * @param {Object} res respuesta del request
  */
 router.delete("/delete-file/:id", userMiddleware, (req, res) => {
@@ -186,6 +186,24 @@ router.delete("/delete-file/:id", userMiddleware, (req, res) => {
     if (error) return res.status(404).send({ error });
     res.sendStatus(204);
   });
+});
+
+/**
+ * Ruta para encontrar archivos de cada participacion
+ * @implements {userMiddleWare} Function to check if the request is sent by a logged user
+ * @param {Object} req contiene el id de la participacion
+ * @param {Object} res respuesta del request
+ */
+
+router.get("/get-files/:participacionId", userMiddleware, (req, res) => {
+  ParticipacionFileController
+  .getFilesFromParticipacion(req.params.participacionId)
+    .then((filenames) => {
+      return res.send(filenames);
+    })
+    .catch((error) => {
+      return res.status(400).send({ error });
+    });
 });
 
 router.get("/ping", userMiddleware, (req, res) => {
