@@ -105,7 +105,7 @@ eventController.editEvent = (eventId, updates) => {
   return new Promise((resolve, reject) => {
     const updatedDate = new Date(updates.date);
 
-    overlappingEventExists(updatedDate)
+    overlappingEventExists(updatedDate, eventId)
       .then((overlapExists) => {
         // If an overlapping event is found, abort event update
         if (overlapExists) {
@@ -211,14 +211,24 @@ eventController.getOccupiedEventTimesFromDate = (eventDateISOString, eventId=nul
  * @param {Date} eventDate 
  * @returns {boolean} True if overlap exists, false otherwise
  */
-function overlappingEventExists(eventDate) {
+function overlappingEventExists(eventDate, eventId=null) {
   return new Promise((resolve, reject) => {
     const oneHourBeforeEventDate = addMinutesToDate(eventDate, -60);
     const oneHourAfterEventDate = addMinutesToDate(eventDate, 60);
 
+    const dbQuery = {
+      date: { 
+        $gte: oneHourBeforeEventDate,
+        $lte: oneHourAfterEventDate 
+      },
+    };
+    if (eventId) {
+      dbQuery._id = { $ne: eventId };
+    }
+
     // Check if there are no events with date that overlaps with newEvent, 
     // considering event duration is 1hr 30 min & event dates can be every 30 min
-    Event.find({ date: { $gte: oneHourBeforeEventDate, $lte: oneHourAfterEventDate } }, "date")
+    Event.find(dbQuery, "date")
       .then((overlappingEvents) => {
         resolve(overlappingEvents.length > 0);
       })
