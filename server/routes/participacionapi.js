@@ -1,3 +1,5 @@
+const Participacion = require("../models/Participaciones");
+const ParticipacionFileController = require("../controllers/ParticipacionFileController");
 const express = require("express");
 const multer = require("multer");
 const path = require("path");
@@ -145,16 +147,21 @@ router.post(
   [userMiddleware, upload.single("file")],
   (req, res) => {
     if (req.file) {
-      return res.send({ file: req.file });
+      ParticipacionFileController.createParticipacionFile(req.query.rfpInvolucrado, req.user._id, req.file.filename)
+        .then(() => {
+          return res.send({ file: req.file });
+        })
+        .catch((err) => console.log(err));
+    } else {
+      return res.status(400).send({ success: false });
     }
-    return res.status(400).send({ success: false });
   }
 );
 
 /**
- * Ruta para que un socio pueda subir un archivo a gridfs
+ * Ruta para recibir la información de un archivo
  * @implements {userMiddleWare} Function to check if the request is sent by a logged user
- * @param {Object} req contiene el id del rfp
+ * @param {Object} req contiene el nombre del archivo en la DB
  * @param {Object} res respuesta del request
  */
 router.get('/get-file/:filename', userMiddleware, (req, res) => {
@@ -169,9 +176,43 @@ router.get('/get-file/:filename', userMiddleware, (req, res) => {
 });
 
 /**
- * Ruta para que un socio pueda subir un archivo a gridfs
+ * Ruta para recibir la información binaria de un archivo convertida a formato base64
  * @implements {userMiddleWare} Function to check if the request is sent by a logged user
- * @param {Object} req contiene el id del rfp
+ * @param {Object} req contiene el nombre del archivo en la DB
+ * @param {Object} res respuesta del request
+ */
+router.get('/get-base64-file/:filename', userMiddleware, (req, res) => {
+  gfs.files.findOne({ filename: req.params.filename }, (err, file) => {
+    if (!file || file.length === 0) {
+      return res.status(404).json({
+        err: 'No file exists'
+      });
+    }
+
+    const readstream = gfs.createReadStream(file.filename);
+    const bufs = [];
+    readstream.on('data', function (chunk) {
+      bufs.push(chunk);
+    });
+
+    readstream.on('end', function () {
+      const fbuf = Buffer.concat(bufs);
+      const base64 = fbuf.toString('base64');
+
+      const fileData = {
+        base64: base64,
+        contentType: file.contentType
+      }
+
+      res.status(200).send(fileData);
+    });
+  });
+});
+
+/**
+ * Ruta para que un socio pueda borrar un archivo previamente subido a gridfs
+ * @implements {userMiddleWare} Function to check if the request is sent by a logged user
+ * @param {Object} req contiene el id del archivo
  * @param {Object} res respuesta del request
  */
 router.delete("/delete-file/:id", userMiddleware, (req, res) => {
@@ -179,6 +220,23 @@ router.delete("/delete-file/:id", userMiddleware, (req, res) => {
     if (error) return res.status(404).send({ error });
     res.sendStatus(204);
   });
+});
+
+/**
+ * Ruta para encontrar archivos de cada participacion
+ * @implements {userMiddleWare} Function to check if the request is sent by a logged user
+ * @param {Object} req contiene el id de la participacion
+ * @param {Object} res respuesta del request
+ */
+router.get("/get-files/:participacionId", userMiddleware, (req, res) => {
+  ParticipacionFileController
+  .getFilesFromParticipacion(req.params.participacionId)
+    .then((filenames) => {
+      return res.send(filenames);
+    })
+    .catch((error) => {
+      return res.status(400).send({ error });
+    });
 });
 
 router.get("/ping", userMiddleware, (req, res) => {

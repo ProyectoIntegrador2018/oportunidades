@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 
-import { Button, Card, CardContent, Typography } from "@material-ui/core";
+import { Button, Card, CardContent, Typography, Link } from "@material-ui/core";
 import useStyles from "../Cards/styles";
 
-import { obtenerSocio } from "../../fetchers/fetcher";
+import { obtenerSocio, obtenerFileNamesParticipaciones, getBase64File } from "../../fetchers/fetcher";
 
 export default function SimpleCard({
   user,
@@ -18,6 +18,7 @@ export default function SimpleCard({
     email: "",
     empresa: "",
   });
+  const [files, setFiles] = useState([]);
 
   // Obtener tipo de usuario
   const userType = sessionStorage.getItem("userType");
@@ -35,8 +36,30 @@ export default function SimpleCard({
         .catch((error) => {
           console.log(error);
         });
+        
+      obtenerFileNamesParticipaciones(participacionId)
+        .then((filenames) =>{
+          setFiles(filenames);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     }
   }, []);
+
+  const downloadFile = (filename) => {
+    getBase64File(filename)
+      .then((fileData) => {
+        const linkSource = `data:${fileData.contentType};base64,${fileData.base64}`;
+        const downloadLink = document.createElement("a");
+        downloadLink.href = linkSource;
+        downloadLink.download = filename;
+        downloadLink.click();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
 
   return (
     <div className="rfp-card">
@@ -61,6 +84,17 @@ export default function SimpleCard({
             <Typography className={classes.labelText}>Estatus:</Typography>
             <Typography className={classes.valueText}>{estatus}</Typography>
           </div>
+          <div className={classes.containerText}>
+            <Typography className={classes.labelText}>Archivos:</Typography>
+          </div>
+            {files.map((elem, index) => {
+              console.log(elem, index)
+              return (
+                <div>
+                <Link key={index} className={classes.valueText} onClick={() => downloadFile(elem)}>{elem}</Link>
+              </div>
+              )
+            })}
           {estatus === "Activo" && (
             <Button
               size="small"
