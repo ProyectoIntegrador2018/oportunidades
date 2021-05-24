@@ -2,8 +2,12 @@ const mongoose = require("mongoose");
 const validator = require("validator");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const moment = require("moment");
 
 const schema = new mongoose.Schema({
+  createdOn: {
+    type: Date,
+  },
   nombrecliente: {
     type: String,
   },
@@ -118,6 +122,21 @@ schema.statics.getNombreCliente = function (rfpId) {
       .catch((error) => {
         reject(error);
       });
+  });
+};
+
+schema.statics.getRfpsCreatedNDaysAgo = function (daysAgo) {
+  const today = new Date();
+  const pastDate = new Date().setDate(today.getDate() - daysAgo);
+  return new Promise((resolve, reject) => {
+    this.find({
+      createdOn: {
+        $gte: moment(pastDate).startOf("day"),
+        $lte: moment(pastDate).endOf("day"),
+      },
+    })
+      .then((rfps) => resolve(rfps))
+      .catch((error) => reject(error));
   });
 };
 

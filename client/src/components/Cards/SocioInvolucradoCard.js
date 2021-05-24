@@ -1,25 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import { Button, Card, CardContent, Typography } from "@material-ui/core";
-import { obtenerListaInvolucrados } from "../../fetchers/fetcher";
 
-const useStyles = makeStyles({
-  title: {
-    fontSize: 20,
-    fontWeight: 800,
-    color: "#EE5D36",
-  },
-  estatus: {
-    fontSize: 18,
-    fontWeight: 800,
-    textAlign: "left",
-    marginRight: "1em",
-  },
-  texto: {
-    fontSize: 18,
-    textAlign: "left",
-  },
-});
+import { Button, Card, CardContent, Typography, Link } from "@material-ui/core";
+import useStyles from "../Cards/styles";
+
+import { obtenerSocio, obtenerFileNamesParticipaciones, getBase64File } from "../../fetchers/fetcher";
 
 export default function SimpleCard({
   user,
@@ -34,13 +18,14 @@ export default function SimpleCard({
     email: "",
     empresa: "",
   });
+  const [files, setFiles] = useState([]);
 
   // Obtener tipo de usuario
   const userType = sessionStorage.getItem("userType");
 
   useEffect(() => {
     if (userType === "admin" || userType === "cliente") {
-      obtenerListaInvolucrados(user)
+      obtenerSocio(user)
         .then((data) => {
           setSocioData({
             nombre: data.name,
@@ -51,28 +36,65 @@ export default function SimpleCard({
         .catch((error) => {
           console.log(error);
         });
+        
+      obtenerFileNamesParticipaciones(participacionId)
+        .then((filenames) =>{
+          setFiles(filenames);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     }
   }, []);
 
+  const downloadFile = (filename) => {
+    getBase64File(filename)
+      .then((fileData) => {
+        const linkSource = `data:${fileData.contentType};base64,${fileData.base64}`;
+        const downloadLink = document.createElement("a");
+        downloadLink.href = linkSource;
+        downloadLink.download = filename;
+        downloadLink.click();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
   return (
     <div className="rfp-card">
-      <Card className="card-Socio">
+      <Card className={classes.socioInvolucradoCard}>
         <CardContent>
-          <Typography className={classes.title}>{socioData.nombre}</Typography>
-          <div className="container-text-socioInvolucrado">
-            <Typography className={classes.estatus}>Email:</Typography>
-            <Typography className={classes.texto}>{socioData.email}</Typography>
+          <Typography className={classes.itemName}>
+            {socioData.nombre}
+          </Typography>
+          <div className={classes.containerText}>
+            <Typography className={classes.labelText}>Email:</Typography>
+            <Typography className={classes.valueText}>
+              {socioData.email}
+            </Typography>
           </div>
-          <div className="container-text-socioInvolucrado">
-            <Typography className={classes.estatus}>Empresa:</Typography>
-            <Typography className={classes.texto}>
+          <div className={classes.containerText}>
+            <Typography className={classes.labelText}>Empresa:</Typography>
+            <Typography className={classes.valueText}>
               {socioData.empresa}
             </Typography>
           </div>
-          <div className="container-text-socioInvolucrado">
-            <Typography className={classes.estatus}>Estatus:</Typography>
-            <Typography className={classes.texto}>{estatus}</Typography>
+          <div className={classes.containerText}>
+            <Typography className={classes.labelText}>Estatus:</Typography>
+            <Typography className={classes.valueText}>{estatus}</Typography>
           </div>
+          <div className={classes.containerText}>
+            <Typography className={classes.labelText}>Archivos:</Typography>
+          </div>
+            {files.map((elem, index) => {
+              console.log(elem, index)
+              return (
+                <div>
+                <Link key={index} className={classes.valueText} onClick={() => downloadFile(elem)}>{elem}</Link>
+              </div>
+              )
+            })}
           {estatus === "Activo" && (
             <Button
               size="small"
@@ -84,6 +106,8 @@ export default function SimpleCard({
                   estatus
                 );
               }}
+              variant="contained"
+              className="boton-alt"
             >
               RECHAZAR PROPUESTA
             </Button>

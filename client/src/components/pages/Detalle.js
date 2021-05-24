@@ -1,15 +1,28 @@
 import React, { useState, useEffect } from "react";
 import { useMatch } from "react-router-dom";
-import { Card, CircularProgress, Grid, Typography } from "@material-ui/core";
+import {
+  Button,
+  Card,
+  CircularProgress,
+  Grid,
+  Typography,
+} from "@material-ui/core";
 import axios from "axios";
 import "../../styles/globalStyles.css";
 import SideMenu from "../SideMenu/SideMenu";
 import RfpCardDetalle from "../Cards/RfpCardDetalle";
 import SocioInvolucradoCard from "../Cards/SocioInvolucradoCard";
 import RechazarPropuesta from "../Dialogs/RechazarPropuesta";
-import { obtenerRFP } from "../../fetchers/fetcher";
+import {
+  obtenerRFP,
+  obtenerListaParticipaciones,
+} from "../../fetchers/fetcher";
+import AceptarPropuesta from "../Dialogs/AceptarPropuesta";
+import useStyles from "./styles";
 
 const Inicio = ({ route }) => {
+  const classes = useStyles();
+
   let match = useMatch("/detalle/:rfp_id");
   // state de RFP
   const [RFP, setRFP] = useState({});
@@ -21,8 +34,10 @@ const Inicio = ({ route }) => {
   );
   // state de control de si ya se hizo la llamada de RFP a la base de datos
   const [llamadaRFP, guardarLlamadaRFP] = useState(false);
-  // state de control de si el modal de retroalimentación está abierto
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  // state de control de si el modal de rechazo de socio está abierto
+  const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
+  // state de control de si el modal de socio ganador está abierto
+  const [isAcceptModalOpen, setIsAcceptModalOpen] = useState(false);
   // state con el nombre del socio que esta siendo rechazado
   const [socioRechazado, setSocioRechazado] = useState({});
   // state con el estado de participación
@@ -37,29 +52,13 @@ const Inicio = ({ route }) => {
         "Content-Type": "application/json",
       },
     };
-    const obtenerListaInvolucrados = () => {
-      axios
-        .get(
-          "/participacion/get-participaciones-rfp/" + match.params.rfp_id,
-          config
-        )
-        .then((res) => {
-          // guardar lista de participaciones en state
-          guardarListaParticipaciones(res.data);
-          // actualizar variable de control
-          guardarLlamadaParticipaciones(true);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    };
     const obtenerEstatusParticipacion = () => {
       axios
         .get("/participacion/get-participaciones-socio", config)
         .then((res) => {
           let isParticipating = false;
           for (const idx in res.data) {
-            if(res.data[idx].rfpInvolucrado === match.params.rfp_id) {
+            if (res.data[idx].rfpInvolucrado === match.params.rfp_id) {
               isParticipating = true;
             }
           }
@@ -75,8 +74,18 @@ const Inicio = ({ route }) => {
         console.log(error);
       });
 
-    if (userType === "admin") obtenerListaInvolucrados();
-    if (userType === "cliente") obtenerListaInvolucrados();
+    if (userType === "admin" || userType == "cliente") {
+      obtenerListaParticipaciones(match.params.rfp_id)
+        .then((res) => {
+          // guardar lista de participaciones en state
+          guardarListaParticipaciones(res);
+          // actualizar variable de control
+          guardarLlamadaParticipaciones(true);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
     if (userType === "socio") obtenerEstatusParticipacion();
   }, []);
 
@@ -87,7 +96,22 @@ const Inicio = ({ route }) => {
       participacionId: participacionId,
       estatus: estatus,
     });
-    setIsModalOpen(true);
+    setIsRejectModalOpen(true);
+  };
+
+  const handleChooseWinner = (e) => {
+    e.preventDefault();
+    setIsAcceptModalOpen(true);
+  };
+
+  const hasValidCandidates = () => {
+    let ans = false;
+    let hasWinner = false;
+    listaParticipaciones.forEach((participation) => {
+      if (participation.socioEstatus === "Ganador") hasWinner = true;
+      else if (participation.socioEstatus === "Activo") ans = true;
+    });
+    return !hasWinner && ans;
   };
 
   return (
@@ -98,27 +122,51 @@ const Inicio = ({ route }) => {
         {!llamadaRFP ? (
           <CircularProgress color="secondary" />
         ) : (
-          <RfpCardDetalle key={match.params.rfp_id} rfp={RFP} isParticipating={isParticipating} />
+          <RfpCardDetalle
+            key={match.params.rfp_id}
+            rfp={RFP}
+            isParticipating={isParticipating}
+          />
         )}
         <RechazarPropuesta
-          setIsModalOpen={setIsModalOpen}
-          isOpen={isModalOpen}
+          setIsModalOpen={setIsRejectModalOpen}
+          isOpen={isRejectModalOpen}
           opportunityName={RFP.nombreOportunidad}
           socioName={socioRechazado.name}
           participacionId={socioRechazado.participacionId}
         />
+        {llamadaParticipaciones ? (
+          <AceptarPropuesta
+            setIsModalOpen={setIsAcceptModalOpen}
+            isOpen={isAcceptModalOpen}
+            opportunityName={RFP.nombreOportunidad}
+            listaParticipaciones={listaParticipaciones}
+          />
+        ) : null}
         {userType === "socio" ? null : (
           <Grid container direction="row" className="container-dashboard ">
             {llamadaParticipaciones ? (
               listaParticipaciones.length === 0 ? (
-                <Card className="cardNoHaySocios">
+                <Card className="card-mensaje">
                   <Typography>
                     No hay socios involucrados hasta ahora
                   </Typography>
                 </Card>
               ) : (
-                <Card className="cardHaySocios">
-                  <Typography>Socios involucrados:</Typography>
+                <Card className="card-mensaje">
+                  <Typography className={classes.sectionSubtitle}>Socios involucrados</Typography>
+                  {hasValidCandidates() ? (
+                    <Button
+                      size="small"
+                      onClick={(e) => {
+                        handleChooseWinner(e);
+                      }}
+                      variant="contained"
+                      className="boton-alt"
+                    >
+                      SELECCIONAR GANADOR
+                    </Button>
+                  ) : null}
                 </Card>
               )
             ) : null}

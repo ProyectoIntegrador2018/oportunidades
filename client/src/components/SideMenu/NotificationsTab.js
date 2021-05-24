@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Grid, List, Button } from "@material-ui/core";
 import useStyles from "../SideMenu/styles";
 import NotificationFactory from "../SideMenu/NotificationFactory";
@@ -9,6 +10,9 @@ export default function NotificationsTab(props) {
 
   // siempre muestra 5 notificaciones al abrir la barra de notificaciones
   const [isExtended, setIsExtended] = useState(false);
+
+  // hook for navigation
+  const navigate = useNavigate();
 
   const toggleExpansion = (e) => {
     e.preventDefault();
@@ -35,7 +39,7 @@ export default function NotificationsTab(props) {
       <Grid container className={classes.notificationsPaper}>
         <List anchor="right">
           {sortedNotifications.map((notif) => (
-            <NotificationFactory component={notif} key={notif._id} />
+            <NotificationFactory component={notif} navigate={navigate} key={notif._id} />
           ))}
         </List>
       </Grid>
@@ -56,7 +60,7 @@ export default function NotificationsTab(props) {
       <Grid container className={classes.notificationsPaper}>
         <List anchor="right">
           {shownNotifications.map((notif) => (
-            <NotificationFactory component={notif} key={notif._id} />
+            <NotificationFactory component={notif} navigate={navigate} key={notif._id} />
           ))}
         </List>
         <Button

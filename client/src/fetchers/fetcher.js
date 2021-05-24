@@ -17,12 +17,77 @@ function updateConfig() {
   config = currentConfig;
 }
 
-async function obtenerListaInvolucrados(user) {
+async function obtenerSocio(user) {
   updateConfig();
   const response = await axios
     .get("/user/get-socio/" + user, config)
     .then((res) => {
       return res.data.user;
+    })
+    .catch((error) => {
+      return error;
+    });
+  return response;
+}
+
+async function obtenerListaParticipaciones(rfp_id) {
+  updateConfig();
+  const response = await axios
+    .get(
+      "/participacion/get-participaciones-rfp/" + rfp_id,
+      config
+    )
+    .then((res) => {
+      return res.data;
+    })
+    .catch((error) => {
+      return error;
+    });
+  return response;
+}
+
+async function obtenerFileNamesParticipaciones(participacionId){
+  updateConfig();
+  const response = await axios
+    .get(
+      "/participacion/get-files/" + participacionId,
+      config
+    )
+    .then((res) => {
+      return res.data;
+    })
+    .catch((error) => {
+      return error;
+    });
+  return response;
+}
+
+async function getFile(filename) {
+  updateConfig();
+  const response = await axios
+    .get(
+      "/participacion/get-file/" + filename,
+      config
+    )
+    .then((res) => {
+      return res.data;
+    })
+    .catch((error) => {
+      return error;
+    });
+  return response;
+}
+
+async function getBase64File(filename) {
+  updateConfig();
+
+  const response = await axios
+    .get(
+      "/participacion/get-base64-file/" + filename,
+      config
+    )
+    .then((res) => {
+      return res.data;
     })
     .catch((error) => {
       return error;
@@ -62,4 +127,4 @@ async function actualizarEstatusSocio(participacionId, estatus, feedback) {
     });
 }
 
-export { obtenerListaInvolucrados, obtenerRFP, actualizarEstatusSocio };
+export { obtenerSocio, obtenerRFP, actualizarEstatusSocio, obtenerListaParticipaciones, obtenerFileNamesParticipaciones, getFile, getBase64File };

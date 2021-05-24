@@ -21,6 +21,21 @@ const schema = new mongoose.Schema({
   estatusNuevo: {
     type: String,
   },
+  nombreEventoPrevio: {
+    type: String,
+  },
+  nombreEventoNuevo: {
+    type: String,
+  },
+  juntaEventoPrevio: {
+    type: String,
+  },
+  juntaEventoNuevo: {
+    type: String,
+  },
+  cambioLink: {
+    type: Boolean,
+  }
 });
 
 /**

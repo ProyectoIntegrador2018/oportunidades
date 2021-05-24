@@ -2,7 +2,8 @@
 /* Login y registro */
 .container {
    height: 100vh;
-   background-color: #EE5D36;
+   background-image: url("/login-bg.jpg");
+   background-size: cover;
 }
 
 .container-calendar-white {
@@ -26,21 +27,6 @@
    justify-content: center;
    align-content: center;
    margin: 2em;
-}
-
-.container-eventos {
-   display: flex;
-   flex-direction: column;
-   justify-content: flex-start;
-   align-items: flex-start;
-}
-
-.container-evento {
-   display: flex;
-   flex-direction: column;
-   justify-content: flex-start;
-   align-items: flex-start;
-   margin-top: 1.5em;
 }
 
 .textField {
@@ -97,8 +83,14 @@
 
 .boton {
    color: white !important;
-   background-color: #EE5D36 !important;
-   margin: 1.5em !important;
+   background-color: #e0673b !important;
+   margin: 1.5em 0.5em !important;
+}
+
+.boton-alt {
+   color: #d26d47 !important;
+   background-color: #fadfd2 !important;
+   margin: 1.5em 0.5em !important;
 }
 
 .boton-gris {
@@ -179,13 +171,6 @@
    background-color: white;
 }
 
-.toolbarIcon {
-   display: 'flex';
-   align-items: 'center';
-   justify-content: 'flex-end';
-   padding: '0 8px';
-}
-
 .menuButton {
    margin-right: 36
 }
@@ -210,19 +195,21 @@
 }
 
 .botonSeleccionar {
-   background-color: #5d5b5b8e !important;
-   color: white !important;
+   background-color: #f3f2f2 !important;
+   color: #e0673b !important;
    height: 2em;
    display: flex;
    justify-content: center;
    text-align: center;
-   font-weight: 600;
    align-items: center;
    margin-bottom: 0.3em;
+   box-shadow: "none";
 }
 
 .activo {
-   background-color: #EE5D36 !important;
+   background-color: #e0673b !important;
+   color: white !important;
+   font-weight: "bold";
 }
 
 .container-rfp {
@@ -233,18 +220,9 @@
    align-content: center;
 }
 
-.container-rfp-edit {
-   background-color: white;
-   display: flex;
-   flex-direction: column;
-   justify-content: center;
-   align-content: center;
-   width: 80%;
-}
-
 .container-dashboard {
    margin-top: 1em;
-   background-color: #EE5D36;
+   background-color: #f3f2f2;
    min-height: 100vh;
    padding: 1em;
    padding-top: 2em;
@@ -266,11 +244,11 @@
    }
 }
 
-.rfp-card-detalle {
+/* .rfp-card-detalle {
    display: flex;
    justify-content: center;
    min-width: 90%;
-}
+} */
 
 .fabIcon {
    z-index: 1000000;
@@ -302,23 +280,24 @@
 .editIcon {
    z-index: 1000;
    margin-left: 1em;
+   color: #d26d47;
 }
 
 .cardTitulo {
    font-weight: 800;
 }
 
-.cardMensaje {
-   min-width: 300px;
-   min-height: 50px;
-   display: flex;
+.card-mensaje {
+   padding: 10px 30px;
    justify-content: center;
    align-items: center;
 }
+
 .cardHaySocios {
-   width: 200px;
-   height: 50px;
+   width: 250px;
+   height: 75px;
    display: flex;
+   flex-direction: column;
    justify-content: center;
    align-items: center;
 }
@@ -332,7 +311,7 @@
 
 .container-detalle {
    margin-top: 1em;
-   background-color: #EE5D36;
+   background-color: #f3f2f2;
    min-height: 100vh;
    padding: 1em;
    padding-top: 2em;
@@ -348,14 +327,6 @@
    flex-direction: column;
    justify-content: space-between;
 }
-.card-Socio {
-   min-width: 400px;
-   height: 180px;
-   display: flex;
-   flex-direction: column;
-   justify-content: space-between;
-   
-}
 
 .container-text-socioInvolucrado {
    display: flex;
@@ -370,16 +341,6 @@
    .card-RFP {
       width: 300px;
       height: 320px;
-   }
-}
-
-@media only screen and (max-width: 415px) {
-   .card-Socio {
-      min-width: 330px;
-      height: 200px;
-   }
-   .container-text-socioInvolucrado {
-      flex-direction: column;
    }
 }
 

@@ -35,4 +35,14 @@ usuarioNotificacion.deleteUsuarioNotificacion = (id) => {
   });
 };
 
+usuarioNotificacion.toggleRead = (id) => {
+  return new Promise ((resolve, reject) => {
+    UsuarioNotificacion.findByIdAndUpdate(id,{read:true})
+    .then((notif)=>{
+      resolve(notif);
+    })
+    .catch((error)=>reject(error));
+  })
+}
+
 module.exports = usuarioNotificacion;

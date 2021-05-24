@@ -4,6 +4,7 @@ const notificationService = require("../services/NotificationService");
 const {
   NUEVA_OPORTUNIDAD,
   OPORTUNIDAD_ELIMINADA,
+  CAMBIO_ESTATUS,
 } = require("../utils/NotificationTypes");
 
 let rfpController = {};
@@ -11,6 +12,7 @@ let rfpController = {};
 rfpController.createrfp = (rawRFP, id) => {
   return new Promise((resolve, reject) => {
     rawRFP.createdBy = id;
+    rawRFP.createdOn = new Date();
     const rfp = new RFP(rawRFP);
     rfp
       .save()
@@ -18,11 +20,7 @@ rfpController.createrfp = (rawRFP, id) => {
         const job = {
           rfp: rfp,
         };
-        // return notificationQueue.add(NUEVA_OPORTUNIDAD, job);
-        return notificationService
-          .notificacionNuevaOportunidad(job)
-          .then((resp) => resp)
-          .catch((error) => reject(error));
+        notificationQueue.add(NUEVA_OPORTUNIDAD, job);
       })
       .then(() => {
         resolve(rfp);
@@ -59,12 +57,7 @@ rfpController.deleterfp = (id) => {
               nombreCliente: rfp.nombrecliente,
               nombreOportunidad: rfp.nombreOportunidad,
             };
-            // notificationQueue.add(OPORTUNIDAD_ELIMINADA, job);
-            notificationService
-              .notificacionOportunidadEliminada(job)
-              .then((resp) => resp)
-              .catch((error) => reject(error));
-            return rfp;
+            notificationQueue.add(OPORTUNIDAD_ELIMINADA, job);
           })
           .then((rfp) => {
             return resolve(rfp);
@@ -81,7 +74,22 @@ rfpController.updaterfp = (id, updatedRFP) => {
   return new Promise((resolve, reject) => {
     RFP.findByIdAndUpdate(updatedRFP.id, updatedRFP)
       .then((rfp) => {
-        return resolve(rfp);
+        const estatusPrevio = rfp.estatus;
+        const estatusNuevo = updatedRFP.estatus;
+
+        if (estatusPrevio == estatusNuevo) {
+          return resolve(rfp);
+        }
+
+        const job = {
+          rfpId: rfp._id,
+          estatusPrevio: rfp.estatus,
+          estatusNuevo: updatedRFP.estatus,
+          nombrecliente: updatedRFP.nombreCliente,
+          nombreOportunidad: updatedRFP.nombreOportunidad,
+        };
+
+        notificationQueue.add(CAMBIO_ESTATUS, job);
       })
       .catch((error) => {
         return reject(error);

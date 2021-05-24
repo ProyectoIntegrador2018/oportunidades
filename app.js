@@ -1,8 +1,9 @@
 require("dotenv").config();
+require('events').EventEmitter.defaultMaxListeners = 11
 const express = require("express");
 const path = require("path");
 const mongoose = require("mongoose");
-const eventScheduler = require('./server/services/EventScheduler');
+const eventScheduler = require("./server/services/EventScheduler");
 
 const port = process.env.PORT || 3001;
 
@@ -14,35 +15,42 @@ app.use(express.urlencoded({ extended: true }));
 
 mongoose.connect(database, { useNewUrlParser: true });
 
-eventScheduler.checkForEventStatusUpdate();
+const connection = mongoose.connection;
+connection.on("error", console.error.bind(console, "connection error:"));
+connection.on("open", () => {
+  
+  eventScheduler.checkForEventStatusUpdate();
 
-let adminConfig = require("./server/config/adminConfig");
+  eventScheduler.checkForOldRfps();
 
-const userRouter = require("./server/routes/userapi");
-app.use("/user", userRouter);
+  let adminConfig = require("./server/config/adminConfig");
 
-const rfpRouter = require("./server/routes/RFPapi");
-app.use("/rfp", rfpRouter);
+  const userRouter = require("./server/routes/userapi");
+  app.use("/user", userRouter);
 
-const adminRouter = require("./server/routes/adminapi");
-app.use("/admin", adminRouter);
+  const rfpRouter = require("./server/routes/RFPapi");
+  app.use("/rfp", rfpRouter);
 
-const participacionRouter = require("./server/routes/participacionapi");
-app.use("/participacion", participacionRouter);
+  const adminRouter = require("./server/routes/adminapi");
+  app.use("/admin", adminRouter);
 
-const eventRouter = require("./server/routes/eventapi");
-app.use("/events", eventRouter);
+  const participacionRouter = require("./server/routes/participacionapi");
+  app.use("/participacion", participacionRouter);
 
-const userNotifRouter = require("./server/routes/usuarioNotificacionapi");
-app.use("/notificaciones", userNotifRouter);
+  const eventRouter = require("./server/routes/eventapi");
+  app.use("/events", eventRouter);
 
-if (process.env.NODE_ENV === "production") {
-  app.use(express.static("client/build"));
-  app.get("*", function (req, res) {
-    res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
+  const userNotifRouter = require("./server/routes/usuarioNotificacionapi");
+  app.use("/notificaciones", userNotifRouter);
+
+  if (process.env.NODE_ENV === "production") {
+    app.use(express.static("client/build"));
+    app.get("*", function (req, res) {
+      res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
+    });
+  }
+
+  app.listen(port, () => {
+    console.log(`App listening on port ${port}`);
   });
-}
-
-app.listen(port, () => {
-  console.log(`App listening on port ${port}`);
 });
