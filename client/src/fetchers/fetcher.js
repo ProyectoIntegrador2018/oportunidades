@@ -78,28 +78,12 @@ async function getFile(filename) {
   return response;
 }
 
-async function getPdfStream(filename) {
+async function getBase64File(filename) {
   updateConfig();
 
   const response = await axios
     .get(
-      "/participacion/pdf/" + filename,
-      config
-    )
-    .then((res) => {
-      return res.data;
-    })
-    .catch((error) => {
-      return error;
-    });
-  return response;
-}
-
-async function getImageStream(filename) {
-  updateConfig();
-  const response = await axios
-    .get(
-      "/participacion/image/" + filename,
+      "/participacion/get-base64-file/" + filename,
       config
     )
     .then((res) => {
@@ -143,4 +127,4 @@ async function actualizarEstatusSocio(participacionId, estatus, feedback) {
     });
 }
 
-export { obtenerSocio, obtenerRFP, actualizarEstatusSocio, obtenerListaParticipaciones, obtenerFileNamesParticipaciones, getFile, getPdfStream, getImageStream };
+export { obtenerSocio, obtenerRFP, actualizarEstatusSocio, obtenerListaParticipaciones, obtenerFileNamesParticipaciones, getFile, getBase64File };

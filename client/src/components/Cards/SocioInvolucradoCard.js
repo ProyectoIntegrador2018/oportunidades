@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Button, Card, CardContent, Typography, Link } from "@material-ui/core";
 import useStyles from "../Cards/styles";
 
-import { obtenerSocio, obtenerFileNamesParticipaciones, getFile, getPdfStream } from "../../fetchers/fetcher";
+import { obtenerSocio, obtenerFileNamesParticipaciones, getBase64File } from "../../fetchers/fetcher";
 
 export default function SimpleCard({
   user,
@@ -47,18 +47,18 @@ export default function SimpleCard({
     }
   }, []);
 
-  const downloadPdf = (filename) => {
-    getPdfStream(filename)
-        .then((pdfBase64) => {
-          const linkSource = `data:application/pdf;base64,${pdfBase64}`;
-          const downloadLink = document.createElement("a");
-          downloadLink.href = linkSource;
-          downloadLink.download = filename;
-          downloadLink.click();
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+  const downloadFile = (filename) => {
+    getBase64File(filename)
+      .then((fileData) => {
+        const linkSource = `data:${fileData.contentType};base64,${fileData.base64}`;
+        const downloadLink = document.createElement("a");
+        downloadLink.href = linkSource;
+        downloadLink.download = filename;
+        downloadLink.click();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }
 
   return (
@@ -91,7 +91,7 @@ export default function SimpleCard({
               console.log(elem, index)
               return (
                 <div>
-                <Link key={index} className={classes.valueText} onClick={() => downloadPdf(elem)}>{elem}</Link>
+                <Link key={index} className={classes.valueText} onClick={() => downloadFile(elem)}>{elem}</Link>
               </div>
               )
             })}
