@@ -28,7 +28,20 @@ schema.statics.getEventsFromLastDay = function () {
 
 schema.statics.deleteManyEvents = function (eventIds) {
   return new Promise((resolve, reject) => {
-    // { _id: { $in: involvedUsersIds } }
+    this.deleteMany(
+      {
+        _id: {
+          $in: eventIds,
+        },
+      },
+      function (err, result) {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(result);
+        }
+      }
+    );
   });
 };
 

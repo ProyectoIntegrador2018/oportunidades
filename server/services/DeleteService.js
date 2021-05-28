@@ -90,7 +90,12 @@ const deleteRfpEvents = (rfpId) => {
   return new Promise((resolve, reject) => {
     EventModel.find({ rfp: { $eq: rfpId } })
       .then((events) => {
-        console.log("these are the events", events);
+        const eventIds = events.map((event) => event._id);
+        EventModel.deleteManyEvents(eventIds)
+          .then((resp) => {
+            resolve(success);
+          })
+          .catch((error) => reject(error));
         resolve(SUCCESS_RESP);
       })
       .catch((error) => reject(error));
