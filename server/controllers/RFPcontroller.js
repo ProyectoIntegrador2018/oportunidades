@@ -7,7 +7,7 @@ const {
   OPORTUNIDAD_ELIMINADA,
   CAMBIO_ESTATUS,
 } = require("../utils/NotificationTypes");
-
+const { DELETE_RFP } = require("../utils/DeleteTypes");
 let rfpController = {};
 
 rfpController.createrfp = (rawRFP, id) => {
@@ -51,7 +51,10 @@ rfpController.deleterfp = (id) => {
   return new Promise((resolve, reject) => {
     RFP.findByIdAndDelete(id)
       .then((rfp) => {
-        // TODO: send job to delete queue
+        const job = {
+          rfpId: rfp._id,
+        };
+        deleteQueue.add(DELETE_RFP, job);
         return rfp;
       })
       .then((rfp) => {
