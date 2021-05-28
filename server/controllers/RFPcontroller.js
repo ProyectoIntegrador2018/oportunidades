@@ -2,7 +2,6 @@ const RFP = require("../models/RFP");
 const deleteQueue = require("../services/DeleteQueue");
 const deleteService = require("../services/DeleteService");
 const notificationQueue = require("../services/NotificationQueue");
-const notificationService = require("../services/NotificationService");
 const {
   NUEVA_OPORTUNIDAD,
   OPORTUNIDAD_ELIMINADA,
@@ -78,30 +77,6 @@ rfpController.deleterfp = (id) => {
       });
   });
 };
-
-// rfpController.deleterfp = (id) => {
-//   return new Promise((resolve, reject) => {
-//     notificationService
-//       .deleteNotificacionesRfp(id)
-//       .then(() => {
-//         RFP.findByIdAndDelete(id)
-//           .then((rfp) => {
-//             const job = {
-//               nombreCliente: rfp.nombrecliente,
-//               nombreOportunidad: rfp.nombreOportunidad,
-//             };
-//             notificationQueue.add(OPORTUNIDAD_ELIMINADA, job);
-//           })
-//           .then((rfp) => {
-//             return resolve(rfp);
-//           })
-//           .catch((error) => {
-//             return reject(error);
-//           });
-//       })
-//       .catch((error) => reject(error));
-//   });
-// };
 
 rfpController.updaterfp = (id, updatedRFP) => {
   return new Promise((resolve, reject) => {
