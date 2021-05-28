@@ -14,7 +14,7 @@ if (process.env.REDIS_ENV === "production") {
 deleteQueue.LOCK_RENEW_TIME = 60 * 1000;
 
 deleteQueue.process(DELETE_RFP, (job) => {
-  return deleteService.deleteNotificacionesRfp(job);
+  return deleteService.deleteRfpRelatedData(job);
 });
 
 deleteQueue.on("stalled", function (job) {
