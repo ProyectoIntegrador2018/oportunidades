@@ -16,13 +16,19 @@ const schema = new mongoose.Schema({
   },
 });
 
-schema.statics.getEventsFromLastDay = function() {
+schema.statics.getEventsFromLastDay = function () {
   const today = new Date();
   const yesterday = new Date().setDate(today.getDate() - 1);
   return new Promise((resolve, reject) => {
     this.find({ date: { $gte: yesterday, $lt: today } })
       .then((events) => resolve(events))
       .catch((error) => reject(error));
+  });
+};
+
+schema.statics.deleteManyEvents = function (eventIds) {
+  return new Promise((resolve, reject) => {
+    // { _id: { $in: involvedUsersIds } }
   });
 };
 

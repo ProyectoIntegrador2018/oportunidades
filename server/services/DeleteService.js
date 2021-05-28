@@ -76,11 +76,25 @@ deleteService.deleteNotificacionesRfp = (rfpId) => {
 };
 
 deleteService.deleteRfpRelatedData = (job) => {
-  return new Promise((resolve, reject) => {});
+  const rfpId = job.data.rfpId;
+  return new Promise((resolve, reject) => {
+    deleteRfpEvents(rfpId)
+      .then((resp) => {
+        resolve(SUCCESS_RESP);
+      })
+      .catch((error) => reject(error));
+  });
 };
 
-deleteService.deleteRfpEvents = () => {
-  return new Promise((resolve, reject) => {});
+const deleteRfpEvents = (rfpId) => {
+  return new Promise((resolve, reject) => {
+    EventModel.find({ rfp: { $eq: rfpId } })
+      .then((events) => {
+        console.log("these are the events", events);
+        resolve(SUCCESS_RESP);
+      })
+      .catch((error) => reject(error));
+  });
 };
 
 module.exports = deleteService;
