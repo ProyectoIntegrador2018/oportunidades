@@ -9,7 +9,8 @@ const DetallesNotificacionModel = require("../models/DetallesNotificacion");
 const deleteService = {};
 const SUCCESS_RESP = { success: 1 };
 
-deleteService.deleteNotificacionesRfp = (rfpId) => {
+deleteService.deleteNotificacionesRfp = (job) => {
+  const rfpId = job.data.rfpId;
   return new Promise((resolve, reject) => {
     DetallesNotificacionModel.findDetallesNotificacionByRfpId(rfpId)
       .then((detallesNotificaciones) => {

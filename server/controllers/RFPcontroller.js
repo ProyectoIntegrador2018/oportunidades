@@ -1,4 +1,5 @@
 const RFP = require("../models/RFP");
+const deleteQueue = require("../services/DeleteQueue");
 const notificationQueue = require("../services/NotificationQueue");
 const notificationService = require("../services/NotificationService");
 const {
@@ -48,27 +49,50 @@ const createNewRFP = function (req, res) {
 
 rfpController.deleterfp = (id) => {
   return new Promise((resolve, reject) => {
-    notificationService
-      .deleteNotificacionesRfp(id)
-      .then(() => {
-        RFP.findByIdAndDelete(id)
-          .then((rfp) => {
-            const job = {
-              nombreCliente: rfp.nombrecliente,
-              nombreOportunidad: rfp.nombreOportunidad,
-            };
-            notificationQueue.add(OPORTUNIDAD_ELIMINADA, job);
-          })
-          .then((rfp) => {
-            return resolve(rfp);
-          })
-          .catch((error) => {
-            return reject(error);
-          });
+    RFP.findByIdAndDelete(id)
+      .then((rfp) => {
+        // TODO: send job to delete queue
+        return rfp;
       })
-      .catch((error) => reject(error));
+      .then((rfp) => {
+        const job = {
+          nombreCliente: rfp.nombrecliente,
+          nombreOportunidad: rfp.nombreOportunidad,
+        };
+        notificationQueue.add(OPORTUNIDAD_ELIMINADA, job);
+      })
+      .then((rfp) => {
+        return resolve(rfp);
+      })
+      .catch((error) => {
+        return reject(error);
+      });
   });
 };
+
+// rfpController.deleterfp = (id) => {
+//   return new Promise((resolve, reject) => {
+//     notificationService
+//       .deleteNotificacionesRfp(id)
+//       .then(() => {
+//         RFP.findByIdAndDelete(id)
+//           .then((rfp) => {
+//             const job = {
+//               nombreCliente: rfp.nombrecliente,
+//               nombreOportunidad: rfp.nombreOportunidad,
+//             };
+//             notificationQueue.add(OPORTUNIDAD_ELIMINADA, job);
+//           })
+//           .then((rfp) => {
+//             return resolve(rfp);
+//           })
+//           .catch((error) => {
+//             return reject(error);
+//           });
+//       })
+//       .catch((error) => reject(error));
+//   });
+// };
 
 rfpController.updaterfp = (id, updatedRFP) => {
   return new Promise((resolve, reject) => {

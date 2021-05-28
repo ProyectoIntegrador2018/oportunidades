@@ -1,6 +1,6 @@
 const Queue = require("bull");
 const { port, host, db, url } = require("../config/redisConfig");
-const { OPORTUNIDAD_ELIMINADA } = require("../utils/NotificationTypes");
+const { DELETE_RFP } = require("../utils/DeleteTypes");
 const deleteService = require("./DeleteService");
 
 let deleteQueue;
@@ -13,8 +13,8 @@ if (process.env.REDIS_ENV === "production") {
 }
 deleteQueue.LOCK_RENEW_TIME = 60 * 1000;
 
-deleteQueue.process(OPORTUNIDAD_ELIMINADA, (job) => {
-  return deleteService.sendEmail(job.data);
+deleteQueue.process(DELETE_RFP, (job) => {
+  return deleteService.deleteNotificacionesRfp(job);
 });
 
 deleteQueue.on("stalled", function (job) {
