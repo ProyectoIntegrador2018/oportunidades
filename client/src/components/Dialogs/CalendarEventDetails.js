@@ -40,6 +40,14 @@ export default function CalendarEventDetails(params) {
         <DialogContent>
           <div className={classes.containerText}>
             <Typography className={classes.labelText}>
+              Nombre de la Oportunidad:
+            </Typography>
+            <Typography className={classes.valueText}>
+              {params.selectedEventOpportunityName}
+            </Typography>
+          </div>
+          <div className={classes.containerText}>
+            <Typography className={classes.labelText}>
               Nombre del Evento:
             </Typography>
             <Typography className={classes.valueText}>

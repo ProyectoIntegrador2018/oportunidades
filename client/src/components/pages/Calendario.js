@@ -11,11 +11,11 @@ import {
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Card from "@material-ui/core/Card";
 import TextField from "@material-ui/core/TextField";
-import axios from "axios";
 
 import { Calendar, momentLocalizer, Views } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import moment from "moment";
+import axios from "axios";
 
 import "../../styles/globalStyles.css";
 import SideMenu from "../SideMenu/SideMenu";
@@ -45,6 +45,7 @@ const Calendario = () => {
   const [llamada, guardarLlamada] = useState("false");
 
   const [startDate, setStartDate] = useState(new Date());
+  const [selectedEventOpportunityName, setSelectedEventOpportunityName] = useState("");
   const [selectedEventName, setSelectedEventName] = useState("");
   const [selectedEventDate, setSelectedEventDate] = useState("");
   const [selectedEventLink, setSelectedEventLink] = useState("");
@@ -70,6 +71,13 @@ const Calendario = () => {
   };
 
   const handleSelectedEvent = (theEvent) => {
+    const config = {
+      headers: {
+        Authorization: "Bearer " + sessionStorage.getItem("token"),
+        "Content-Type": "application/json",
+      },
+    };
+
     // Opciones para mostrar la fecha en string
     const options = {
       weekday: "long",
@@ -77,6 +85,16 @@ const Calendario = () => {
       month: "long",
       day: "numeric",
     };
+
+    axios
+      .get("/events/opportunity-name/" + theEvent.id, config)
+      .then((res) => {
+        setSelectedEventOpportunityName(res.data.opportunityName);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
     setSelectedEventName(theEvent.title);
     let spanishDate = translateDate(theEvent.start);
     setSelectedEventDate(
@@ -201,6 +219,7 @@ const Calendario = () => {
           <CalendarEventDetails
             isModalOpen={isModalOpen}
             closeModal={closeModal}
+            selectedEventOpportunityName={selectedEventOpportunityName}
             selectedEventName={selectedEventName}
             selectedEventDate={selectedEventDate}
             selectedEventTime={selectedEventTime}
