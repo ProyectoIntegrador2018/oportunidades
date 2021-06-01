@@ -1,3 +1,6 @@
+const Grid = require("gridfs-stream");
+const { mongo, connection } = require("mongoose");
+const { FILE_COLLECTION } = require("../config/filesConfig");
 const UserModel = require("../models/User");
 const RfpModel = require("../models/RFP");
 const EventModel = require("../models/Event");
@@ -5,6 +8,10 @@ const NotificacionModel = require("../models/Notificacion");
 const ParticipacionModel = require("../models/Participaciones");
 const UsuarioNotificacionModel = require("../models/UsuarioNotificacion");
 const DetallesNotificacionModel = require("../models/DetallesNotificacion");
+
+Grid.mongo = mongo;
+const gfs = Grid(connection.db, mongo);
+gfs.collection(FILE_COLLECTION);
 
 const deleteService = {};
 const SUCCESS_RESP = { success: 1 };
