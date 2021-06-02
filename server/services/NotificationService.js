@@ -362,7 +362,7 @@ notificationService.notificacionNuevoEvento = (job) => {
                 })
                 .catch((error) => reject(error));
             } else {
-              resolve(SUCCESS_RESP);
+              resolve(resp);
             }
           }
         );
@@ -388,25 +388,29 @@ notificationService.notificacionEventoEliminado = (job) => {
 
         notificacionUsuarios(EVENTO_ELIMINADO, detalles, sociosParticipantes)
           .then((resp) => {
-            RfpModel.getNombreOportunidad(evento.rfp)
-            .then((nombreOportunidad) => {
-              RfpModel.getNombreCliente(evento.rfp)
-              .then((nombrecliente)=>{
-                const eventData = {
-                  name: evento.name,
-                  nombreOportunidad: nombreOportunidad,
-                  nombreCliente: nombrecliente,
-                };
-                mailUsuarios(EVENTO_ELIMINADO, eventData, sociosParticipantes)
-                  .then((resp) => {
-                    resolve(resp);
-                  })
-                  .catch((error) => reject(error));
+            if (MAIL_ENABLED) {
+              RfpModel.getNombreOportunidad(evento.rfp)
+              .then((nombreOportunidad) => {
+                RfpModel.getNombreCliente(evento.rfp)
+                .then((nombrecliente)=>{
+                  const eventData = {
+                    name: evento.name,
+                    nombreOportunidad: nombreOportunidad,
+                    nombreCliente: nombrecliente,
+                  };
+                  mailUsuarios(EVENTO_ELIMINADO, eventData, sociosParticipantes)
+                    .then((resp) => {
+                      resolve(resp);
+                    })
+                    .catch((error) => reject(error));
+                })
+                .catch((error)=>(error));
+                
               })
-              .catch((error)=>(error));
-              
-            })
-            .catch((error) => reject(error));
+              .catch((error) => reject(error));
+            } else {
+              resolve(resp);
+            }
           })
           .catch((error) => reject(error));
       })
@@ -475,7 +479,7 @@ notificationService.notificacionCambioEvento = (job) => {
                     })
                     .catch((error) => reject(error));
                 } else {
-                  resolve(SUCCESS_RESP);
+                  resolve(resp);
                 }
               })
               .catch((error) => reject(error));
