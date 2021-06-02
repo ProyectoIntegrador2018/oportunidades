@@ -137,4 +137,15 @@ router.get("/all-events", adminMiddleware, (req, res) => {
     });
 });
 
+router.get("/opportunity-name/:id", userMiddleware, (req, res) => {
+  eventController
+    .getEventOpportunityName(req.params.id)
+    .then((opportunityName) => {
+      return res.send({ opportunityName: opportunityName });
+    })
+    .catch((err) => {
+      return res.status(401).send({ err });
+    });
+});
+
 module.exports = router;
