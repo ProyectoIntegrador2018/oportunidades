@@ -447,7 +447,7 @@ notificationService.notificacionCambioEvento = (job) => {
         if (
           eventBeforeUpdate.name == eventUpdated.name &&
           eventBeforeUpdate.link == eventUpdated.link &&
-          eventBeforeUpdate.date.getTime() == eventUpdated.date.getTime()
+          eventBeforeUpdate.date == eventUpdated.date.toISOString()
         ) {
           return resolve(SUCCESS_RESP);
         }
@@ -463,7 +463,7 @@ notificationService.notificacionCambioEvento = (job) => {
               nombreEventoPrevio: eventBeforeUpdate.name,
               nombreEventoNuevo: eventUpdated.name,
               juntaEventoPrevio: eventBeforeUpdate.date,
-              juntaEventoNuevo: eventUpdated.date,
+              juntaEventoNuevo: eventUpdated.date.toISOString(),
               cambioLink: eventBeforeUpdate.link !== eventUpdated.link,
             };
             notificacionUsuarios(CAMBIO_EVENTO, detalles, sociosParticipantes)
