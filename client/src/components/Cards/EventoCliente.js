@@ -34,6 +34,13 @@ export default function EventoCliente({ evento }) {
   const [link, guardarLink] = useState(evento.link);
   const [id, guardarId] = useState(evento._id);
 
+  //Validar si link tiene http/https
+  if (!/^https?:\/\//i.test(link)) {
+    var url = 'https://' + link;
+  }
+  else{
+    url = link;
+  }
   // State del modal de editar evento
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const handleEditClick = () => {
@@ -104,8 +111,8 @@ export default function EventoCliente({ evento }) {
         </div>
         <div className={classes.containerText}>
           <Typography className={classes.labelText}>Link:</Typography>
-          <Link href={link} target="_blank">
-            {link}
+          <Link href={url} target="_blank">
+            {url}
           </Link>
         </div>
       </div>
