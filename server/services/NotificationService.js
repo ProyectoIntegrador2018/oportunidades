@@ -404,8 +404,7 @@ notificationService.notificacionEventoEliminado = (job) => {
                     })
                     .catch((error) => reject(error));
                 })
-                .catch((error)=>(error));
-                
+                .catch((error)=> reject(error));
               })
               .catch((error) => reject(error));
             } else {
