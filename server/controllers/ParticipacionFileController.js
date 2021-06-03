@@ -3,15 +3,15 @@ const Participacion = require("../models/Participaciones");
 
 const participacionFile = {};
 
-participacionFile.createParticipacionFile = (rfpInvolucrado, socioInvolucrado, filename) => {
+participacionFile.createParticipacionFile = (rfpInvolucrado, socioInvolucrado, filename, originalname) => {
   return new Promise((resolve, reject) => {
     Participacion.findOne({ rfpInvolucrado: rfpInvolucrado, socioInvolucrado: socioInvolucrado }, "_id")
       .then((participacion) => {
         const rawParticipacionFile = {
           participacion: participacion._id,
-          name: filename
+          name: filename,
+          originalname: originalname,
         }
-
         const participacionFile = new ParticipacionFile(rawParticipacionFile);
         participacionFile
           .save()
@@ -26,10 +26,10 @@ participacionFile.createParticipacionFile = (rfpInvolucrado, socioInvolucrado, f
 
 participacionFile.getFilesFromParticipacion = (participacionId) => {
   return new Promise((resolve, reject) => {
-    ParticipacionFile.find({ participacion: participacionId }, "name")
+    ParticipacionFile.find({ participacion: participacionId }, "originalname")
       .then((files) => {
         const filenames = files.map((file) => {
-          return file.name;
+          return file.originalname;
         });
         resolve(filenames);
       })

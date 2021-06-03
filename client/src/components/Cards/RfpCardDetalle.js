@@ -37,7 +37,8 @@ export default function SimpleCard({ rfp, isParticipating }) {
     formData.append( 
       "file",
       selectedFile,
-      selectedFile.name
+      selectedFile.name,
+      selectedFile.originalname,
     );
 
     axios.post("/participacion/upload-file", formData, config)

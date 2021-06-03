@@ -32,6 +32,7 @@ const storage = GridFsStorage({
         const fileInfo = {
           filename: filename,
           bucketName: FILE_COLLECTION,
+          aliases:file.originalname
         };
         resolve(fileInfo);
       });
@@ -147,7 +148,7 @@ router.post(
   [userMiddleware, upload.single("file")],
   (req, res) => {
     if (req.file) {
-      ParticipacionFileController.createParticipacionFile(req.query.rfpInvolucrado, req.user._id, req.file.filename)
+      ParticipacionFileController.createParticipacionFile(req.query.rfpInvolucrado, req.user._id, req.file.filename,req.file.originalname)
         .then(() => {
           return res.send({ file: req.file });
         })
@@ -165,7 +166,7 @@ router.post(
  * @param {Object} res respuesta del request
  */
 router.get('/get-file/:filename', userMiddleware, (req, res) => {
-  gfs.files.findOne({ filename: req.params.filename }, (err, file) => {
+  gfs.files.findOne({ aliases: req.params.filename }, (err, file) => {
     if (!file || file.length === 0) {
       return res.status(404).json({
         err: 'No file exists'
@@ -182,7 +183,7 @@ router.get('/get-file/:filename', userMiddleware, (req, res) => {
  * @param {Object} res respuesta del request
  */
 router.get('/get-base64-file/:filename', userMiddleware, (req, res) => {
-  gfs.files.findOne({ filename: req.params.filename }, (err, file) => {
+  gfs.files.findOne({ aliases: req.params.filename }, (err, file) => {
     if (!file || file.length === 0) {
       return res.status(404).json({
         err: 'No file exists'
