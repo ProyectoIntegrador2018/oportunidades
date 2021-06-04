@@ -7,13 +7,12 @@ const crypto = require("crypto");
 const { mongo, connection } = require("mongoose");
 const userMiddleware = require("../middleware/User");
 const participacionController = require("../controllers/ParticipacionController");
+const { FILE_COLLECTION } = require("../config/filesConfig");
 const GridFsStorage = require("multer-gridfs-storage");
 const Grid = require("gridfs-stream");
 Grid.mongo = mongo;
 
 const router = express.Router();
-
-const FILE_COLLECTION = "fileUploads";
 
 // Init GridFS
 const gfs = Grid(connection.db, mongo);

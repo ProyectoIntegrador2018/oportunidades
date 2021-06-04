@@ -1,10 +1,18 @@
+const Grid = require("gridfs-stream");
+const { mongo, connection } = require("mongoose");
+const { FILE_COLLECTION } = require("../config/filesConfig");
 const UserModel = require("../models/User");
 const RfpModel = require("../models/RFP");
 const EventModel = require("../models/Event");
 const NotificacionModel = require("../models/Notificacion");
 const ParticipacionModel = require("../models/Participaciones");
+const ParticipacionFileModel = require("../models/ParticipacionFile");
 const UsuarioNotificacionModel = require("../models/UsuarioNotificacion");
 const DetallesNotificacionModel = require("../models/DetallesNotificacion");
+
+Grid.mongo = mongo;
+const gfs = Grid(connection.db, mongo);
+gfs.collection(FILE_COLLECTION);
 
 const deleteService = {};
 const SUCCESS_RESP = { success: 1 };
@@ -80,6 +88,13 @@ deleteService.deleteRfpRelatedData = (job) => {
   return new Promise((resolve, reject) => {
     deleteRfpEvents(rfpId)
       .then((resp) => {
+        deleteParticipaciones(rfpId)
+          .then((resp) => {
+            return;
+          })
+          .catch((error) => reject(error));
+      })
+      .then(() => {
         resolve(SUCCESS_RESP);
       })
       .catch((error) => reject(error));
@@ -99,6 +114,68 @@ const deleteRfpEvents = (rfpId) => {
         resolve(SUCCESS_RESP);
       })
       .catch((error) => reject(error));
+  });
+};
+
+const deleteParticipaciones = (rfpId) => {
+  return new Promise((resolve, reject) => {
+    ParticipacionModel.find({ rfpInvolucrado: rfpId })
+      .then((participaciones) => {
+        participaciones.map((participacion) => {
+          const participacionId = participacion._id;
+          deleteParticipacionFile(participacionId)
+            .then((resp) => {
+              ParticipacionModel.findByIdAndDelete(participacionId)
+                .then((deletedParticipacion) => {
+                  return;
+                })
+                .catch((error) => reject(error));
+            })
+            .catch((error) => reject(error));
+        });
+      })
+      .then(() => {
+        resolve(SUCCESS_RESP);
+      })
+      .catch((error) => reject(error));
+  });
+};
+
+const deleteParticipacionFile = (participacionId) => {
+  return new Promise((resolve, reject) => {
+    ParticipacionFileModel.find({ participacion: participacionId })
+      .then((participacionFiles) => {
+        participacionFiles.map((participacionFile) => {
+          const participacionFileId = participacionFile._id;
+          const filename = participacionFile.name;
+          deleteParticipacionGridFiles(filename)
+            .then((resp) => {
+              ParticipacionFileModel.findByIdAndDelete(participacionFileId)
+                .then((deletedParticipacionFile) => {
+                  return;
+                })
+                .catch((error) => reject(error));
+            })
+            .catch((error) => reject(error));
+        });
+        return;
+      })
+      .then(() => {
+        resolve(SUCCESS_RESP);
+      })
+      .reject((error) => reject(error));
+  });
+};
+
+const deleteParticipacionGridFiles = (filename) => {
+  return new Promise((resolve, reject) => {
+    gfs.remove({ filename: filename }, (err) => {
+      if (err) {
+        console.log(`error while delete file ${filename}`, err);
+        reject(err);
+      }
+      resolve(SUCCESS_RESP);
+    });
   });
 };
 
