@@ -1,4 +1,3 @@
-const Participacion = require("../models/Participaciones");
 const ParticipacionFileController = require("../controllers/ParticipacionFileController");
 const express = require("express");
 const multer = require("multer");
@@ -147,7 +146,12 @@ router.post(
   [userMiddleware, upload.single("file")],
   (req, res) => {
     if (req.file) {
-      ParticipacionFileController.createParticipacionFile(req.query.rfpInvolucrado, req.user._id, req.file.filename,req.file.originalname)
+      ParticipacionFileController.createParticipacionFile(
+        req.query.rfpInvolucrado,
+        req.user._id,
+        req.file.filename,
+        req.file.originalname
+      )
         .then(() => {
           return res.send({ file: req.file });
         })
