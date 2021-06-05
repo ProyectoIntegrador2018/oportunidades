@@ -12,16 +12,9 @@ import KeyboardArrowLeft from "@material-ui/icons/KeyboardArrowLeft";
 import FabEditRFPFlex from "../ui/FabEditRFPFlex";
 import useStyles from "../Cards/styles";
 
-import axios from "axios";
+import { createParticipacion, dejarDeParticipar } from "../../fetchers/fetcher";
 
 export default function SimpleCard({ rfp }) {
-  const config = {
-    headers: {
-      Authorization: "Bearer " + sessionStorage.getItem("token"),
-      "Content-Type": "application/json",
-    },
-  };
-
   const classes = useStyles();
 
   // hook para redireccionar
@@ -30,48 +23,22 @@ export default function SimpleCard({ rfp }) {
   // Obtener tipo de usuario
   const userType = sessionStorage.getItem("userType");
 
-  // TODO: Refactor to fetchers
   const handleClick = () => {
     rfp.participandoActual = true;
-    axios
-      .post(
-        "/participacion/create-participacion",
-        {
-          rfpInvolucrado: rfp._id,
-        },
-        config
-      )
-      .then((res) => {
-        //window.location.reload();
+    createParticipacion(rfp._id)
+      .then(() => {
         navigate("/mis-oportunidades");
       })
       .catch((error) => {
         console.log(error);
       });
   };
-  // TODO: Refactor to fetchers
+
   const handleDejarDeParticipar = () => {
     rfp.participandoActual = false;
-    axios
-      .get("/participacion/get-participaciones-socio", config)
-      .then((res) => {
-        for (var i = 0; i < res.data.length; i++) {
-          if (res.data[i].rfpInvolucrado == rfp._id) {
-            // TODO: Refactor to fetchers
-            axios
-              .delete(
-                "/participacion/delete-participacion-socio/" + res.data[i]._id,
-                config
-              )
-              .then((response) => {
-                //window.location.reload();
-                navigate("/mis-oportunidades");
-              })
-              .catch((error) => {
-                console.log(error);
-              });
-          }
-        }
+    dejarDeParticipar(rfp._id)
+      .then(() => {
+        navigate("/mis-oportunidades");
       })
       .catch((error) => {
         console.log(error);

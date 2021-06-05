@@ -15,7 +15,7 @@ import CloseIcon from "@material-ui/icons/Close";
 import Alert from "@material-ui/lab/Alert";
 import useStyles from "./styles";
 
-import axios from "axios";
+import { changePassword } from "../../fetchers/fetcher";
 
 export default function EditarPassword(params) {
   const [open, setOpen] = useState(false);
@@ -25,13 +25,6 @@ export default function EditarPassword(params) {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
 
   const classes = useStyles();
-
-  const config = {
-    headers: {
-      Authorization: "Bearer " + sessionStorage.getItem("token"),
-      "Content-Type": "application/json",
-    },
-  };
 
   useEffect(() => {
     setOpen(params.isOpen);
@@ -51,17 +44,10 @@ export default function EditarPassword(params) {
     params.setModalIsOpen(false);
     setOpen(false);
   };
-  // TODO: Refactor to fetchers
+
   const handleSave = () => {
-    axios
-      .patch(
-        "/user/change-password",
-        {
-          password,
-        },
-        config
-      )
-      .then((res) => {
+    changePassword(password)
+      .then(() => {
         setSnackbarOpen(true);
         handleClose();
       })

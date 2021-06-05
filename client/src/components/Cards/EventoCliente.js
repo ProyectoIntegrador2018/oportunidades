@@ -7,17 +7,10 @@ import EditarEvento from "../Dialogs/EditarEvento";
 import ConfirmDialog from "../Dialogs/ConfirmDialog";
 import useStyles from "../Cards/styles";
 
-import axios from "axios";
 import moment from "moment";
+import { deleteEvento } from "../../fetchers/fetcher";
 
 export default function EventoCliente({ evento }) {
-  const config = {
-    headers: {
-      Authorization: "Bearer " + sessionStorage.getItem("token"),
-      "Content-Type": "application/json",
-    },
-  };
-
   const classes = useStyles();
 
   // Opciones para mostrar la fecha en string
@@ -50,11 +43,9 @@ export default function EventoCliente({ evento }) {
   // State del modal de confirmación de borrar evento
   const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
 
-  const deleteEvento = () => {
-    // TODO: Refactor to fetchers
-    axios
-      .delete("/events/" + evento._id, config)
-      .then((response) => {
+  const deleteEventoOnConfirm = () => {
+    deleteEvento(evento._id)
+      .then(() => {
         window.location.reload();
       })
       .catch((error) => {
@@ -76,7 +67,7 @@ export default function EventoCliente({ evento }) {
         title="Confirmación"
         open={isConfirmationOpen}
         setOpen={setIsConfirmationOpen}
-        onConfirm={deleteEvento}
+        onConfirm={deleteEventoOnConfirm}
       >
         ¿Está seguro de que desea borrar el evento?
       </ConfirmDialog>

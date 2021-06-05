@@ -22,15 +22,9 @@ import "react-datepicker/dist/react-datepicker.css";
 
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import axios from "axios";
+import { updateRfp } from "../../fetchers/fetcher";
 
 export default function SimpleCard({ rfp }) {
-  const config = {
-    headers: {
-      Authorization: "Bearer " + sessionStorage.getItem("token"),
-      "Content-Type": "application/json",
-    },
-  };
 
   const classes = useStyles();
 
@@ -115,35 +109,28 @@ export default function SimpleCard({ rfp }) {
     }),
     onSubmit: (rfp) => {
       if (estatus === "Cerrada") {
-        // TODO: Refactor to fetchers
-        axios
-          .patch(
-            "/RFP/updaterfp",
-            {
-              nombrecliente: rfp.name_person,
-              posicioncliente: rfp.position,
-              telefono: rfp.phone,
-              email: rfp.email,
-              nombreOportunidad: rfp.rfpname,
-              objetivoOportunidad: rfp.objective,
-              fechasRelevantes: rfp.imp_dates,
-              descripcionProblematica: rfp.problem,
-              descripcionFuncional: rfp.functional,
-              requerimientosObligatorios: rfp.requirements,
-              aprobadaAreaUsuario: aprobadaUsuario,
-              aprobadaAreaTI: aprobadaTI,
-              presupuestoAsignado: presupuesto,
-              comentariosAdicionales: rfp.comment,
-              tipoGeneralProyecto: rfp.tipo_general,
-              tipoEspecificoProyecto: rfp.tipo_esp,
-              id: rfp.id,
-              estatus: estatus,
-              causa: causaEstatus,
-            },
-            config
-          )
-          .then((res) => {
-            // redireccionar
+        updateRfp({
+          nombrecliente: rfp.name_person,
+          posicioncliente: rfp.position,
+          telefono: rfp.phone,
+          email: rfp.email,
+          nombreOportunidad: rfp.rfpname,
+          objetivoOportunidad: rfp.objective,
+          fechasRelevantes: rfp.imp_dates,
+          descripcionProblematica: rfp.problem,
+          descripcionFuncional: rfp.functional,
+          requerimientosObligatorios: rfp.requirements,
+          aprobadaAreaUsuario: aprobadaUsuario,
+          aprobadaAreaTI: aprobadaTI,
+          presupuestoAsignado: presupuesto,
+          comentariosAdicionales: rfp.comment,
+          tipoGeneralProyecto: rfp.tipo_general,
+          tipoEspecificoProyecto: rfp.tipo_esp,
+          id: rfp.id,
+          estatus: estatus,
+          causa: causaEstatus,
+        })
+          .then(() => {
             navigate("/inicio");
           })
           .catch((error) => {
@@ -151,35 +138,28 @@ export default function SimpleCard({ rfp }) {
             guardarMensajeError("RFP inválido");
           });
       } else {
-        // TODO: Refactor to fetchers
-        axios
-          .patch(
-            "/RFP/updaterfp",
-            {
-              nombrecliente: rfp.name_person,
-              posicioncliente: rfp.position,
-              telefono: rfp.phone,
-              email: rfp.email,
-              nombreOportunidad: rfp.rfpname,
-              objetivoOportunidad: rfp.objective,
-              fechasRelevantes: rfp.imp_dates,
-              descripcionProblematica: rfp.problem,
-              descripcionFuncional: rfp.functional,
-              requerimientosObligatorios: rfp.requirements,
-              aprobadaAreaUsuario: aprobadaUsuario,
-              aprobadaAreaTI: aprobadaTI,
-              presupuestoAsignado: presupuesto,
-              comentariosAdicionales: rfp.comment,
-              tipoGeneralProyecto: rfp.tipo_general,
-              tipoEspecificoProyecto: rfp.tipo_esp,
-              id: rfp.id,
-              estatus: estatus,
-              causa: "",
-            },
-            config
-          )
-          .then((res) => {
-            // redireccionar
+        updateRfp({
+          nombrecliente: rfp.name_person,
+          posicioncliente: rfp.position,
+          telefono: rfp.phone,
+          email: rfp.email,
+          nombreOportunidad: rfp.rfpname,
+          objetivoOportunidad: rfp.objective,
+          fechasRelevantes: rfp.imp_dates,
+          descripcionProblematica: rfp.problem,
+          descripcionFuncional: rfp.functional,
+          requerimientosObligatorios: rfp.requirements,
+          aprobadaAreaUsuario: aprobadaUsuario,
+          aprobadaAreaTI: aprobadaTI,
+          presupuestoAsignado: presupuesto,
+          comentariosAdicionales: rfp.comment,
+          tipoGeneralProyecto: rfp.tipo_general,
+          tipoEspecificoProyecto: rfp.tipo_esp,
+          id: rfp.id,
+          estatus: estatus,
+          causa: "",
+        })
+          .then(() => {
             navigate("/inicio");
           })
           .catch((error) => {

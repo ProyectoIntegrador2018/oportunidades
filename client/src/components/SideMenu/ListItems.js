@@ -8,7 +8,7 @@ import CalendarIcon from "@material-ui/icons/CalendarToday";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import AccountBalanceWalletIcon from "@material-ui/icons/AccountBalanceWallet";
 import { useNavigate } from "react-router-dom";
-import Axios from "axios";
+import { userLogout } from "../../fetchers/fetcher";
 
 const ListItems = () => {
    const navigate = useNavigate();
@@ -85,20 +85,14 @@ const ListItems = () => {
          <ListItem
             button
             onClick={() => {
-               const config = {
-                  headers: {
-                     Authorization: "Bearer " + sessionStorage.getItem("token"),
-                     "Content-Type": "application/json",
-                  },
-               };
-               Axios.post("/user/logout", null, config)
-                  .then((res) => {
-                     sessionStorage.clear();
-                     navigate("/");
-                  })
-                  .catch((error) => {
-                     console.log(error);
-                  });
+               userLogout()
+                 .then(() => {
+                   sessionStorage.clear();
+                   navigate("/");
+                 })
+                 .catch((error) => {
+                   console.log(error);
+                 });
             }}
          >
             <ListItemIcon>

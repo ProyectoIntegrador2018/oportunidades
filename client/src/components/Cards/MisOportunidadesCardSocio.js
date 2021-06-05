@@ -10,59 +10,30 @@ import {
 } from "@material-ui/core";
 import useStyles from "../Cards/styles";
 
-import axios from "axios";
+import { createParticipacion } from "../../fetchers/fetcher";
 
 export default function SimpleCard({ rfp }) {
-  const config = {
-    headers: {
-      Authorization: "Bearer " + sessionStorage.getItem("token"),
-      "Content-Type": "application/json",
-    },
-  };
 
   const classes = useStyles();
 
   // hook para redireccionar
   const navigate = useNavigate();
 
-  // TODO: Refactor to fetchers
   const handleClick = () => {
-    axios
-      .post(
-        "/participacion/create-participacion",
-        {
-          rfpInvolucrado: rfp._id,
-        },
-        config
-      )
-      .then((res) => {
+    createParticipacion(rfp._id)
+      .then(() => {
         window.location.reload();
       })
       .catch((error) => {
         console.log(error);
       });
   };
-  // TODO: Refactor to fetchers
+
   const handleDejarDeParticipar = () => {
-    axios
-      .get("/participacion/get-participaciones-socio", config)
-      .then((res) => {
-        for (var i = 0; i < res.data.length; i++) {
-          if (res.data[i].rfpInvolucrado == rfp._id) {
-            // TODO: Refactor to fetchers
-            axios
-              .delete(
-                "/participacion/delete-participacion-socio/" + res.data[i]._id,
-                config
-              )
-              .then((response) => {
-                window.location.reload();
-              })
-              .catch((error) => {
-                console.log(error);
-              });
-          }
-        }
+    rfp.participandoActual = false;
+    dejarDeParticipar(rfp._id)
+      .then(() => {
+        window.location.reload();
       })
       .catch((error) => {
         console.log(error);

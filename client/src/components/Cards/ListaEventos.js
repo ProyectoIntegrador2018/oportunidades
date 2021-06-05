@@ -11,16 +11,9 @@ import EventoSocio from "./EventoSocio";
 import NuevoEvento from "../Dialogs/NuevoEvento";
 import useStyles from "../Cards/styles";
 
-import axios from "axios";
+import { obtenerEventos } from "../../fetchers/fetcher";
 
 export default function ListaEventos({ rfp }) {
-  const config = {
-    headers: {
-      Authorization: "Bearer " + sessionStorage.getItem("token"),
-      "Content-Type": "application/json",
-    },
-  };
-
   const classes = useStyles();
 
   // Obtener tipo de usuario
@@ -31,23 +24,15 @@ export default function ListaEventos({ rfp }) {
   const [cargando, guardarCargando] = useState("true");
 
   useEffect(() => {
-    // Función que regresa la lista de eventos de la oportunidad
-    // TODO: Refactor to fetchers
-    const obtenerEventos = () => {
-      axios
-        .get("/events/get-rfp-events/" + rfp._id, config)
-        .then((res) => {
-          // guardar lista de eventos de la oportunidad en state
-          guardarEventos(res.data.events);
-          // actualizar variable de control
-          guardarCargando("false");
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-      guardarCargando("false");
-    };
-    obtenerEventos();
+    obtenerEventos(rfp._id)
+      .then((data) => {
+        guardarEventos(data.events);
+        guardarCargando("false");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    guardarCargando("false");
   }, []);
 
   // State del modal

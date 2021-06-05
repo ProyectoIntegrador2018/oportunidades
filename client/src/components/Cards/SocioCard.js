@@ -12,24 +12,17 @@ import EditIcon from "@material-ui/icons/Edit";
 import ConfirmDialog from "../Dialogs/ConfirmDialog";
 import useStyles from "../Cards/styles";
 
-import axios from "axios";
+import { deleteSocio } from "../../fetchers/fetcher";
 
 export default function SocioCard({ socio }) {
-  const config = {
-    headers: {
-      Authorization: "Bearer " + sessionStorage.getItem("token"),
-      "Content-Type": "application/json",
-    },
-  };
 
   const classes = useStyles();
 
   const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
 
-  const deleteSocio = () => {
-    axios
-      .delete("/admin/socio/" + socio._id, config)
-      .then((response) => {
+  const deleteSocioOnConfirm = () => {
+    deleteSocio(socio._id)
+      .then(() => {
         window.location.reload();
       })
       .catch((error) => {
@@ -76,7 +69,7 @@ export default function SocioCard({ socio }) {
           title="¿Está seguro de que desea borrar el socio?"
           open={isConfirmationOpen}
           setOpen={setIsConfirmationOpen}
-          onConfirm={deleteSocio}
+          onConfirm={deleteSocioOnConfirm}
         />
       </Card>
     </div>

@@ -13,7 +13,7 @@ import {
 import CloseIcon from "@material-ui/icons/Close";
 import useStyles from "./styles";
 
-import axios from "axios";
+import { updateUser } from "../../fetchers/fetcher";
 
 export default function EditarPerfil(params) {
   const [open, setOpen] = useState(false);
@@ -24,13 +24,6 @@ export default function EditarPerfil(params) {
 
   const classes = useStyles();
 
-  const config = {
-    headers: {
-      Authorization: "Bearer " + sessionStorage.getItem("token"),
-      "Content-Type": "application/json",
-    },
-  };
-
   useEffect(() => {
     setOpen(params.isOpen);
   }, [params]);
@@ -39,20 +32,15 @@ export default function EditarPerfil(params) {
     params.setModalIsOpen(false);
     setOpen(false);
   };
-  // TODO: Refactor to fetchers
+
   const handleSave = () => {
-    axios
-      .patch(
-        "/user/",
-        {
-          name,
-          email,
-          empresa,
-          telefono,
-        },
-        config
-      )
-      .then((res) => {
+    updateUser({
+      name,
+      email,
+      empresa,
+      telefono,
+    })
+      .then(() => {
         window.location.reload();
       })
       .catch((error) => {

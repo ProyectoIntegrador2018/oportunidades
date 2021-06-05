@@ -14,41 +14,31 @@ import FabEditRFPFlex from "../ui/FabEditRFPFlex";
 import ListaEventos from "./ListaEventos";
 import useStyles from "../Cards/styles";
 
-import axios from "axios";
 import moment from "moment";
+import { dejarDeParticipar, socioUpdateFile } from "../../fetchers/fetcher";
 
 export default function SimpleCard({ rfp, isParticipating }) {
   const [selectedFile, setSelectedFile] = useState(null);
 
-  const config = {
-    headers: {
-      Authorization: "Bearer " + sessionStorage.getItem("token"),
-      "Content-Type": "application/json",
-    },
-    params: {
-      rfpInvolucrado: rfp._id
-    },
-  };
-
-  // On file upload (click the upload button) 
+  // On file upload (click the upload button)
   const onFileUpload = () => {
     const formData = new FormData();
 
-    formData.append( 
+    formData.append(
       "file",
       selectedFile,
       selectedFile.name,
-      selectedFile.originalname,
+      selectedFile.originalname
     );
 
-    axios.post("/participacion/upload-file", formData, config)
-      .then((res) => {
+    socioUpdateFile(formData)
+      .then(() => {
         window.location.reload();
       })
       .catch((error) => {
         console.log(error);
       });
-  }; 
+  };
 
   const classes = useStyles();
 
@@ -66,47 +56,22 @@ export default function SimpleCard({ rfp, isParticipating }) {
   // Obtener tipo de usuario
   const userType = sessionStorage.getItem("userType");
 
-  // TODO: Refactor to fetchers
   const handleClick = () => {
     rfp.participandoActual = true;
-    axios
-      .post(
-        "/participacion/create-participacion",
-        {
-          rfpInvolucrado: rfp._id,
-        },
-        config
-      )
-      .then((res) => {
+    createParticipacion(rfp._id)
+      .then(() => {
         navigate("/inicio");
       })
       .catch((error) => {
         console.log(error);
       });
   };
-  // TODO: Refactor to fetchers
+
   const handleDejarDeParticipar = () => {
     rfp.participandoActual = false;
-    axios
-      .get("/participacion/get-participaciones-socio", config)
-      .then((res) => {
-        for (var i = 0; i < res.data.length; i++) {
-          if (res.data[i].rfpInvolucrado == rfp._id) {
-            // TODO: Refactor to fetchers
-            axios
-              .delete(
-                "/participacion/delete-participacion-socio/" + res.data[i]._id,
-                config
-              )
-              .then((response) => {
-                //window.location.reload();
-                navigate("/inicio");
-              })
-              .catch((error) => {
-                console.log(error);
-              });
-          }
-        }
+    dejarDeParticipar()
+      .then(() => {
+        navigate("/inicio");
       })
       .catch((error) => {
         console.log(error);
@@ -258,14 +223,18 @@ export default function SimpleCard({ rfp, isParticipating }) {
           )}
           {userType === "socio" && isParticipating ? (
             <form>
-              <Typography className={classes.sectionSubtitle}>Carga de Archivos:</Typography>
+              <Typography className={classes.sectionSubtitle}>
+                Carga de Archivos:
+              </Typography>
               <div className={classes.containerText}>
-                <Input type="file"
-                  onChange={(event) => setSelectedFile(event.target.files[0])}/> 
-                <Button className="boton" onClick={onFileUpload}> 
+                <Input
+                  type="file"
+                  onChange={(event) => setSelectedFile(event.target.files[0])}
+                />
+                <Button className="boton" onClick={onFileUpload}>
                   SUBIR ARCHIVO
-                </Button> 
-              </div> 
+                </Button>
+              </div>
             </form>
           ) : null}
         </CardContent>

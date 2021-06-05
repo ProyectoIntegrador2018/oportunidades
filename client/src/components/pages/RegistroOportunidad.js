@@ -28,6 +28,7 @@ import es from "date-fns/locale/es";
 import "../../styles/globalStyles.css";
 import SideMenu from "../SideMenu/SideMenu";
 import useStyles from "./styles";
+import { createRfp } from "../../fetchers/fetcher";
 
 const RegistroOportunidad = () => {
   registerLocale("es", es);
@@ -111,31 +112,25 @@ const RegistroOportunidad = () => {
       comment: Yup.string(),
     }),
     onSubmit: (rfp) => {
-      axios
-        .post(
-          "/RFP/create-rfp",
-          {
-            nombrecliente: rfp.name_person,
-            posicioncliente: rfp.position,
-            telefono: rfp.phone,
-            email: rfp.email,
-            nombreOportunidad: rfp.rfpname,
-            objetivoOportunidad: rfp.objective,
-            fechasRelevantes: rfp.imp_dates,
-            descripcionProblematica: rfp.problem,
-            descripcionFuncional: rfp.functional,
-            requerimientosObligatorios: rfp.requirements,
-            aprobadaAreaUsuario: aprobadaUsuario,
-            aprobadaAreaTI: aprobadaTI,
-            presupuestoAsignado: presupuesto,
-            comentariosAdicionales: rfp.comment,
-            tipoGeneralProyecto: rfp.tipo_general,
-            tipoEspecificoProyecto: rfp.tipo_esp,
-          },
-          config
-        )
-        .then((res) => {
-          // redireccionar
+      createRfp({
+        nombrecliente: rfp.name_person,
+        posicioncliente: rfp.position,
+        telefono: rfp.phone,
+        email: rfp.email,
+        nombreOportunidad: rfp.rfpname,
+        objetivoOportunidad: rfp.objective,
+        fechasRelevantes: rfp.imp_dates,
+        descripcionProblematica: rfp.problem,
+        descripcionFuncional: rfp.functional,
+        requerimientosObligatorios: rfp.requirements,
+        aprobadaAreaUsuario: aprobadaUsuario,
+        aprobadaAreaTI: aprobadaTI,
+        presupuestoAsignado: presupuesto,
+        comentariosAdicionales: rfp.comment,
+        tipoGeneralProyecto: rfp.tipo_general,
+        tipoEspecificoProyecto: rfp.tipo_esp,
+      })
+        .then(() => {
           navigate("/inicio");
         })
         .catch((error) => {
@@ -388,7 +383,7 @@ const RegistroOportunidad = () => {
                       La necesidad:
                     </Typography>
                   </div>
-                  <br/>
+                  <br />
                   <div className={classes.containerRadios}>
                     <FormControl component="fieldset">
                       <FormLabel component="legend">

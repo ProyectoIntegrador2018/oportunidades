@@ -3,7 +3,7 @@ import {useNavigate} from 'react-router-dom';
 import Fab from '@material-ui/core/Fab';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
-import axios from 'axios';
+import { deleteRfp } from '../../fetchers/fetcher';
 
 export default function FloatingActionButtons({rfp}) {
 
@@ -11,19 +11,9 @@ export default function FloatingActionButtons({rfp}) {
   const navigate = useNavigate();
 
   const handleDelete = () => {
-    axios
-      .delete("/RFP/deleterfp", {
-        headers: {
-          Authorization: "Bearer " + sessionStorage.getItem("token"),
-          "Content-Type": "application/json",
-        },
-        params: {
-          id: rfp._id
-        }
-      })
-      .then((res) => {
-        // redireccionar
-        navigate('/inicio');
+    deleteRfp(rfp._id)
+      .then(() => {
+        navigate("/inicio");
       })
       .catch((error) => {
         console.log(error);

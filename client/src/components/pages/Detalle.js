@@ -7,7 +7,6 @@ import {
   Grid,
   Typography,
 } from "@material-ui/core";
-import axios from "axios";
 import "../../styles/globalStyles.css";
 import SideMenu from "../SideMenu/SideMenu";
 import RfpCardDetalle from "../Cards/RfpCardDetalle";
@@ -16,6 +15,7 @@ import RechazarPropuesta from "../Dialogs/RechazarPropuesta";
 import {
   obtenerRFP,
   obtenerListaParticipaciones,
+  obtenerSocioParticipaciones,
 } from "../../fetchers/fetcher";
 import AceptarPropuesta from "../Dialogs/AceptarPropuesta";
 import useStyles from "./styles";
@@ -29,9 +29,8 @@ const Inicio = ({ route }) => {
   // state de lista de participaciones de socio en RFPs
   const [listaParticipaciones, guardarListaParticipaciones] = useState([]);
   // state de control de si ya se hizo la llamada de participaciones a la base de datos
-  const [llamadaParticipaciones, guardarLlamadaParticipaciones] = useState(
-    false
-  );
+  const [llamadaParticipaciones, guardarLlamadaParticipaciones] =
+    useState(false);
   // state de control de si ya se hizo la llamada de RFP a la base de datos
   const [llamadaRFP, guardarLlamadaRFP] = useState(false);
   // state de control de si el modal de rechazo de socio está abierto
@@ -46,23 +45,19 @@ const Inicio = ({ route }) => {
   // Obtener tipo de usuario
   const userType = sessionStorage.getItem("userType");
   useEffect(() => {
-    const config = {
-      headers: {
-        Authorization: "Bearer " + sessionStorage.getItem("token"),
-        "Content-Type": "application/json",
-      },
-    };
     const obtenerEstatusParticipacion = () => {
-      axios
-        .get("/participacion/get-participaciones-socio", config)
-        .then((res) => {
+      obtenerSocioParticipaciones()
+        .then((data) => {
           let isParticipating = false;
-          for (const idx in res.data) {
-            if (res.data[idx].rfpInvolucrado === match.params.rfp_id) {
+          for (const idx in data) {
+            if (data[idx].rfpInvolucrado === match.params.rfp_id) {
               isParticipating = true;
             }
           }
           setIsParticipating(isParticipating);
+        })
+        .catch((error) => {
+          console.log(error);
         });
     };
     obtenerRFP(match.params.rfp_id)
@@ -154,7 +149,9 @@ const Inicio = ({ route }) => {
                 </Card>
               ) : (
                 <Card className="card-mensaje">
-                  <Typography className={classes.sectionSubtitle}>Socios involucrados</Typography>
+                  <Typography className={classes.sectionSubtitle}>
+                    Socios involucrados
+                  </Typography>
                   {hasValidCandidates() ? (
                     <Button
                       size="small"
