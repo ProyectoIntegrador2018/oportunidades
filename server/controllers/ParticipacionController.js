@@ -108,4 +108,16 @@ participacionController.updateEstatusSocio = (id, estatus, feedback) => {
   });
 };
 
+participacionController.getParticipacion = (id) => {
+  return new Promise((resolve, reject) => {
+    Participacion.findById(id)
+      .then((participacion) => {
+        resolve(participacion);
+      })
+      .catch((error) => {
+        reject({ error });
+      });
+  });
+};
+
 module.exports = participacionController;

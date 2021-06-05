@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import {
@@ -16,9 +16,11 @@ import useStyles from "../Cards/styles";
 
 import axios from "axios";
 import moment from "moment";
+import { isSocioBanned } from "../../fetchers/fetcher";
 
 export default function SimpleCard({ rfp, isParticipating }) {
   const [selectedFile, setSelectedFile] = useState(null);
+  const [isBanned, setIsBanned] = useState(true);
 
   const config = {
     headers: {
@@ -29,6 +31,18 @@ export default function SimpleCard({ rfp, isParticipating }) {
       rfpInvolucrado: rfp._id
     },
   };
+
+  useEffect(() => {
+    if (sessionStorage.getItem("userType") === "socio") {
+      isSocioBanned(rfp._id)
+        .then((data) => {
+          setIsBanned(data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+  }, []);
 
   // On file upload (click the upload button) 
   const onFileUpload = () => {
@@ -271,7 +285,7 @@ export default function SimpleCard({ rfp, isParticipating }) {
         </CardContent>
         <CardActions>
           <div className={classes.contenedorBotones}>
-            {userType === "socio" ? (
+            {userType === "socio" && !isBanned ? (
               !isParticipating ? (
                 <Button
                   type="submit"

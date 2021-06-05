@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import {
@@ -11,14 +11,27 @@ import {
 import useStyles from "../Cards/styles";
 
 import axios from "axios";
+import { isSocioBanned } from "../../fetchers/fetcher";
 
 export default function SimpleCard({ rfp }) {
+  const [isBanned, setIsBanned] = useState(true);
+
   const config = {
     headers: {
       Authorization: "Bearer " + sessionStorage.getItem("token"),
       "Content-Type": "application/json",
     },
   };
+
+  useEffect(() => {
+    isSocioBanned(rfp._id)
+      .then((data) => {
+        setIsBanned(data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
 
   const classes = useStyles();
 
@@ -99,7 +112,7 @@ export default function SimpleCard({ rfp }) {
             >
               SABER MÁS
             </Button>
-            {rfp.participandoActual == false ? (
+            {!isBanned && rfp.participandoActual == false && (
               <Button
                 type="submit"
                 onClick={() => {
@@ -110,7 +123,8 @@ export default function SimpleCard({ rfp }) {
               >
                 PARTICIPAR
               </Button>
-            ) : (
+            )}
+            {!isBanned && rfp.participandoActual == true && (
               <Button
                 type="submit"
                 onClick={() => {
