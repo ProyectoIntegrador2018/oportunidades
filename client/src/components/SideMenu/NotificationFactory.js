@@ -89,10 +89,6 @@ export default function NotificationFactory(props) {
       return <NotificacionOportunidadEliminada {...downProps} />;
     case NOTIFICATION_TYPES.CAMBIO_ESTATUS:
       return <NotificacionCambioEstatus {...downProps} />;
-    case NOTIFICATION_TYPES.CAMBIO_HORARIO:
-      return <NotificacionCambioHorario {...downProps} />;
-    case NOTIFICATION_TYPES.NUEVO_HORARIO:
-      return <NotificacionNuevoHorario {...downProps} />;
     case NOTIFICATION_TYPES.PARTICIPACION_RECHAZADA:
       return <NotificacionRechazo {...downProps} />;
     case NOTIFICATION_TYPES.PARTICIPACION_GANADOR:
@@ -348,36 +344,6 @@ class NotificacionCambioEstatus extends PortalNotification {
   };
 }
 
-class NotificacionCambioHorario extends PortalNotification {
-  getTitle = () => {
-    return "Cambio de Horario de Junta";
-  };
-
-  getDescription = () => {
-    const details = this.state.data.details;
-    return `El cliente ${details.author} ha cambiado el horario de junta para la oportunidad "${details.opportunityName}" de ${details.prevSched} a ${details.newSched}`;
-  };
-
-  getNavPath = () => {
-    return "/detalle/" + this.props.rawNotif.notificacion.detalles.rfp._id;
-  };
-}
-
-class NotificacionNuevoHorario extends PortalNotification {
-  getTitle = () => {
-    return "Horario de Junta Establecido";
-  };
-
-  getDescription = () => {
-    const details = this.state.data.details;
-    return `El cliente ${details.author} ha establecido el siguiente horario de junta para la oportunidad "${details.opportunityName}": ${details.sched}`;
-  };
-
-  getNavPath = () => {
-    return "/detalle/" + this.props.rawNotif.notificacion.detalles.rfp._id;
-  };
-}
-
 class NotificacionRechazo extends PortalNotification {
   getTitle = () => {
     return "Rechazo de Propuesta";
@@ -519,7 +485,7 @@ class NotificacionCambioEvento extends PortalNotification {
     ) {
       return `El nombre del evento "${detalles.nombreEventoPrevio}" de la oportunidad "${details.opportunityName}" ha sido renombrado a "${detalles.nombreEventoNuevo}"`;
     } else {
-      return `Se han registrado multiples cambios en uno de los eventos de la oportunidad "${details.opportunityName}"`;
+      return `Se han registrado múltiples cambios en uno de los eventos de la oportunidad "${details.opportunityName}"`;
     }
   };
 }
