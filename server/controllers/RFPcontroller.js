@@ -99,6 +99,9 @@ rfpController.updaterfp = (id, updatedRFP) => {
 
         notificationQueue.add(CAMBIO_ESTATUS, job);
       })
+      .then(() => {
+        resolve({ success: 1 });
+      })
       .catch((error) => {
         return reject(error);
       });
