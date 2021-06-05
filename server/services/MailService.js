@@ -11,6 +11,7 @@ const {
   PARTICIPACION_RECHAZADA,
   PARTICIPACION_GANADOR,
   OPORTUNIDAD_ELIMINADA,
+  OPORTUNIDAD_CERRADA_NO_PARTICIPACIONES,
 } = require("../utils/NotificationTypes");
 
 const mailService = {};
@@ -194,6 +195,11 @@ Liga de la reunión: ${mailData.eventBeforeUpdate.link}`;
         mailOptions.text = `el cliente ${mailData.nombreCliente} ha eliminado la Oportunidad Comercial "${mailData.detalles}".`;
         mailOptions.html = `el cliente ${mailData.nombreCliente} ha eliminado la Oportunidad Comercial "${mailData.detalles}".</p>`;
         break;
+      
+      case OPORTUNIDAD_CERRADA_NO_PARTICIPACIONES:
+        mailOptions.subject = "Oportunidad Cerrada sin Participantes";
+        mailOptions.text = `se ha cerrado automáticamente la oportunidad "${mailData.detalles}" debido a que no tuvo participaciones por dos semanas`;
+        mailOptions.html = `se ha cerrado automáticamente la oportunidad "${mailData.detalles}" debido a que no tuvo participaciones por dos semanas`;
 
       default:
         reject("Invalid notificationType");
