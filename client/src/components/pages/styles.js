@@ -1,4 +1,5 @@
 import { makeStyles } from "@material-ui/core";
+import { red } from "@material-ui/core/colors";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -62,6 +63,10 @@ const useStyles = makeStyles((theme) => ({
   },
   logo: {
     height: "36px",
+  },
+  warning:{
+    color:'#FF0000',
+    fontSize: 20,
   }
 }));
 
