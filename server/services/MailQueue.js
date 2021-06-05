@@ -10,6 +10,7 @@ const {
   PARTICIPACION_RECHAZADA,
   PARTICIPACION_GANADOR,
   OPORTUNIDAD_ELIMINADA,
+  OPORTUNIDAD_CERRADA_NO_PARTICIPACIONES,
 } = require("../utils/NotificationTypes");
 const mailService = require("./MailService");
 
@@ -58,6 +59,10 @@ mailQueue.process(PARTICIPACION_GANADOR, (job) => {
 mailQueue.process(OPORTUNIDAD_ELIMINADA, (job) => {
   return mailService.sendEmail(job.data);
 });
+
+mailQueue.process(OPORTUNIDAD_CERRADA_NO_PARTICIPACIONES, (job)=> {
+  return mailService.sendEmail(job.data);
+}); 
 
 mailQueue.on("stalled", function (job) {
   console.log("stalled job, restarting it again!", job.queue.name, job.data);
