@@ -95,6 +95,8 @@ export default function NotificationFactory(props) {
       return <NotificacionGanador {...downProps} />;
     case NOTIFICATION_TYPES.NUEVA_PARTICIPACION:
       return <NotificacionSocioAplica {...downProps} />;
+    case NOTIFICATION_TYPES.PARTICIPACION_NUEVO_ARCHIVO:
+      return <NotificacionParticipacionNuevoArchivo {...downProps} />;
     case NOTIFICATION_TYPES.NUEVO_EVENTO:
       return <NotificacionNuevoEvento {...downProps} />;
     case NOTIFICATION_TYPES.EVENTO_ELIMINADO:
@@ -379,9 +381,27 @@ class NotificacionSocioAplica extends PortalNotification {
 
   getDescription = () => {
     const details = this.state.data.details;
-    const participanteName = this.props.rawNotif.notificacion.detalles
-      .participante.name;
+    const participanteName =
+      this.props.rawNotif.notificacion.detalles.participante.name;
     return `El socio ${participanteName} ha aplicado a su oportunidad comercial "${details.opportunityName}"`;
+  };
+
+  getNavPath = () => {
+    return "/detalle/" + this.props.rawNotif.notificacion.detalles.rfp._id;
+  };
+}
+
+class NotificacionParticipacionNuevoArchivo extends PortalNotification {
+  getTitle = () => {
+    return "Nuevo Archivo";
+  };
+
+  getDescription = () => {
+    const details = this.state.data.details;
+    const rawNotifDetalles = this.props.rawNotif.notificacion.detalles;
+    const participanteName = rawNotifDetalles.participante.name;
+    const nombreArchivo = rawNotifDetalles.detalles;
+    return `El socio ${participanteName} subio un nuevo archivo "${nombreArchivo}" en la oportunidad: "${details.opportunityName}"`;
   };
 
   getNavPath = () => {

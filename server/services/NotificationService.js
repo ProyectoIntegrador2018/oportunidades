@@ -16,6 +16,7 @@ const {
   PARTICIPACION_GANADOR,
   EVENTO_ELIMINADO,
   OPORTUNIDAD_CERRADA_NO_PARTICIPACIONES,
+  PARTICIPACION_NUEVO_ARCHIVO,
 } = require("../utils/NotificationTypes");
 const detallesNotifController = require("../controllers/DetallesNotificacionController");
 const notificacionController = require("../controllers/NotificacionController");
@@ -338,6 +339,27 @@ notificationService.notificacionNuevaParticipacion = (job) => {
           .catch((error) => reject(error));
       })
       .catch((error) => reject(error));
+  });
+};
+
+notificationService.notificacionParticipacionNuevoArchivo = (job) => {
+  const { rfpInvolucrado, socioInvolucrado, originalname } = job.data;
+  return new Promise((resolve, reject) => {
+    getClienteRfp(rfpInvolucrado).then((cliente) => {
+      if (!cliente || cliente.length == 0) {
+        return resolve(SUCCESS_RESP);
+      }
+      const detalles = {
+        rfp: rfpInvolucrado,
+        participante: socioInvolucrado,
+        detalles: originalname,
+      };
+      notificacionUsuarios(PARTICIPACION_NUEVO_ARCHIVO, detalles, cliente)
+        .then((resp) => {
+          resolve(resp);
+        })
+        .catch((error) => reject(error));
+    });
   });
 };
 
