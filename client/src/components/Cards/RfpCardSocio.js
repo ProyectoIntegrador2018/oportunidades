@@ -8,6 +8,7 @@ import {
   CardContent,
   Typography,
 } from "@material-ui/core";
+import ConfirmDialog from "../Dialogs/ConfirmDialog";
 import useStyles from "../Cards/styles";
 
 import axios from "axios";
@@ -15,6 +16,7 @@ import { isSocioBanned } from "../../fetchers/fetcher";
 
 export default function SimpleCard({ rfp }) {
   const [isBanned, setIsBanned] = useState(true);
+  const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
 
   const config = {
     headers: {
@@ -84,6 +86,15 @@ export default function SimpleCard({ rfp }) {
 
   return (
     <div className="rfp-card">
+      <ConfirmDialog
+        title="Confirmación"
+        open={isConfirmationOpen}
+        setOpen={setIsConfirmationOpen}
+        onConfirm={handleDejarDeParticipar}
+      >
+        ¿Está seguro de que desea dejar de participar? Esta acción no se puede
+        revertir
+      </ConfirmDialog>
       <Card className={classes.cardRfp}>
         <CardContent>
           <Typography className={classes.title}>
@@ -128,7 +139,7 @@ export default function SimpleCard({ rfp }) {
               <Button
                 type="submit"
                 onClick={() => {
-                  handleDejarDeParticipar();
+                  setIsConfirmationOpen(true);
                 }}
                 variant="contained"
                 className="boton"
