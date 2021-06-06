@@ -146,9 +146,7 @@ notificationService.notificacionOportunidadCerradaNoParticipaciones = (job) => {
         ])
         .then((resp) => {
           if (MAIL_ENABLED) {
-            mailUsuarios(OPORTUNIDAD_CERRADA_NO_PARTICIPACIONES, detalles, [
-              cliente,
-            ])
+            mailUsuarios(OPORTUNIDAD_CERRADA_NO_PARTICIPACIONES, detalles, [cliente])
               .then((respMail) => {
                 resolve(respMail);
               })
