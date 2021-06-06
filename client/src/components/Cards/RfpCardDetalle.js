@@ -347,7 +347,7 @@ export default function SimpleCard({ rfp, isParticipating }) {
                       type="file"
                       onChange={(event) => setSelectedFile(event.target.files[0])}
                     />
-                    <Button className="boton" disabled={!selectedFile || isFileOverSizeLimit()} onClick={onFileUpload}>
+                    <Button className="boton" disabled={!selectedFile || files.length >= 3 || isFileOverSizeLimit()} onClick={onFileUpload}>
                       SUBIR ARCHIVO
                     </Button>
                   </div>
@@ -356,6 +356,11 @@ export default function SimpleCard({ rfp, isParticipating }) {
                     {isFileOverSizeLimit() ? (
                       <Typography className="error-titulo-rojo-medium">
                         El archivo seleccionado pesa más del límite permitido de {MAX_FILE_SIZE} MB para archivos
+                      </Typography>
+                    ) : null}
+                    {selectedFile && files.length >= 3 ? (
+                      <Typography className="error-titulo-rojo-medium">
+                        Sólo está permitido subir hasta 3 archivos en un RFP. Puede borrar un archivo para subir uno nuevo.
                       </Typography>
                     ) : null}
                   </div>
