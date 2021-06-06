@@ -142,6 +142,18 @@ router.patch("/updaterfp", userMiddleware, (req, res) => {
     });
 });
 
+router.get("/is-socio-banned/:rfp_id", userMiddleware, (req, res) => {
+  rfpController
+    .isSocioBanned(req.params.rfp_id, req.user._id)
+    .then((isBanned) => {
+      return res.send(isBanned);
+    })
+    .catch((error) => {
+      console.log("error", error);
+      return res.status(400).send({ error });
+    });
+});
+
 router.get("/ping", userMiddleware, (req, res) => {
   return res.send({ info: "ping is working for authorized user" });
 });

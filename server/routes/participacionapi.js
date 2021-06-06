@@ -9,6 +9,7 @@ const participacionController = require("../controllers/ParticipacionController"
 const { FILE_COLLECTION } = require("../config/filesConfig");
 const GridFsStorage = require("multer-gridfs-storage");
 const Grid = require("gridfs-stream");
+const rfpController = require("../controllers/RFPcontroller");
 Grid.mongo = mongo;
 
 const router = express.Router();
@@ -30,7 +31,7 @@ const storage = GridFsStorage({
         const fileInfo = {
           filename: filename,
           bucketName: FILE_COLLECTION,
-          aliases:file.originalname
+          aliases: file.originalname,
         };
         resolve(fileInfo);
       });
@@ -69,9 +70,23 @@ router.post("/create-participacion", userMiddleware, (req, res) => {
  */
 router.delete("/delete-participacion-socio/:id", userMiddleware, (req, res) => {
   participacionController
-    .deleteParticipacion(req.params.id)
+    .getParticipacion(req.params.id)
     .then((participacion) => {
-      return res.send({ participacion });
+      rfpController
+        .banSocio(participacion.rfpInvolucrado, participacion.socioInvolucrado)
+        .then(() => {
+          participacionController
+            .deleteParticipacion(req.params.id)
+            .then((participacion) => {
+              return res.send({ participacion });
+            })
+            .catch((error) => {
+              return res.status(400).send({ error });
+            });
+        })
+        .catch((error) => {
+          return res.status(400).send({ error });
+        });
     })
     .catch((error) => {
       return res.status(400).send({ error });
@@ -168,11 +183,11 @@ router.post(
  * @param {Object} req contiene el nombre del archivo en la DB
  * @param {Object} res respuesta del request
  */
-router.get('/get-file/:filename', userMiddleware, (req, res) => {
+router.get("/get-file/:filename", userMiddleware, (req, res) => {
   gfs.files.findOne({ aliases: req.params.filename }, (err, file) => {
     if (!file || file.length === 0) {
       return res.status(404).json({
-        err: 'No file exists'
+        err: "No file exists",
       });
     }
     return res.json(file);
@@ -185,28 +200,28 @@ router.get('/get-file/:filename', userMiddleware, (req, res) => {
  * @param {Object} req contiene el nombre del archivo en la DB
  * @param {Object} res respuesta del request
  */
-router.get('/get-base64-file/:filename', userMiddleware, (req, res) => {
+router.get("/get-base64-file/:filename", userMiddleware, (req, res) => {
   gfs.files.findOne({ aliases: req.params.filename }, (err, file) => {
     if (!file || file.length === 0) {
       return res.status(404).json({
-        err: 'No file exists'
+        err: "No file exists",
       });
     }
 
     const readstream = gfs.createReadStream(file.filename);
     const bufs = [];
-    readstream.on('data', function (chunk) {
+    readstream.on("data", function (chunk) {
       bufs.push(chunk);
     });
 
-    readstream.on('end', function () {
+    readstream.on("end", function () {
       const fbuf = Buffer.concat(bufs);
-      const base64 = fbuf.toString('base64');
+      const base64 = fbuf.toString("base64");
 
       const fileData = {
         base64: base64,
-        contentType: file.contentType
-      }
+        contentType: file.contentType,
+      };
 
       res.status(200).send(fileData);
     });
@@ -220,7 +235,7 @@ router.get('/get-base64-file/:filename', userMiddleware, (req, res) => {
  * @param {Object} res respuesta del request
  */
 router.delete("/delete-file/:id", userMiddleware, (req, res) => {
-  gfs.remove({ _id: req.params.id, root: FILE_COLLECTION}, (error) => {
+  gfs.remove({ _id: req.params.id, root: FILE_COLLECTION }, (error) => {
     if (error) return res.status(404).send({ error });
     res.sendStatus(204);
   });
@@ -233,8 +248,9 @@ router.delete("/delete-file/:id", userMiddleware, (req, res) => {
  * @param {Object} res respuesta del request
  */
 router.get("/get-files/:participacionId", userMiddleware, (req, res) => {
-  ParticipacionFileController
-  .getFilesFromParticipacion(req.params.participacionId)
+  ParticipacionFileController.getFilesFromParticipacion(
+    req.params.participacionId
+  )
     .then((filenames) => {
       return res.send(filenames);
     })

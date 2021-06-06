@@ -156,4 +156,44 @@ rfpController.getOneRfp = (rfp_id) => {
   });
 };
 
+rfpController.banSocio = (rfp_id, socio_id) => {
+  return new Promise((resolve, reject) => {
+    RFP.findById(rfp_id).then((rfp) => {
+      const curBanned = rfp.bannedSocios ? rfp.bannedSocios : [];
+      RFP.findByIdAndUpdate(rfp_id, {
+        bannedSocios: [...curBanned, socio_id],
+      })
+        .then((res) => {
+          return resolve();
+        })
+        .catch((error) => {
+          return reject({ error });
+        });
+    });
+  });
+};
+
+rfpController.isSocioBanned = (rfp_id, socio_id) => {
+  return new Promise((resolve, reject) => {
+    rfpController
+      .getOneRfp(rfp_id)
+      .then((rfp) => {
+        if (rfp.bannedSocios) {
+          let isBanned = false;
+          for (let idx = 0; idx < rfp.bannedSocios.length; idx++) {
+            if (socio_id.toString() === rfp.bannedSocios[idx].toString()) {
+              isBanned = true;
+            }
+          }
+          return resolve(isBanned);
+        } else {
+          return resolve(false);
+        }
+      })
+      .catch((error) => {
+        return reject({ error });
+      });
+  });
+};
+
 module.exports = rfpController;
