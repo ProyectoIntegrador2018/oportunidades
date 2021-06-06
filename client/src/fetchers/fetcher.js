@@ -30,6 +30,22 @@ async function obtenerSocio(user) {
   return response;
 }
 
+async function obtenerParticipacion(rfp_id) {
+  updateConfig();
+  const response = await axios
+    .get(
+      "/participacion/get-participacion/" + rfp_id,
+      config
+    )
+    .then((res) => {
+      return res.data;
+    })
+    .catch((error) => {
+      return error;
+    });
+  return response;
+}
+
 async function obtenerListaParticipaciones(rfp_id) {
   updateConfig();
   const response = await axios
@@ -132,6 +148,7 @@ export {
   obtenerSocio,
   obtenerRFP,
   actualizarEstatusSocio,
+  obtenerParticipacion,
   obtenerListaParticipaciones,
   obtenerFileNamesParticipaciones,
   getFile,

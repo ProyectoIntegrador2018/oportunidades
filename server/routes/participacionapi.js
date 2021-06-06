@@ -99,6 +99,24 @@ router.delete("/delete-participacion-socio/:id", userMiddleware, (req, res) => {
  * @param {Object} req contiene el id del socio
  * @param {Object} res respuesta del request
  */
+ router.get("/get-participacion/:rfpId", userMiddleware, (req, res) => {
+  participacionController
+    .getParticipacion(req.params.rfpId, req.user.id)
+    .then((participacion) => {
+      return res.send(participacion);
+    })
+    .catch((error) => {
+      console.log("error", error);
+      return res.status(400).send({ error });
+    });
+});
+
+/**
+ * Ruta para obtener las participaciones en las que esté involucrado un socio
+ * @implements {userMiddleWare} Function to check if the request is sent by a logged user
+ * @param {Object} req contiene el id del socio
+ * @param {Object} res respuesta del request
+ */
 router.get("/get-participaciones-socio", userMiddleware, (req, res) => {
   participacionController
     .getParticipacionesSocio(req.user.id)
