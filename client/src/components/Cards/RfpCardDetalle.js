@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import {
@@ -8,6 +8,7 @@ import {
   CardContent,
   Typography,
   Input,
+  Link
 } from "@material-ui/core";
 import KeyboardArrowLeft from "@material-ui/icons/KeyboardArrowLeft";
 import FabEditRFPFlex from "../ui/FabEditRFPFlex";
@@ -16,9 +17,12 @@ import useStyles from "../Cards/styles";
 
 import axios from "axios";
 import moment from "moment";
+import { obtenerParticipacion, obtenerFileNamesParticipaciones, getBase64File } from "../../fetchers/fetcher";
 
 export default function SimpleCard({ rfp, isParticipating }) {
+
   const [selectedFile, setSelectedFile] = useState(null);
+  const [files, setFiles] = useState([]);
 
   const config = {
     headers: {
@@ -29,6 +33,27 @@ export default function SimpleCard({ rfp, isParticipating }) {
       rfpInvolucrado: rfp._id
     },
   };
+
+  useEffect(() => {
+    console.log('en useEffect -------------');
+    if (userType === "socio") {
+      obtenerParticipacion(rfp._id)
+        .then((participacion) => {
+          obtenerFileNamesParticipaciones(participacion._id)
+            .then((filenames) => {
+              console.log('filenames', filenames);
+              setFiles(filenames);
+              console.log('files', files);
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+  }, []);
 
   // On file upload (click the upload button) 
   const onFileUpload = () => {
@@ -48,7 +73,21 @@ export default function SimpleCard({ rfp, isParticipating }) {
       .catch((error) => {
         console.log(error);
       });
-  }; 
+  };
+
+  const downloadFile = (filename) => {
+    getBase64File(filename)
+      .then((fileData) => {
+        const linkSource = `data:${fileData.contentType};base64,${fileData.base64}`;
+        const downloadLink = document.createElement("a");
+        downloadLink.href = linkSource;
+        downloadLink.download = filename;
+        downloadLink.click();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
 
   const classes = useStyles();
 
@@ -257,16 +296,31 @@ export default function SimpleCard({ rfp, isParticipating }) {
             <ListaEventos key={rfp._id} rfp={rfp} />
           )}
           {userType === "socio" && isParticipating ? (
-            <form>
-              <Typography className={classes.sectionSubtitle}>Carga de Archivos:</Typography>
-              <div className={classes.containerText}>
-                <Input type="file"
-                  onChange={(event) => setSelectedFile(event.target.files[0])}/> 
-                <Button className="boton" onClick={onFileUpload}> 
-                  SUBIR ARCHIVO
-                </Button> 
-              </div> 
-            </form>
+            <div>
+              <form>
+                <Typography className={classes.sectionSubtitle}>Carga de Archivos:</Typography>
+                <div className={classes.containerText}>
+                  <Input type="file"
+                    onChange={(event) => setSelectedFile(event.target.files[0])}/> 
+                  <Button className="boton" onClick={onFileUpload}> 
+                    SUBIR ARCHIVO
+                  </Button> 
+                </div> 
+              </form>
+              <div className={classes.containerColumnText}>
+                <Typography className={classes.labelText}>
+                  Archivos subidos:
+                </Typography>
+                {files.map((elem, index) => {
+                  console.log(elem, index)
+                  return (
+                    <div>
+                      <Link href="#" key={index} onClick={() => downloadFile(elem)}>{elem}</Link>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
           ) : null}
         </CardContent>
         <CardActions>
