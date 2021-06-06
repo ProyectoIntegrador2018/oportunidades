@@ -364,6 +364,7 @@ export default function SimpleCard({ rfp, isParticipating }) {
                       </Typography>
                     ) : null}
                   </div>
+                {files.length <= 0 ? null :
                 <div className={classes.containerColumnText}>
                   <Typography className={classes.labelText}>
                     Archivos subidos:
@@ -378,7 +379,7 @@ export default function SimpleCard({ rfp, isParticipating }) {
                       </div>
                     )
                   })}
-                </div>
+                </div>}
               </div>
             ) : null}
           </CardContent>
