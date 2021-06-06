@@ -316,7 +316,7 @@ export default function SimpleCard({ rfp, isParticipating }) {
                       type="file"
                       onChange={(event) => setSelectedFile(event.target.files[0])}
                     />
-                    <Button className="boton" onClick={onFileUpload}>
+                    <Button className="boton" disabled={selectedFile === null} onClick={onFileUpload}>
                       SUBIR ARCHIVO
                     </Button>
                   </div>
