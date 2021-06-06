@@ -57,13 +57,35 @@ You should ask for access to this tools if you don't have it already:
 
 ### Prerequisites
 
-Before you start, make sure you have **node** and **npm** installed in your computer.
+Before you start, make sure you have **node**, **npm** and **redis** installed in your computer.
+
+#### Install redis in MacOS
+
+run the following commands:
+
+```
+brew update
+brew install redis
+brew services start redis
+```
+
+Video tutorial: https://youtu.be/lgWjGkdrExA
+
+#### Install redis in Windows
+
+Navigate to microsoftarchive/redis GitHub repo: https://github.com/microsoftarchive/redis
+
+
+Go releases and install the latest release by downloading the .msi installer
+
+#### Confirmation of prerequisites
 
 To check this, run the following commands:
 
 ```
 node -v
 npm -v
+redis-cli -v
 ```
 
 ### Setup the project
@@ -89,8 +111,7 @@ Install dependencies with:
 npm install
 ```
 
-Create a .env file in the root directory. In this repo you will find a .env.config file, please feel free to copy its contents into
-your .env file. Please replace with your information
+Create a .env file in the root directory. In Accesos.txt you will be able to find the values for this environment variables. Please replace with your information.
 
 * `PORT` : The port where the app runs
 * `DATABASE` : The URL of your Mongo Database
@@ -98,6 +119,16 @@ your .env file. Please replace with your information
 * `AMDIN_EMAIL` : The email of the admin user.
 * `ADMIN_PASSWORD` : The password of the admin user.
 * `ADMIN_NAME` : The name of the admin user.
+* `REDIS_ENV`: Redis environment, either "production" or "development" depending on redis host
+* `REDIS_URL`: Redis url which contains host, password and port. Used in redis production env
+* `MAIL_ENABLED`: Boolean (true, false) indicating whether notifications should be sent by mail
+* `MAIL_USER`: Email address from which notification emails will be sent.
+* `MAIL_PASSWORD`: Email password for the specified mail at MAIL_USER.
+* `MAIL_SERVICE`: gmail (for CSOFTMTY MAL_SERVICE provider is Gmail)
+* `REDIS_PORT`: Local redis port number, usually 6379
+* `REDIS_HOST`: Local redis host api number, usually 127.0.0.1
+* `REDIS_DB`: Local redis database number, usually 0
+
 
 Start the server backend
 

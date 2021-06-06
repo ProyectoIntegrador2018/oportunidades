@@ -21,9 +21,8 @@ Go to settings and then go to the environment variables section to add the follo
 * `MAIL_USER` = Email address from which the notification emails will be sent
 * `MAIL_PASSWORD` = Email password from which the notification emails will be sent
 * `MAIL_SERVICE` = Mail service that nodemailer will use to send notification emails, this depends on the email used in MAIL_USER
-* `REDIS_PORT`= Redis port
-* `REDIS_HOST`= Redis host
-* `REDIS_DB`= Redis db
+
+**Note**: Heroku Redis is an add-on that enables redis in production. To obtain REDIS_URL navigate to Heroku Redis in resources, then settings, and click 'view credentials'.
 
 ## Login to Heroku in your terminal
 
