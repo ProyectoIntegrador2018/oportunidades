@@ -8,6 +8,7 @@ import {
   CardContent,
   Typography,
   Input,
+  Link
 } from "@material-ui/core";
 import KeyboardArrowLeft from "@material-ui/icons/KeyboardArrowLeft";
 import FabEditRFPFlex from "../ui/FabEditRFPFlex";
@@ -17,10 +18,11 @@ import useStyles from "../Cards/styles";
 
 import axios from "axios";
 import moment from "moment";
-import { isSocioBanned } from "../../fetchers/fetcher";
+import { obtenerParticipacion, obtenerFileNamesParticipaciones, getBase64File, deleteFile, isSocioBanned } from "../../fetchers/fetcher";
 
 export default function SimpleCard({ rfp, isParticipating }) {
   const [selectedFile, setSelectedFile] = useState(null);
+  const [files, setFiles] = useState([]);
   const [isBanned, setIsBanned] = useState(true);
   const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
 
@@ -35,10 +37,26 @@ export default function SimpleCard({ rfp, isParticipating }) {
   };
 
   useEffect(() => {
-    if (sessionStorage.getItem("userType") === "socio") {
+    if (userType === "socio") {
       isSocioBanned(rfp._id)
         .then((data) => {
           setIsBanned(data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+
+      obtenerParticipacion(rfp._id)
+        .then((participacion) => {
+          obtenerFileNamesParticipaciones(participacion._id)
+            .then((filenames) => {
+              console.log('filenames', filenames);
+              setFiles(filenames);
+              console.log('files', files);
+            })
+            .catch((error) => {
+              console.log(error);
+            });
         })
         .catch((error) => {
           console.log(error);
@@ -66,6 +84,30 @@ export default function SimpleCard({ rfp, isParticipating }) {
         console.log(error);
       });
   };
+
+  const downloadFile = (filename, originalname) => {
+    getBase64File(filename)
+      .then((fileData) => {
+        const linkSource = `data:${fileData.contentType};base64,${fileData.base64}`;
+        const downloadLink = document.createElement("a");
+        downloadLink.href = linkSource;
+        downloadLink.download = originalname;
+        downloadLink.click();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
+  const handleDeleteFile = (filename) => {
+    deleteFile(filename)
+      .then((res) => {
+        window.location.reload();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
 
   const classes = useStyles();
 
@@ -288,20 +330,37 @@ export default function SimpleCard({ rfp, isParticipating }) {
               <ListaEventos key={rfp._id} rfp={rfp} />
             )}
             {userType === "socio" && isParticipating ? (
-              <form>
-                <Typography className={classes.sectionSubtitle}>
-                  Carga de Archivos:
-                </Typography>
-                <div className={classes.containerText}>
-                  <Input
-                    type="file"
-                    onChange={(event) => setSelectedFile(event.target.files[0])}
-                  />
-                  <Button className="boton" onClick={onFileUpload}>
-                    SUBIR ARCHIVO
-                  </Button>
+              <div>
+                <form>
+                  <Typography className={classes.sectionSubtitle}>
+                    Carga de Archivos:
+                  </Typography>
+                  <div className={classes.containerText}>
+                    <Input
+                      type="file"
+                      onChange={(event) => setSelectedFile(event.target.files[0])}
+                    />
+                    <Button className="boton" disabled={selectedFile === null} onClick={onFileUpload}>
+                      SUBIR ARCHIVO
+                    </Button>
+                  </div>
+                </form>
+                <div className={classes.containerColumnText}>
+                  <Typography className={classes.labelText}>
+                    Archivos subidos:
+                  </Typography>
+                  {files.map((file, index) => {
+                    return (
+                      <div key={"div" + index}>
+                        <Link key={"link" + index} onClick={() => downloadFile(file.name, file.originalname)}>{file.originalname}</Link>
+                        <Button key={"button" + index} className="boton" onClick={() => handleDeleteFile(file.name)}>
+                          BORRAR
+                        </Button>
+                      </div>
+                    )
+                  })}
                 </div>
-              </form>
+              </div>
             ) : null}
           </CardContent>
           <CardActions>

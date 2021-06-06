@@ -44,12 +44,25 @@ participacionFile.createParticipacionFile = (
   });
 };
 
+participacionFile.deleteParticipacionFile = (filename) => {
+  return new Promise((resolve, reject) => {
+    ParticipacionFile.deleteOne({ name: filename })
+      .then((participacionFile) => {
+        resolve(participacionFile);
+      })
+      .catch((err) => reject(err));
+  });
+};
+
 participacionFile.getFilesFromParticipacion = (participacionId) => {
   return new Promise((resolve, reject) => {
-    ParticipacionFile.find({ participacion: participacionId }, "originalname")
+    ParticipacionFile.find({ participacion: participacionId }, "name originalname")
       .then((files) => {
         const filenames = files.map((file) => {
-          return file.originalname;
+          return {
+            name: file.name,
+            originalname: file.originalname
+          };
         });
         resolve(filenames);
       })

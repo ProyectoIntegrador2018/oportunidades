@@ -99,6 +99,24 @@ router.delete("/delete-participacion-socio/:id", userMiddleware, (req, res) => {
  * @param {Object} req contiene el id del socio
  * @param {Object} res respuesta del request
  */
+router.get("/get-participacion/:rfpId", userMiddleware, (req, res) => {
+  participacionController
+    .getParticipacionByRfpAndSocioId(req.params.rfpId, req.user.id)
+    .then((participacion) => {
+      return res.send(participacion);
+    })
+    .catch((error) => {
+      console.log("error", error);
+      return res.status(400).send({ error });
+    });
+});
+
+/**
+ * Ruta para obtener las participaciones en las que esté involucrado un socio
+ * @implements {userMiddleWare} Function to check if the request is sent by a logged user
+ * @param {Object} req contiene el id del socio
+ * @param {Object} res respuesta del request
+ */
 router.get("/get-participaciones-socio", userMiddleware, (req, res) => {
   participacionController
     .getParticipacionesSocio(req.user.id)
@@ -201,7 +219,7 @@ router.get("/get-file/:filename", userMiddleware, (req, res) => {
  * @param {Object} res respuesta del request
  */
 router.get("/get-base64-file/:filename", userMiddleware, (req, res) => {
-  gfs.files.findOne({ aliases: req.params.filename }, (err, file) => {
+  gfs.files.findOne({ filename: req.params.filename }, (err, file) => {
     if (!file || file.length === 0) {
       return res.status(404).json({
         err: "No file exists",
@@ -234,11 +252,17 @@ router.get("/get-base64-file/:filename", userMiddleware, (req, res) => {
  * @param {Object} req contiene el id del archivo
  * @param {Object} res respuesta del request
  */
-router.delete("/delete-file/:id", userMiddleware, (req, res) => {
-  gfs.remove({ _id: req.params.id, root: FILE_COLLECTION }, (error) => {
-    if (error) return res.status(404).send({ error });
-    res.sendStatus(204);
-  });
+ router.delete("/delete-file/:filename", userMiddleware, (req, res) => {
+  ParticipacionFileController.deleteParticipacionFile(req.params.filename)
+    .then(() => {
+      gfs.remove({ filename: req.params.filename, root: FILE_COLLECTION }, (error) => {
+        if (error) return res.status(404).send({ error });
+        res.sendStatus(204);
+      });
+    })
+    .catch((error) => {
+      return res.status(404).send({ error });
+    });
 });
 
 /**

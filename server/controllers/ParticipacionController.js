@@ -62,6 +62,30 @@ participacionController.deleteParticipacion = (id) => {
   });
 };
 
+participacionController.getParticipacion = (id) => {
+  return new Promise((resolve, reject) => {
+    Participacion.findById(id)
+      .then((participacion) => {
+        resolve(participacion);
+      })
+      .catch((error) => {
+        reject({ error });
+      });
+  });
+};
+
+participacionController.getParticipacionByRfpAndSocioId = (rfpId, socioId) => {
+  return new Promise((resolve, reject) => {
+    Participacion.findOne({ rfpInvolucrado: rfpId, socioInvolucrado: socioId })
+      .then((participacion) => {
+        return resolve(participacion);
+      })
+      .catch((error) => {
+        return reject({ error });
+      });
+  });
+};
+
 participacionController.getParticipacionesSocio = (id) => {
   return new Promise((resolve, reject) => {
     Participacion.find({ socioInvolucrado: id })
@@ -105,18 +129,6 @@ participacionController.updateEstatusSocio = (id, estatus, feedback) => {
         }
       })
       .catch((error) => reject(error));
-  });
-};
-
-participacionController.getParticipacion = (id) => {
-  return new Promise((resolve, reject) => {
-    Participacion.findById(id)
-      .then((participacion) => {
-        resolve(participacion);
-      })
-      .catch((error) => {
-        reject({ error });
-      });
   });
 };
 
