@@ -7,6 +7,7 @@ import {
   CardActions,
   CardContent,
   Typography,
+  Input
 } from "@material-ui/core";
 import KeyboardArrowLeft from "@material-ui/icons/KeyboardArrowLeft";
 import FabEditRFPFlex from "../ui/FabEditRFPFlex";
@@ -16,6 +17,7 @@ import useStyles from "../Cards/styles";
 import axios from "axios";
 
 export default function SimpleCard({ rfp }) {
+  const [selectedFile, setSelectedFile] = useState(null);
   const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
 
   const config = {
@@ -32,6 +34,32 @@ export default function SimpleCard({ rfp }) {
 
   // Obtener tipo de usuario
   const userType = sessionStorage.getItem("userType");
+
+  // On file upload (click the upload button)
+  const onFileUpload = () => {
+    const formData = new FormData();
+
+    formData.append(
+      "file",
+      selectedFile,
+      selectedFile.name,
+      selectedFile.originalname
+    );
+
+    axios
+      .post("/participacion/upload-file", formData, {
+        ...config,
+        params: {
+          rfpInvolucrado: rfp._id,
+        },
+      })
+      .then((res) => {
+        window.location.reload();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   // TODO: Refactor to fetchers
   const handleClick = () => {
@@ -221,6 +249,20 @@ export default function SimpleCard({ rfp }) {
                 {rfp.posicioncliente}
               </Typography>
             </div>
+            <form>
+              <Typography className={classes.sectionSubtitle}>
+                Carga de Archivos:
+              </Typography>
+              <div className={classes.containerText}>
+                <Input
+                  type="file"
+                  onChange={(event) => setSelectedFile(event.target.files[0])}
+                />
+                <Button className="boton" onClick={onFileUpload}>
+                  SUBIR ARCHIVO
+                </Button>
+              </div>
+            </form>
           </CardContent>
           <CardActions>
             <div className={classes.contenedorBotones}>
