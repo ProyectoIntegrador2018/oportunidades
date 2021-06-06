@@ -84,16 +84,20 @@ export default function SimpleCard({
             <Typography className={classes.labelText}>Estatus:</Typography>
             <Typography className={classes.valueText}>{estatus}</Typography>
           </div>
-          <div className={classes.containerText}>
-            <Typography className={classes.labelText}>Archivos:</Typography>
-          </div>
-            {files.map((file, index) => {
-              return (
-                <div>
-                  <Link key={index} className={classes.valueText} onClick={() => downloadFile(file.name, file.originalname)}>{file.originalname}</Link>
-                </div>
-              )
-            })}
+          {files.length > 0 ? (
+            <div>
+              <div className={classes.containerText}>
+                <Typography className={classes.labelText}>Archivos:</Typography>
+              </div>
+              {files.map((file, index) => {
+                return (
+                  <div>
+                    <Link key={index} className={classes.valueText} onClick={() => downloadFile(file.name, file.originalname)}>{file.originalname}</Link>
+                  </div>
+                )
+              })}
+            </div>
+          ) : null}
           {estatus === "Activo" && (
             <Button
               size="small"
