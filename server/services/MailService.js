@@ -200,7 +200,8 @@ Liga de la reunión: ${mailData.eventBeforeUpdate.link}`;
         mailOptions.subject = "Oportunidad Cerrada sin Participantes";
         mailOptions.text = `se ha cerrado automáticamente la oportunidad "${mailData.detalles}" debido a que no tuvo participaciones por dos semanas`;
         mailOptions.html = `se ha cerrado automáticamente la oportunidad "${mailData.detalles}" debido a que no tuvo participaciones por dos semanas`;
-
+        break;
+        
       default:
         reject("Invalid notificationType");
     }
