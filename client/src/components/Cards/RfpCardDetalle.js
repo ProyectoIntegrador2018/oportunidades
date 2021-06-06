@@ -85,6 +85,20 @@ export default function SimpleCard({ rfp, isParticipating }) {
       });
   };
 
+  const downloadFile = (filename, originalname) => {
+    getBase64File(filename)
+      .then((fileData) => {
+        const linkSource = `data:${fileData.contentType};base64,${fileData.base64}`;
+        const downloadLink = document.createElement("a");
+        downloadLink.href = linkSource;
+        downloadLink.download = originalname;
+        downloadLink.click();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
   const classes = useStyles();
 
   // Opciones para mostrar la fecha en string
@@ -325,11 +339,10 @@ export default function SimpleCard({ rfp, isParticipating }) {
                   <Typography className={classes.labelText}>
                     Archivos subidos:
                   </Typography>
-                  {files.map((elem, index) => {
-                    console.log(elem, index)
+                  {files.map((file, index) => {
                     return (
                       <div>
-                        <Link href="#" key={index} onClick={() => downloadFile(elem)}>{elem}</Link>
+                        <Link key={index} onClick={() => downloadFile(file.name, file.originalname)}>{file.originalname}</Link>
                       </div>
                     )
                   })}
