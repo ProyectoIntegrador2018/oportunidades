@@ -72,13 +72,13 @@ export default function SimpleCard({ rfp, isParticipating }) {
       });
   };
 
-  const downloadFile = (filename) => {
+  const downloadFile = (filename, originalname) => {
     getBase64File(filename)
       .then((fileData) => {
         const linkSource = `data:${fileData.contentType};base64,${fileData.base64}`;
         const downloadLink = document.createElement("a");
         downloadLink.href = linkSource;
-        downloadLink.download = filename;
+        downloadLink.download = originalname;
         downloadLink.click();
       })
       .catch((error) => {
@@ -308,11 +308,10 @@ export default function SimpleCard({ rfp, isParticipating }) {
                 <Typography className={classes.labelText}>
                   Archivos subidos:
                 </Typography>
-                {files.map((elem, index) => {
-                  console.log(elem, index)
+                {files.map((file, index) => {
                   return (
                     <div>
-                      <Link href="#" key={index} onClick={() => downloadFile(elem)}>{elem}</Link>
+                      <Link key={index} onClick={() => downloadFile(file.name, file.originalname)}>{file.originalname}</Link>
                     </div>
                   )
                 })}

@@ -200,7 +200,7 @@ router.get('/get-file/:filename', userMiddleware, (req, res) => {
  * @param {Object} res respuesta del request
  */
 router.get('/get-base64-file/:filename', userMiddleware, (req, res) => {
-  gfs.files.findOne({ aliases: req.params.filename }, (err, file) => {
+  gfs.files.findOne({ filename: req.params.filename }, (err, file) => {
     if (!file || file.length === 0) {
       return res.status(404).json({
         err: 'No file exists'
