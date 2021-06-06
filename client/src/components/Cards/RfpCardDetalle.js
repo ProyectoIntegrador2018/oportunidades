@@ -17,7 +17,7 @@ import useStyles from "../Cards/styles";
 
 import axios from "axios";
 import moment from "moment";
-import { obtenerParticipacion, obtenerFileNamesParticipaciones, getBase64File } from "../../fetchers/fetcher";
+import { obtenerParticipacion, obtenerFileNamesParticipaciones, getBase64File, deleteFile } from "../../fetchers/fetcher";
 
 export default function SimpleCard({ rfp, isParticipating }) {
 
@@ -80,6 +80,16 @@ export default function SimpleCard({ rfp, isParticipating }) {
         downloadLink.href = linkSource;
         downloadLink.download = originalname;
         downloadLink.click();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
+  const handleDeleteFile = (filename) => {
+    deleteFile(filename)
+      .then((res) => {
+        window.location.reload();
       })
       .catch((error) => {
         console.log(error);
@@ -312,6 +322,9 @@ export default function SimpleCard({ rfp, isParticipating }) {
                   return (
                     <div>
                       <Link key={index} onClick={() => downloadFile(file.name, file.originalname)}>{file.originalname}</Link>
+                      <Button className="boton" onClick={() => handleDeleteFile(file.name)}>
+                        BORRAR
+                      </Button>
                     </div>
                   )
                 })}

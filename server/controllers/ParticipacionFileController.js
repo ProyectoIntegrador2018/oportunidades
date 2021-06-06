@@ -24,6 +24,16 @@ participacionFile.createParticipacionFile = (rfpInvolucrado, socioInvolucrado, f
   });
 };
 
+participacionFile.deleteParticipacionFile = (filename) => {
+  return new Promise((resolve, reject) => {
+    ParticipacionFile.deleteOne({ name: filename })
+      .then((participacionFile) => {
+        resolve(participacionFile);
+      })
+      .catch((err) => reject(err));
+  });
+};
+
 participacionFile.getFilesFromParticipacion = (participacionId) => {
   return new Promise((resolve, reject) => {
     ParticipacionFile.find({ participacion: participacionId }, "name originalname")

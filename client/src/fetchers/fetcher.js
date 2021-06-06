@@ -111,6 +111,23 @@ async function getBase64File(filename) {
   return response;
 }
 
+async function deleteFile(filename) {
+  updateConfig();
+
+  const response = await axios
+    .delete(
+      "/participacion/delete-file/" + filename,
+      config
+    )
+    .then((res) => {
+      return res.data;
+    })
+    .catch((error) => {
+      return error;
+    });
+  return response;
+}
+
 async function obtenerRFP(rfp_id) {
   updateConfig();
   const response = await axios
@@ -143,4 +160,4 @@ async function actualizarEstatusSocio(participacionId, estatus, feedback) {
     });
 }
 
-export { obtenerSocio, obtenerRFP, actualizarEstatusSocio, obtenerParticipacion, obtenerListaParticipaciones, obtenerFileNamesParticipaciones, getFile, getBase64File };
+export { obtenerSocio, obtenerRFP, actualizarEstatusSocio, obtenerParticipacion, obtenerListaParticipaciones, obtenerFileNamesParticipaciones, getFile, getBase64File, deleteFile };

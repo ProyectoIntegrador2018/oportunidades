@@ -1,4 +1,3 @@
-const Participacion = require("../models/Participaciones");
 const ParticipacionFileController = require("../controllers/ParticipacionFileController");
 const express = require("express");
 const multer = require("multer");
@@ -233,11 +232,17 @@ router.get('/get-base64-file/:filename', userMiddleware, (req, res) => {
  * @param {Object} req contiene el id del archivo
  * @param {Object} res respuesta del request
  */
-router.delete("/delete-file/:id", userMiddleware, (req, res) => {
-  gfs.remove({ _id: req.params.id, root: FILE_COLLECTION}, (error) => {
-    if (error) return res.status(404).send({ error });
-    res.sendStatus(204);
-  });
+router.delete("/delete-file/:filename", userMiddleware, (req, res) => {
+  ParticipacionFileController.deleteParticipacionFile(req.params.filename)
+    .then(() => {
+      gfs.remove({ filename: req.params.filename, root: FILE_COLLECTION }, (error) => {
+        if (error) return res.status(404).send({ error });
+        res.sendStatus(204);
+      });
+    })
+    .catch((error) => {
+      return res.status(404).send({ error });
+    });
 });
 
 /**
