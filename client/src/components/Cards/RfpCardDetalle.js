@@ -25,6 +25,8 @@ export default function SimpleCard({ rfp, isParticipating }) {
   const [files, setFiles] = useState([]);
   const [isBanned, setIsBanned] = useState(true);
   const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
+  // maximum allowed file size in MB
+  const MAX_FILE_SIZE = 10;
 
   const config = {
     headers: {
@@ -84,6 +86,11 @@ export default function SimpleCard({ rfp, isParticipating }) {
         console.log(error);
       });
   };
+
+  const isFileOverSizeLimit = () => {
+    // selectedFile.size is in bytes, MAX_FILE_SIZE is in MB
+    return (selectedFile && selectedFile.size / 1024 / 1024 > MAX_FILE_SIZE);
+  }
 
   const downloadFile = (filename, originalname) => {
     getBase64File(filename)
@@ -340,11 +347,18 @@ export default function SimpleCard({ rfp, isParticipating }) {
                       type="file"
                       onChange={(event) => setSelectedFile(event.target.files[0])}
                     />
-                    <Button className="boton" disabled={selectedFile === null} onClick={onFileUpload}>
+                    <Button className="boton" disabled={!selectedFile || isFileOverSizeLimit()} onClick={onFileUpload}>
                       SUBIR ARCHIVO
                     </Button>
                   </div>
                 </form>
+                <div className={classes.containerText}>
+                    {isFileOverSizeLimit() ? (
+                      <Typography className="error-titulo-rojo-medium">
+                        El archivo seleccionado pesa más del límite permitido de {MAX_FILE_SIZE} MB para archivos
+                      </Typography>
+                    ) : null}
+                  </div>
                 <div className={classes.containerColumnText}>
                   <Typography className={classes.labelText}>
                     Archivos subidos:
