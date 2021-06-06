@@ -34,6 +34,13 @@ export default function EventoSocio({evento}) {
   // Opciones para mostrar la fecha en string
   const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
 
+  //validar si link contiene http/https
+  if (!/^https?:\/\//i.test(evento.link)) {
+    var url = 'https://' + evento.link;
+  }
+  else{
+    url = evento.link;
+  }
   return (
     <>
       <div className="container-evento">
@@ -45,8 +52,8 @@ export default function EventoSocio({evento}) {
           {' '}
           {moment.utc(evento.fecha).toDate().toLocaleTimeString('en-US')}
         </Typography>
-        <Link href={evento.link} target="_blank">
-          {evento.link}
+        <Link href={url} target="_blank">
+          {url}
         </Link>
       </div>
     </>

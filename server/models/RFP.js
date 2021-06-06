@@ -72,6 +72,15 @@ const schema = new mongoose.Schema({
     required: true,
     ref: "User",
   },
+  bannedSocios: {
+    type: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    required: false
+  },
 });
 
 schema.statics.findRfpById = function (rfpId) {

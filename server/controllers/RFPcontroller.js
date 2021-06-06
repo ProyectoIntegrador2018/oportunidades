@@ -1,12 +1,13 @@
 const RFP = require("../models/RFP");
+const deleteQueue = require("../services/DeleteQueue");
+const deleteService = require("../services/DeleteService");
 const notificationQueue = require("../services/NotificationQueue");
-const notificationService = require("../services/NotificationService");
 const {
   NUEVA_OPORTUNIDAD,
   OPORTUNIDAD_ELIMINADA,
   CAMBIO_ESTATUS,
 } = require("../utils/NotificationTypes");
-
+const { DELETE_RFP } = require("../utils/DeleteTypes");
 let rfpController = {};
 
 rfpController.createrfp = (rawRFP, id) => {
@@ -48,25 +49,32 @@ const createNewRFP = function (req, res) {
 
 rfpController.deleterfp = (id) => {
   return new Promise((resolve, reject) => {
-    notificationService
-      .deleteNotificacionesRfp(id)
-      .then(() => {
-        RFP.findByIdAndDelete(id)
-          .then((rfp) => {
-            const job = {
-              nombreCliente: rfp.nombrecliente,
-              nombreOportunidad: rfp.nombreOportunidad,
-            };
-            notificationQueue.add(OPORTUNIDAD_ELIMINADA, job);
-          })
-          .then((rfp) => {
-            return resolve(rfp);
-          })
-          .catch((error) => {
-            return reject(error);
-          });
+    RFP.findByIdAndDelete(id)
+      .then((rfp) => {
+        deleteService.deleteNotificacionesRfp(rfp._id);
+        return rfp;
       })
-      .catch((error) => reject(error));
+      .then((rfp) => {
+        const job = {
+          rfpId: rfp._id,
+        };
+        deleteQueue.add(DELETE_RFP, job);
+        return rfp;
+      })
+      .then((rfp) => {
+        const job = {
+          nombreCliente: rfp.nombrecliente,
+          nombreOportunidad: rfp.nombreOportunidad,
+        };
+        notificationQueue.add(OPORTUNIDAD_ELIMINADA, job);
+        return rfp;
+      })
+      .then((rfp) => {
+        return resolve(rfp);
+      })
+      .catch((error) => {
+        return reject(error);
+      });
   });
 };
 
@@ -90,6 +98,9 @@ rfpController.updaterfp = (id, updatedRFP) => {
         };
 
         notificationQueue.add(CAMBIO_ESTATUS, job);
+      })
+      .then(() => {
+        resolve({ success: 1 });
       })
       .catch((error) => {
         return reject(error);
@@ -138,6 +149,46 @@ rfpController.getOneRfp = (rfp_id) => {
     RFP.findById(rfp_id)
       .then((rfp) => {
         return resolve(rfp);
+      })
+      .catch((error) => {
+        return reject({ error });
+      });
+  });
+};
+
+rfpController.banSocio = (rfp_id, socio_id) => {
+  return new Promise((resolve, reject) => {
+    RFP.findById(rfp_id).then((rfp) => {
+      const curBanned = rfp.bannedSocios ? rfp.bannedSocios : [];
+      RFP.findByIdAndUpdate(rfp_id, {
+        bannedSocios: [...curBanned, socio_id],
+      })
+        .then((res) => {
+          return resolve();
+        })
+        .catch((error) => {
+          return reject({ error });
+        });
+    });
+  });
+};
+
+rfpController.isSocioBanned = (rfp_id, socio_id) => {
+  return new Promise((resolve, reject) => {
+    rfpController
+      .getOneRfp(rfp_id)
+      .then((rfp) => {
+        if (rfp.bannedSocios) {
+          let isBanned = false;
+          for (let idx = 0; idx < rfp.bannedSocios.length; idx++) {
+            if (socio_id.toString() === rfp.bannedSocios[idx].toString()) {
+              isBanned = true;
+            }
+          }
+          return resolve(isBanned);
+        } else {
+          return resolve(false);
+        }
       })
       .catch((error) => {
         return reject({ error });

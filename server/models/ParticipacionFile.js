@@ -5,6 +5,10 @@ const schema = new mongoose.Schema({
     type: String,
   },
 
+  originalname:{
+    type: String,
+  },
+
   participacion: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "participaciones",

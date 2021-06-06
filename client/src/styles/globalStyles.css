@@ -87,6 +87,11 @@
    margin: 1.5em 0.5em !important;
 }
 
+.boton:disabled {
+   background-color: #895137 !important;
+   color: #3c3c3c !important;
+}
+
 .boton-alt {
    color: #d26d47 !important;
    background-color: #fadfd2 !important;
@@ -158,6 +163,13 @@
    color: hsl(0, 95%, 44%);
    text-align: start;
    max-width: 300px;
+}
+
+.error-titulo-rojo-medium {
+   margin: 0;
+   margin-bottom: 0.3em;
+   color: hsl(0, 95%, 44%);
+   text-align: start;
 }
 
 .error-texto {

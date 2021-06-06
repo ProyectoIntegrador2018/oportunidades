@@ -16,6 +16,14 @@ import useStyles from "./styles";
 export default function CalendarEventDetails(params) {
   const classes = useStyles();
 
+//Validar si link tiene http/https
+  if (!/^https?:\/\//i.test(params.selectedEventLink)) {
+    var url = 'https://' + params.selectedEventLink;
+  }
+  else{
+    url = params.selectedEventLink;
+  }
+
   return (
     <div>
       <Dialog
@@ -38,6 +46,14 @@ export default function CalendarEventDetails(params) {
           ) : null}
         </DialogTitle>
         <DialogContent>
+          <div className={classes.containerText}>
+            <Typography className={classes.labelText}>
+              Nombre de la Oportunidad:
+            </Typography>
+            <Typography className={classes.valueText}>
+              {params.selectedEventOpportunityName}
+            </Typography>
+          </div>
           <div className={classes.containerText}>
             <Typography className={classes.labelText}>
               Nombre del Evento:
@@ -66,9 +82,9 @@ export default function CalendarEventDetails(params) {
             <Typography className={classes.labelText}>
               Liga del Evento:
             </Typography>
-            <Typography className={classes.valueText}>
-              {params.selectedEventLink}
-            </Typography>
+            <a className={classes.valueText} href={url}>
+              {url}
+            </a>
           </div>
         </DialogContent>
 

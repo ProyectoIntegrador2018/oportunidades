@@ -1,5 +1,5 @@
 require("dotenv").config();
-require('events').EventEmitter.defaultMaxListeners = 11
+require('events').EventEmitter.defaultMaxListeners = 12;
 const express = require("express");
 const path = require("path");
 const mongoose = require("mongoose");

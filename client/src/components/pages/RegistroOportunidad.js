@@ -506,7 +506,9 @@ const RegistroOportunidad = () => {
                       {formik.errors.comment}
                     </p>
                   ) : null}
-
+                  <Typography className={classes.warning}>
+                    * Si la oportunidad no tiene participantes durante los primeros 15 días, se cerrará automáticamente y usted será notificado. *
+                  </Typography>
                   <div className="container-botones">
                     <Button type="submit" variant="contained" className="boton">
                       Registrar oportunidad

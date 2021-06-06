@@ -206,6 +206,19 @@ eventController.getOccupiedEventTimesFromDate = (eventDateISOString, eventId=nul
   });
 };
 
+eventController.getEventOpportunityName = (eventId) => {
+  return new Promise((resolve, reject) => {
+    Event.findById(eventId)
+      .populate({ path: "rfp" })
+      .then((eventWithRfp) => {
+        resolve(eventWithRfp.rfp.nombreOportunidad);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+};
+
 /**
  * Function to check if a given date overlaps with another event
  * @param {Date} eventDate 

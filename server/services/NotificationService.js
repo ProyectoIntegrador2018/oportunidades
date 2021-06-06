@@ -16,6 +16,7 @@ const {
   PARTICIPACION_GANADOR,
   EVENTO_ELIMINADO,
   OPORTUNIDAD_CERRADA_NO_PARTICIPACIONES,
+  PARTICIPACION_NUEVO_ARCHIVO,
 } = require("../utils/NotificationTypes");
 const detallesNotifController = require("../controllers/DetallesNotificacionController");
 const notificacionController = require("../controllers/NotificacionController");
@@ -143,7 +144,17 @@ notificationService.notificacionOportunidadCerradaNoParticipaciones = (job) => {
         notificacionUsuarios(OPORTUNIDAD_CERRADA_NO_PARTICIPACIONES, detalles, [
           cliente,
         ])
-          .then((resp) => resolve(resp))
+        .then((resp) => {
+          if (MAIL_ENABLED) {
+            mailUsuarios(OPORTUNIDAD_CERRADA_NO_PARTICIPACIONES, detalles, [cliente])
+              .then((respMail) => {
+                resolve(respMail);
+              })
+              .catch((error) => reject(error));
+          } else {
+            resolve(resp);
+          }
+          })
           .catch((error) => reject(error));
       })
       .catch((error) => reject(error));
@@ -341,6 +352,27 @@ notificationService.notificacionNuevaParticipacion = (job) => {
   });
 };
 
+notificationService.notificacionParticipacionNuevoArchivo = (job) => {
+  const { rfpInvolucrado, socioInvolucrado, originalname } = job.data;
+  return new Promise((resolve, reject) => {
+    getClienteRfp(rfpInvolucrado).then((cliente) => {
+      if (!cliente || cliente.length == 0) {
+        return resolve(SUCCESS_RESP);
+      }
+      const detalles = {
+        rfp: rfpInvolucrado,
+        participante: socioInvolucrado,
+        detalles: originalname,
+      };
+      notificacionUsuarios(PARTICIPACION_NUEVO_ARCHIVO, detalles, cliente)
+        .then((resp) => {
+          resolve(resp);
+        })
+        .catch((error) => reject(error));
+    });
+  });
+};
+
 notificationService.notificacionNuevoEvento = (job) => {
   const evento = job.data.newEvent;
   return new Promise((resolve, reject) => {
@@ -362,7 +394,7 @@ notificationService.notificacionNuevoEvento = (job) => {
                 })
                 .catch((error) => reject(error));
             } else {
-              resolve(SUCCESS_RESP);
+              resolve(resp);
             }
           }
         );
@@ -388,25 +420,28 @@ notificationService.notificacionEventoEliminado = (job) => {
 
         notificacionUsuarios(EVENTO_ELIMINADO, detalles, sociosParticipantes)
           .then((resp) => {
-            RfpModel.getNombreOportunidad(evento.rfp)
-            .then((nombreOportunidad) => {
-              RfpModel.getNombreCliente(evento.rfp)
-              .then((nombrecliente)=>{
-                const eventData = {
-                  name: evento.name,
-                  nombreOportunidad: nombreOportunidad,
-                  nombreCliente: nombrecliente,
-                };
-                mailUsuarios(EVENTO_ELIMINADO, eventData, sociosParticipantes)
-                  .then((resp) => {
-                    resolve(resp);
-                  })
-                  .catch((error) => reject(error));
+            if (MAIL_ENABLED) {
+              RfpModel.getNombreOportunidad(evento.rfp)
+              .then((nombreOportunidad) => {
+                RfpModel.getNombreCliente(evento.rfp)
+                .then((nombrecliente)=>{
+                  const eventData = {
+                    name: evento.name,
+                    nombreOportunidad: nombreOportunidad,
+                    nombreCliente: nombrecliente,
+                  };
+                  mailUsuarios(EVENTO_ELIMINADO, eventData, sociosParticipantes)
+                    .then((resp) => {
+                      resolve(resp);
+                    })
+                    .catch((error) => reject(error));
+                })
+                .catch((error)=> reject(error));
               })
-              .catch((error)=>(error));
-              
-            })
-            .catch((error) => reject(error));
+              .catch((error) => reject(error));
+            } else {
+              resolve(resp);
+            }
           })
           .catch((error) => reject(error));
       })
@@ -443,7 +478,7 @@ notificationService.notificacionCambioEvento = (job) => {
         if (
           eventBeforeUpdate.name == eventUpdated.name &&
           eventBeforeUpdate.link == eventUpdated.link &&
-          eventBeforeUpdate.date.getTime() == eventUpdated.date.getTime()
+          eventBeforeUpdate.date == eventUpdated.date.toISOString()
         ) {
           return resolve(SUCCESS_RESP);
         }
@@ -459,7 +494,7 @@ notificationService.notificacionCambioEvento = (job) => {
               nombreEventoPrevio: eventBeforeUpdate.name,
               nombreEventoNuevo: eventUpdated.name,
               juntaEventoPrevio: eventBeforeUpdate.date,
-              juntaEventoNuevo: eventUpdated.date,
+              juntaEventoNuevo: eventUpdated.date.toISOString(),
               cambioLink: eventBeforeUpdate.link !== eventUpdated.link,
             };
             notificacionUsuarios(CAMBIO_EVENTO, detalles, sociosParticipantes)
@@ -475,7 +510,7 @@ notificationService.notificacionCambioEvento = (job) => {
                     })
                     .catch((error) => reject(error));
                 } else {
-                  resolve(SUCCESS_RESP);
+                  resolve(resp);
                 }
               })
               .catch((error) => reject(error));
@@ -521,72 +556,6 @@ const getClienteRfp = function (rfpId) {
           .catch((error) => reject(error));
       })
       .catch((error) => reject(error));
-  });
-};
-
-notificationService.deleteNotificacionesRfp = (rfpId) => {
-  return new Promise((resolve, reject) => {
-    DetallesNotificacionModel.findDetallesNotificacionByRfpId(rfpId)
-      .then((detallesNotificaciones) => {
-        const detallesNotifIds = detallesNotificaciones.map((detalles) => {
-          return detalles._id;
-        });
-        return DetallesNotificacionModel.deleteManyDetallesNotificacionByIds(
-          detallesNotifIds
-        )
-          .then((deleteResp) => {
-            return detallesNotifIds;
-          })
-          .catch((error) => {
-            reject(error);
-          });
-      })
-      .then((detallesNotifIds) => {
-        return NotificacionModel.findNotificacionByDetallesNotifIds(
-          detallesNotifIds
-        )
-          .then((notificaciones) => {
-            const notifIds = notificaciones.map((notificaciones) => {
-              return notificaciones._id;
-            });
-            return NotificacionModel.deleteManyNotificacionByIds(notifIds)
-              .then((deleteResp) => {
-                return notifIds;
-              })
-              .catch((error) => reject(error));
-          })
-          .catch((error) => reject(error));
-      })
-      .then((notifIds) => {
-        return UsuarioNotificacionModel.findUsuarioNotificacionByNotificacionIds(
-          notifIds
-        )
-          .then((usuarioNotificaciones) => {
-            return usuarioNotificaciones.map((usuarioNotificacion) => {
-              const { user: userId, _id: usuarioNotifId } = usuarioNotificacion;
-              UserModel.findById(userId)
-                .then((user) => {
-                  user.notificaciones.pull({ _id: usuarioNotifId });
-                  user.save();
-                })
-                .catch((error) => reject(error));
-              return usuarioNotifId;
-            });
-          })
-          .then((usuarioNotifIds) => {
-            UsuarioNotificacionModel.deleteManyUsuarioNotifByIds(
-              usuarioNotifIds
-            )
-              .then((deleteResp) => {
-                resolve({ status: 200 });
-              })
-              .catch((error) => reject(error));
-          })
-          .catch((error) => reject(error));
-      })
-      .catch((error) => {
-        reject(error);
-      });
   });
 };
 
