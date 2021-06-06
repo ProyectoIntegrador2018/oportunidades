@@ -35,15 +35,12 @@ export default function SimpleCard({ rfp, isParticipating }) {
   };
 
   useEffect(() => {
-    console.log('en useEffect -------------');
     if (userType === "socio") {
       obtenerParticipacion(rfp._id)
         .then((participacion) => {
           obtenerFileNamesParticipaciones(participacion._id)
             .then((filenames) => {
-              console.log('filenames', filenames);
               setFiles(filenames);
-              console.log('files', files);
             })
             .catch((error) => {
               console.log(error);
@@ -302,9 +299,9 @@ export default function SimpleCard({ rfp, isParticipating }) {
                 <div className={classes.containerText}>
                   <Input type="file"
                     onChange={(event) => setSelectedFile(event.target.files[0])}/> 
-                  <Button className="boton" onClick={onFileUpload}> 
+                  <Button className="boton" disabled={selectedFile === null} onClick={onFileUpload}> 
                     SUBIR ARCHIVO
-                  </Button> 
+                  </Button>
                 </div> 
               </form>
               <div className={classes.containerColumnText}>
