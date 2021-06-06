@@ -111,7 +111,7 @@ Install dependencies with:
 npm install
 ```
 
-Create a .env file in the root directory. Please replace with your information
+Create a .env file in the root directory. In Accesos.txt you will be able to find the values for this environment variables. Please replace with your information.
 
 * `PORT` : The port where the app runs
 * `DATABASE` : The URL of your Mongo Database
