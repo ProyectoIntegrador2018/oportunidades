@@ -25,6 +25,8 @@ export default function SimpleCard({ rfp, isParticipating }) {
   const [files, setFiles] = useState([]);
   const [isBanned, setIsBanned] = useState(true);
   const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
+  // maximum allowed file size in MB
+  const MAX_FILE_SIZE = 10;
 
   const config = {
     headers: {
@@ -83,6 +85,11 @@ export default function SimpleCard({ rfp, isParticipating }) {
       .catch((error) => {
         console.log(error);
       });
+  };
+
+  const isFileOverSizeLimit = () => {
+    // selectedFile.size is in bytes, MAX_FILE_SIZE is in MB
+    return (selectedFile && selectedFile.size / 1024 / 1024 > MAX_FILE_SIZE);
   };
 
   const downloadFile = (filename, originalname) => {
@@ -340,11 +347,24 @@ export default function SimpleCard({ rfp, isParticipating }) {
                       type="file"
                       onChange={(event) => setSelectedFile(event.target.files[0])}
                     />
-                    <Button className="boton" disabled={selectedFile === null} onClick={onFileUpload}>
+                    <Button className="boton" disabled={!selectedFile || files.length >= 3 || isFileOverSizeLimit()} onClick={onFileUpload}>
                       SUBIR ARCHIVO
                     </Button>
                   </div>
                 </form>
+                <div className={classes.containerText}>
+                  {isFileOverSizeLimit() ? (
+                    <Typography className="error-titulo-rojo-medium">
+                      El archivo seleccionado pesa más del límite permitido de {MAX_FILE_SIZE} MB para archivos
+                    </Typography>
+                  ) : null}
+                  {selectedFile && files.length >= 3 ? (
+                    <Typography className="error-titulo-rojo-medium">
+                      Sólo está permitido subir hasta 3 archivos en un RFP. Puede borrar un archivo para subir uno nuevo.
+                    </Typography>
+                  ) : null}
+                </div>
+                {files.length > 0 ? (
                 <div className={classes.containerColumnText}>
                   <Typography className={classes.labelText}>
                     Archivos subidos:
@@ -360,6 +380,7 @@ export default function SimpleCard({ rfp, isParticipating }) {
                     )
                   })}
                 </div>
+                ) : null}
               </div>
             ) : null}
           </CardContent>

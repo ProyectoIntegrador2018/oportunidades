@@ -165,6 +165,13 @@
    max-width: 300px;
 }
 
+.error-titulo-rojo-medium {
+   margin: 0;
+   margin-bottom: 0.3em;
+   color: hsl(0, 95%, 44%);
+   text-align: start;
+}
+
 .error-texto {
    color: hsl(0, 95%, 44%);
    font-weight: 900;
