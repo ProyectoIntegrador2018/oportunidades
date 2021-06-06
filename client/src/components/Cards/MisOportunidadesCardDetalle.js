@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import {
@@ -7,7 +7,8 @@ import {
   CardActions,
   CardContent,
   Typography,
-  Input
+  Input,
+  Link
 } from "@material-ui/core";
 import KeyboardArrowLeft from "@material-ui/icons/KeyboardArrowLeft";
 import FabEditRFPFlex from "../ui/FabEditRFPFlex";
@@ -15,9 +16,13 @@ import ConfirmDialog from "../Dialogs/ConfirmDialog";
 import useStyles from "../Cards/styles";
 
 import axios from "axios";
+import moment from "moment";
+import { obtenerParticipacion, obtenerFileNamesParticipaciones, getBase64File, deleteFile, isSocioBanned } from "../../fetchers/fetcher";
 
 export default function SimpleCard({ rfp }) {
   const [selectedFile, setSelectedFile] = useState(null);
+  const [files, setFiles] = useState([]);
+  const [isBanned, setIsBanned] = useState(true);
   const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
 
   const config = {
@@ -25,15 +30,38 @@ export default function SimpleCard({ rfp }) {
       Authorization: "Bearer " + sessionStorage.getItem("token"),
       "Content-Type": "application/json",
     },
+    params: {
+      rfpInvolucrado: rfp._id,
+    },
   };
 
-  const classes = useStyles();
+  useEffect(() => {
+    if (userType === "socio") {
+      isSocioBanned(rfp._id)
+        .then((data) => {
+          setIsBanned(data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
 
-  // hook para redireccionar
-  const navigate = useNavigate();
-
-  // Obtener tipo de usuario
-  const userType = sessionStorage.getItem("userType");
+      obtenerParticipacion(rfp._id)
+        .then((participacion) => {
+          obtenerFileNamesParticipaciones(participacion._id)
+            .then((filenames) => {
+              console.log('filenames', filenames);
+              setFiles(filenames);
+              console.log('files', files);
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+  }, []);
 
   // On file upload (click the upload button)
   const onFileUpload = () => {
@@ -47,12 +75,7 @@ export default function SimpleCard({ rfp }) {
     );
 
     axios
-      .post("/participacion/upload-file", formData, {
-        ...config,
-        params: {
-          rfpInvolucrado: rfp._id,
-        },
-      })
+      .post("/participacion/upload-file", formData, config)
       .then((res) => {
         window.location.reload();
       })
@@ -60,6 +83,46 @@ export default function SimpleCard({ rfp }) {
         console.log(error);
       });
   };
+
+  const downloadFile = (filename, originalname) => {
+    getBase64File(filename)
+      .then((fileData) => {
+        const linkSource = `data:${fileData.contentType};base64,${fileData.base64}`;
+        const downloadLink = document.createElement("a");
+        downloadLink.href = linkSource;
+        downloadLink.download = originalname;
+        downloadLink.click();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
+  const handleDeleteFile = (filename) => {
+    deleteFile(filename)
+      .then((res) => {
+        window.location.reload();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
+  const classes = useStyles();
+
+  // Opciones para mostrar la fecha en string
+  const options = {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  };
+
+  // hook para redireccionar
+  const navigate = useNavigate();
+
+  // Obtener tipo de usuario
+  const userType = sessionStorage.getItem("userType");
 
   // TODO: Refactor to fetchers
   const handleClick = () => {
@@ -73,7 +136,6 @@ export default function SimpleCard({ rfp }) {
         config
       )
       .then((res) => {
-        //window.location.reload();
         navigate("/mis-oportunidades");
       })
       .catch((error) => {
@@ -144,6 +206,16 @@ export default function SimpleCard({ rfp }) {
                 {rfp.estatus}
               </Typography>
             </div>
+            {rfp.causa !== "" ? (
+              <div className={classes.containerText}>
+                <Typography className={classes.labelText}>
+                  Causa de estatus cerrado:
+                </Typography>
+                <Typography className={classes.valueText}>
+                  {rfp.causa}
+                </Typography>
+              </div>
+            ) : null}
             <div className={classes.containerColumnText}>
               <Typography className={classes.labelText}>
                 Objetivo de la oportunidad:
@@ -228,10 +300,14 @@ export default function SimpleCard({ rfp }) {
             )}
             <div className={classes.containerText}>
               <Typography className={classes.labelText}>
-                Feha de la primer reunión:
+                Fecha de la siguiente reunión:
               </Typography>
               <Typography className={classes.valueText}>
-                {rfp.fechaCita}
+                {moment
+                  .utc(rfp.fechaCita)
+                  .toDate()
+                  .toLocaleDateString("es-ES", options)}{" "}
+                {moment.utc(rfp.fechaCita).toDate().toLocaleTimeString("en-US")}
               </Typography>
             </div>
             <Typography className={classes.sectionSubtitle}>
@@ -258,15 +334,30 @@ export default function SimpleCard({ rfp }) {
                   type="file"
                   onChange={(event) => setSelectedFile(event.target.files[0])}
                 />
-                <Button className="boton" onClick={onFileUpload}>
+                <Button className="boton" disabled={selectedFile === null} onClick={onFileUpload}>
                   SUBIR ARCHIVO
                 </Button>
               </div>
             </form>
+            <div className={classes.containerColumnText}>
+              <Typography className={classes.labelText}>
+                Archivos subidos:
+              </Typography>
+              {files.map((file, index) => {
+                return (
+                  <div key={"div" + index}>
+                    <Link key={"link" + index} onClick={() => downloadFile(file.name, file.originalname)}>{file.originalname}</Link>
+                    <Button key={"button" + index} className="boton" onClick={() => handleDeleteFile(file.name)}>
+                      BORRAR
+                    </Button>
+                  </div>
+                )
+              })}
+            </div>
           </CardContent>
           <CardActions>
             <div className={classes.contenedorBotones}>
-              {userType === "socio" ? (
+              {userType === "socio" && !isBanned ? (
                 rfp.participandoActual == false ? (
                   <Button
                     type="submit"
