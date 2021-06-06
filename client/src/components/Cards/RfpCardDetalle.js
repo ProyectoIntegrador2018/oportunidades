@@ -18,7 +18,7 @@ import useStyles from "../Cards/styles";
 
 import axios from "axios";
 import moment from "moment";
-import { obtenerParticipacion, obtenerFileNamesParticipaciones, getBase64File, isSocioBanned } from "../../fetchers/fetcher";
+import { obtenerParticipacion, obtenerFileNamesParticipaciones, getBase64File, deleteFile, isSocioBanned } from "../../fetchers/fetcher";
 
 export default function SimpleCard({ rfp, isParticipating }) {
   const [selectedFile, setSelectedFile] = useState(null);
@@ -37,7 +37,7 @@ export default function SimpleCard({ rfp, isParticipating }) {
   };
 
   useEffect(() => {
-    if (sessionStorage.getItem("userType") === "socio") {
+    if (userType === "socio") {
       isSocioBanned(rfp._id)
         .then((data) => {
           setIsBanned(data);
@@ -93,6 +93,16 @@ export default function SimpleCard({ rfp, isParticipating }) {
         downloadLink.href = linkSource;
         downloadLink.download = originalname;
         downloadLink.click();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
+  const handleDeleteFile = (filename) => {
+    deleteFile(filename)
+      .then((res) => {
+        window.location.reload();
       })
       .catch((error) => {
         console.log(error);
@@ -341,8 +351,11 @@ export default function SimpleCard({ rfp, isParticipating }) {
                   </Typography>
                   {files.map((file, index) => {
                     return (
-                      <div>
-                        <Link key={index} onClick={() => downloadFile(file.name, file.originalname)}>{file.originalname}</Link>
+                      <div key={"div" + index}>
+                        <Link key={"link" + index} onClick={() => downloadFile(file.name, file.originalname)}>{file.originalname}</Link>
+                        <Button key={"button" + index} className="boton" onClick={() => handleDeleteFile(file.name)}>
+                          BORRAR
+                        </Button>
                       </div>
                     )
                   })}

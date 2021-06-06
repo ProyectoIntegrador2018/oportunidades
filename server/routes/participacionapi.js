@@ -99,9 +99,9 @@ router.delete("/delete-participacion-socio/:id", userMiddleware, (req, res) => {
  * @param {Object} req contiene el id del socio
  * @param {Object} res respuesta del request
  */
- router.get("/get-participacion/:rfpId", userMiddleware, (req, res) => {
+router.get("/get-participacion/:rfpId", userMiddleware, (req, res) => {
   participacionController
-    .getParticipacion(req.params.rfpId, req.user.id)
+    .getParticipacionByRfpAndSocioId(req.params.rfpId, req.user.id)
     .then((participacion) => {
       return res.send(participacion);
     })
@@ -252,11 +252,17 @@ router.get("/get-base64-file/:filename", userMiddleware, (req, res) => {
  * @param {Object} req contiene el id del archivo
  * @param {Object} res respuesta del request
  */
-router.delete("/delete-file/:id", userMiddleware, (req, res) => {
-  gfs.remove({ _id: req.params.id, root: FILE_COLLECTION }, (error) => {
-    if (error) return res.status(404).send({ error });
-    res.sendStatus(204);
-  });
+ router.delete("/delete-file/:filename", userMiddleware, (req, res) => {
+  ParticipacionFileController.deleteParticipacionFile(req.params.filename)
+    .then(() => {
+      gfs.remove({ filename: req.params.filename, root: FILE_COLLECTION }, (error) => {
+        if (error) return res.status(404).send({ error });
+        res.sendStatus(204);
+      });
+    })
+    .catch((error) => {
+      return res.status(404).send({ error });
+    });
 });
 
 /**

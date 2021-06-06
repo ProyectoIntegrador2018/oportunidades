@@ -90,8 +90,8 @@ export default function SimpleCard({
             {files.map((file, index) => {
               return (
                 <div>
-                <Link key={index} className={classes.valueText} onClick={() => downloadFile(file.name, file.originalname)}>{file.originalname}</Link>
-              </div>
+                  <Link key={index} className={classes.valueText} onClick={() => downloadFile(file.name, file.originalname)}>{file.originalname}</Link>
+                </div>
               )
             })}
           {estatus === "Activo" && (
